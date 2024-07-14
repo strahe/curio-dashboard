@@ -1,0 +1,6 @@
+type Sector {
+    meta: SectorMeta
+    storages: [StoragePath]
+    tasks: [Task]
+    taskHistories: [TaskHistory]
+}
