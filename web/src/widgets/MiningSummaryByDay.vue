@@ -2,10 +2,10 @@
 import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import {MiningSummaryDay} from "@/typed-graph";
-import {ChartData} from "chart.js";
 import {formatDay} from "@/utils/formatDay";
+import {ComputedRef} from "vue";
 
-const { result, loading,refetch } = useQuery(gql`
+const { result, loading,refetch, error } = useQuery(gql`
   query GetMiningSummaryByDay($days: Int!) {
     miningSummaryByDay(lastDays: $days) {
       day
@@ -20,19 +20,28 @@ const { result, loading,refetch } = useQuery(gql`
 }));
 
 const items: ComputedRef<[MiningSummaryDay]> = computed(() => result.value?.miningSummaryByDay || []);
-const chartData = ref<ChartData<'bar'>>({
-  labels: [],
-  datasets: [],
-})
-watch(items, (newItems) => {
-  // Step 1: Normalize and sort the days
+
+const chartData = computed(() => {
+  const data = prepareData(items.value);
+  return {
+    data: {
+      labels: data.labels,
+      datasets: data.datasets,
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+    },
+  };
+});
+
+function prepareData(newItems) {
   const labelsSet = new Set<string>();
   newItems.forEach((item) => {
     labelsSet.add(formatDay(new Date(item.day)));
   });
   const sortedLabels = Array.from(labelsSet).sort();
 
-// Step 2: Initialize datasets for each `sp_id` with pre-filled data arrays of zeros
   const datasetsBySpId: { [sp_id: number]: { label: string; data: number[] } } = {};
   newItems.forEach((item) => {
     if (!datasetsBySpId[item.sp_id]) {
@@ -43,7 +52,6 @@ watch(items, (newItems) => {
     }
   });
 
-// Step 3: Populate the datasets
   newItems.forEach((item) => {
     const day = formatDay(new Date(item.day));
     const dayIndex = sortedLabels.indexOf(day);
@@ -53,20 +61,12 @@ watch(items, (newItems) => {
   });
 
   const datasets = Object.values(datasetsBySpId);
-  chartData.value = {
+  return  {
     labels: sortedLabels,
     datasets: datasets,
   };
-})
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false,
-    },
-  },
 }
+
 </script>
 
 <template>
@@ -76,8 +76,9 @@ const chartOptions = {
   name="win-summary-by-day"
   title="Block Wins"
   type='Bar'
-  :data="chartData"
-  :options="chartOptions"
+  :data="chartData.data"
+  :options="chartData.options"
+  :error="error as Error"
 >
   <template #titleAction>
     <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>

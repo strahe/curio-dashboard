@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import {GetRunningTasks} from "@/pages/tasks/query";
 import {useQuery} from "@vue/apollo-composable";
 import {Task} from "@/typed-graph";
 import {format} from "timeago.js";
 import TaskDetails from "@/widgets/TaskDetails.vue";
 import {definePage} from "unplugin-vue-router/runtime";
+import {GetRunningTasks} from "@/query/task";
+import RunningTaskPieChart from "@/widgets/RunningTaskChart.vue";
 
 definePage({
   meta: {
@@ -58,17 +59,9 @@ const chartOptions = {
 <v-container fill-height fluid grid-list-xl>
   <v-row justify="center">
     <v-col cols="12">
-      <Card>
-        <Chart
-          type="Bar"
-          :data="chartData"
-          :options="chartOptions"
-        ></Chart>
-      </Card>
+      <RunningTaskPieChart type="Bar"></RunningTaskPieChart>
     </v-col>
     <v-col cols="12">
-      <Card title="Running Tasks">
-      </Card>
       <v-card>
         <v-alert v-if="error" type="error">
           {{ error.message }}

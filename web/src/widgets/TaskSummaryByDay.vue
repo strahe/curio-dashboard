@@ -2,11 +2,10 @@
 import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { TaskSummaryDay} from "@/typed-graph";
-import {ChartData} from "chart.js";
 import {formatDay} from "@/utils/formatDay";
 import {ComputedRef} from "vue";
 
-const { result, loading, refetch } = useQuery(gql`
+const { result, loading, refetch, error } = useQuery(gql`
   query GetTaskSummaryByDay($days: Int!) {
     taskSummaryByDay(lastDays: $days) {
       day
@@ -20,28 +19,29 @@ const { result, loading, refetch } = useQuery(gql`
 }, () => ({
   fetchPolicy: 'cache-first',
 }));
-
-const dataCompletedTasksChart= {
-  data: {
-    labels: [],
-    datasets: [],
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
+const items: ComputedRef<[TaskSummaryDay]> = computed(() => result.value?.taskSummaryByDay || []);
+const chartData = computed(() => {
+  const data = prepareData(items.value);
+  return {
+    data: {
+      labels: data.labels,
+      datasets: data.datasets,
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false,
+        },
       },
     },
-  },
-}
+  };
+});
 
-const items: ComputedRef<[TaskSummaryDay]> = computed(() => result.value?.taskSummaryByDay || []);
-const chartData = ref<ChartData<'line'>>(dataCompletedTasksChart.data)
-watch(items, (newItems) => {
+function prepareData(newItems) {
   const sortedItems = [...newItems].sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime());
-  chartData.value = {
+  return {
     labels: sortedItems.map((item) => {
       return formatDay(new Date(item.day));
     }),
@@ -56,16 +56,8 @@ watch(items, (newItems) => {
       }
     ]
   }
-})
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false,
-    },
-  },
 }
+
 </script>
 
 <template>
@@ -75,8 +67,9 @@ const chartOptions = {
   name="task-summary-by-day"
   title="Completed Tasks"
   type='Line'
-  :data="chartData"
-  :options="chartOptions"
+  :data="chartData.data"
+  :options="chartData.options"
+  :error="error as Error"
 >
   <template #titleAction>
     <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>

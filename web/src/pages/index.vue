@@ -8,7 +8,7 @@
         <MiningSummaryByDay color="info"></MiningSummaryByDay>
       </v-col>
       <v-col cols="12" lg="4">
-        <TaskSummaryByDay color="info"></TaskSummaryByDay>
+        <RunningTaskPieChart type="Pie"></RunningTaskPieChart>
       </v-col>
 
       <v-col cols="12" lg="3">
@@ -71,4 +71,5 @@ import PipelineSummary from "@/widgets/PipelineSummary.vue";
 import ChainConnectivity from "@/widgets/ChainConnectivity.vue";
 import TaskSummaryByDay from "@/widgets/TaskSummaryByDay.vue";
 import MiningSummaryByDay from "@/widgets/MiningSummaryByDay.vue";
+import RunningTaskPieChart from "@/widgets/RunningTaskChart.vue";
 </script>
