@@ -7,7 +7,6 @@ package resolvers
 import (
 	"context"
 	"errors"
-	"github.com/yugabyte/pgx/v5"
 	"sync"
 	"time"
 
@@ -17,6 +16,7 @@ import (
 	"github.com/strahe/curio-dashboard/graph"
 	cachecontrol "github.com/strahe/curio-dashboard/graph/cache_control"
 	"github.com/strahe/curio-dashboard/graph/model"
+	pgx "github.com/yugabyte/pgx/v5"
 	"golang.org/x/xerrors"
 )
 

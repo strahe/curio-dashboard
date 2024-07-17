@@ -47,7 +47,7 @@ const headers = ref([
 <template>
   <Card :title="title" :color="color" :error="error as Error">
     <template #titleAction>
-      <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading"></v-btn>
+      <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
     </template>
     <v-card-text>
       <v-data-table-virtual

@@ -127,15 +127,15 @@ type StorageStats struct {
 }
 
 type TaskHistory struct {
-	ID                     int    `json:"id"`
-	TaskID                 int    `json:"taskId"`
-	Name                   string `json:"name"`
-	Posted                 string `json:"posted"`
-	WorkStart              string `json:"workStart"`
-	WorkEnd                string `json:"workEnd"`
-	Result                 bool   `json:"result"`
-	Err                    string `json:"err"`
-	CompletedByHostAndPort string `json:"completedByHostAndPort"`
+	ID                     int       `json:"id"`
+	TaskID                 int       `json:"taskId"`
+	Name                   string    `json:"name"`
+	Posted                 time.Time `json:"posted"`
+	WorkStart              time.Time `json:"workStart"`
+	WorkEnd                time.Time `json:"workEnd"`
+	Result                 bool      `json:"result"`
+	Err                    *string   `json:"err,omitempty"`
+	CompletedByHostAndPort string    `json:"completedByHostAndPort"`
 }
 
 type TaskSummary struct {

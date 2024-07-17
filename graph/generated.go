@@ -11391,9 +11391,9 @@ func (ec *executionContext) _TaskHistory_posted(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_TaskHistory_posted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -11403,7 +11403,7 @@ func (ec *executionContext) fieldContext_TaskHistory_posted(_ context.Context, f
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -11435,9 +11435,9 @@ func (ec *executionContext) _TaskHistory_workStart(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_TaskHistory_workStart(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -11447,7 +11447,7 @@ func (ec *executionContext) fieldContext_TaskHistory_workStart(_ context.Context
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -11479,9 +11479,9 @@ func (ec *executionContext) _TaskHistory_workEnd(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_TaskHistory_workEnd(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -11491,7 +11491,7 @@ func (ec *executionContext) fieldContext_TaskHistory_workEnd(_ context.Context, 
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -11562,14 +11562,11 @@ func (ec *executionContext) _TaskHistory_err(ctx context.Context, field graphql.
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_TaskHistory_err(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -16589,9 +16586,6 @@ func (ec *executionContext) _TaskHistory(ctx context.Context, sel ast.SelectionS
 			}
 		case "err":
 			out.Values[i] = ec._TaskHistory_err(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "completedByHostAndPort":
 			out.Values[i] = ec._TaskHistory_completedByHostAndPort(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

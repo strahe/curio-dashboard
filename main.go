@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/strahe/curio-dashboard/aggregator"
+
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
@@ -55,6 +57,12 @@ func main() {
 				EnvVars: []string{"CURIO_HARMONYDB_URL"},
 				Usage:   "URL to connect to harmonydb, e.g. postgres://username:password@localhost:5433/database_name?search_path=curio",
 			},
+			&cli.StringFlag{
+				Name:    "appdb-url",
+				EnvVars: []string{"CURIO_APPDB_URL"},
+				Value:   "sqlite3://app.sqlite",
+				Usage:   "URL to connect to appdb, e.g. postgres://username:password@localhost:5433/database_name?search_path=dashboard",
+			},
 			cliutil.FlagVeryVerbose,
 		},
 		Before: func(c *cli.Context) error {
@@ -73,11 +81,11 @@ func main() {
 }
 
 var runAction = func(cctx *cli.Context) error {
-	db, err := db.NewHarmonyDB(cctx.Context, cctx.String("harmonydb-url"))
+	harmonyDB, err := db.NewHarmonyDB(cctx.Context, cctx.String("harmonydb-url"))
 	if err != nil {
 		return fmt.Errorf("failed to connect to harmonydb: %w", err)
 	}
-	defer db.Close()
+	defer harmonyDB.Close()
 	if os.Getenv("FULLNODE_API_INFO") == "" {
 		return fmt.Errorf("FULLNODE_API_INFO not set")
 	}
@@ -98,6 +106,18 @@ var runAction = func(cctx *cli.Context) error {
 		return fmt.Errorf("failed to use network bundle: %w", err)
 	}
 
+	appDB, err := db.NewAppDb(cctx.Context, cctx.String("appdb-url"))
+	if err != nil {
+		return fmt.Errorf("failed to connect to appdb: %w", err)
+	}
+
+	agg, err := aggregator.NewManager(fullNode, harmonyDB, appDB)
+	if err != nil {
+		return fmt.Errorf("failed to create aggregator manager: %w", err)
+	}
+	agg.Start()
+	defer agg.Stop()
+
 	router := http.NewServeMux()
 	var fn func(r *http.Request) bool
 	if cctx.Bool("debug") {
@@ -107,7 +127,7 @@ var runAction = func(cctx *cli.Context) error {
 	}
 
 	var srv = handler.New(
-		graph.NewExecutableSchema(graph.Config{Resolvers: resolvers.NewResolver(db, fullNode)}))
+		graph.NewExecutableSchema(graph.Config{Resolvers: resolvers.NewResolver(harmonyDB, fullNode)}))
 	srv.AddTransport(transport.Websocket{
 		KeepAlivePingInterval: 10 * time.Second,
 		Upgrader: websocket.Upgrader{

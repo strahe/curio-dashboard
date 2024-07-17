@@ -343,14 +343,14 @@ export type Task = {
 export type TaskHistory = {
   __typename?: 'TaskHistory';
   completedByHostAndPort: Scalars['String']['output'];
-  err: Scalars['String']['output'];
+  err?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
-  posted: Scalars['String']['output'];
+  posted: Scalars['Time']['output'];
   result: Scalars['Boolean']['output'];
   taskId: Scalars['Int']['output'];
-  workEnd: Scalars['String']['output'];
-  workStart: Scalars['String']['output'];
+  workEnd: Scalars['Time']['output'];
+  workStart: Scalars['Time']['output'];
 };
 
 export type TaskSummary = {
@@ -368,3 +368,13 @@ export type TaskSummaryDay = {
   totalCount: Scalars['Int']['output'];
   trueCount: Scalars['Int']['output'];
 };
+
+
+      export type PossibleTypesResultData = {
+  "possibleTypes": {}
+};
+      const result: PossibleTypesResultData = {
+  "possibleTypes": {}
+};
+      export default result;
+    

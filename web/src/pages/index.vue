@@ -55,10 +55,10 @@
         />
       </v-col>
       <v-col cols="12" lg="6">
-          <ChainConnectivity title="Chain Connectivity" color="orange"/>
+          <ChainConnectivity title="Chain Connectivity"/>
       </v-col>
       <v-col cols="12" lg="6">
-        <ChainConnectivity title="Chain Connectivity" color="orange"/>
+        <RecentTasks></RecentTasks>
       </v-col>
       <v-col cols="12">
         <PipelineSummary title="Pipelines"></PipelineSummary>
@@ -72,4 +72,5 @@ import ChainConnectivity from "@/widgets/ChainConnectivity.vue";
 import TaskSummaryByDay from "@/widgets/TaskSummaryByDay.vue";
 import MiningSummaryByDay from "@/widgets/MiningSummaryByDay.vue";
 import RunningTaskPieChart from "@/widgets/RunningTaskChart.vue";
+import RecentTasks from "@/widgets/RecentTasks.vue";
 </script>

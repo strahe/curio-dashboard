@@ -2,10 +2,10 @@ type TaskHistory {
     id: Int!
     taskId: Int!
     name: String!
-    posted: String!
-    workStart: String!
-    workEnd: String!
+    posted: Time!
+    workStart: Time!
+    workEnd: Time!
     result: Boolean!
-    err: String!
+    err: String
     completedByHostAndPort: String!
 }

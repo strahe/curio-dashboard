@@ -49,7 +49,7 @@ const headers = [
 <template>
   <Card :title="title" :color="color" :error="error as Error">
     <template #titleAction>
-      <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading"></v-btn>
+      <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
     </template>
     <v-data-table-virtual
       :loading="loading"
