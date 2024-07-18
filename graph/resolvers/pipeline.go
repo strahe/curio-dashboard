@@ -17,6 +17,36 @@ func (r *pipelineResolver) ID(ctx context.Context, obj *model.Pipeline) (string,
 	return fmt.Sprintf("%d-%d", obj.SpID, obj.SectorNumber), nil
 }
 
+// Status is the resolver for the status field.
+func (r *pipelineResolver) Status(ctx context.Context, obj *model.Pipeline) (model.PipelineStatus, error) {
+	if obj.Failed {
+		return model.PipelineStatusFailed, nil
+	} else if obj.AfterCommitMsgSuccess {
+		return model.PipelineStatusCommitMsg, nil
+	} else if obj.AfterCommitMsg {
+		return model.PipelineStatusCommit, nil
+	} else if obj.AfterMoveStorage {
+		return model.PipelineStatusMoveStorage, nil
+	} else if obj.AfterFinalize {
+		return model.PipelineStatusFinalize, nil
+	} else if obj.AfterPorep {
+		return model.PipelineStatusPoRep, nil
+	} else if obj.AfterPrecommitMsgSuccess {
+		return model.PipelineStatusPreCommitMsg, nil
+	} else if obj.AfterPrecommitMsg {
+		return model.PipelineStatusPreCommit, nil
+	} else if obj.AfterTreeR {
+		return model.PipelineStatusTreeR, nil
+	} else if obj.AfterTreeC {
+		return model.PipelineStatusTreeC, nil
+	} else if obj.AfterTreeD {
+		return model.PipelineStatusTreeD, nil
+	} else if obj.AfterSdr {
+		return model.PipelineStatusSdr, nil
+	}
+	return model.PipelineStatusStarted, nil
+}
+
 // Pipeline returns graph.PipelineResolver implementation.
 func (r *Resolver) Pipeline() graph.PipelineResolver { return &pipelineResolver{r} }
 

@@ -37,10 +37,10 @@ const headers = [
   { title: 'Miner', key: 'id' },
   { title: 'SDR', key: 'sdr' },
   { title: 'Trees', key: 'trees' },
-  { title: 'Precommit Msg', key: 'precommitMsg' },
+  { title: 'Precommit', key: 'precommitMsg' },
   { title: 'Wait Seed', key: 'waitSeed' },
   { title: 'PoRep', key: 'porep' },
-  { title: 'Commit Msg', key: 'commitMsg' },
+  { title: 'Commit', key: 'commitMsg' },
   { title: 'Done', key: 'done' },
   { title: 'Failed', key: 'failed' },
 ]

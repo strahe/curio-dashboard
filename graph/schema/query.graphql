@@ -14,9 +14,10 @@ type Query {
     task(id: Int!): Task
     tasks: [Task]
     taskHistories(offset: Int!, limit: Int!): [TaskHistory]
-    taskSummary(lastDays: Int!): [TaskSummary]
-    taskSummaryByDay(lastDays: Int!): [TaskSummaryDay]
-
+#    taskSummary(lastDays: Int!): [TaskSummary]
+#    taskSummaryByDay(lastDays: Int!): [TaskSummaryDay]
+    taskAggregatesByDay(lastDays: Int!): [TaskAggregate]
+    taskAggregatesByHour(lastHours: Int!): [TaskAggregate]
     # storage
     storagePaths: [StoragePath]
     storageStats: [StorageStats]

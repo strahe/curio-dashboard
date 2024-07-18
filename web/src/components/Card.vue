@@ -13,11 +13,12 @@ defineProps({
     default: null,
   },
 })
+
 </script>
 
 <template>
-<v-card>
-  <v-card-title v-if="title" :style="color ? `color: ${color};` : ''" class="d-flex justify-space-between">
+<v-card v-bind="$attrs">
+  <v-card-title v-if="title !== null" :style="color ? `color: ${color};` : ''" class="d-flex justify-space-between">
     <div>{{ title }}</div>
     <slot name="titleAction" />
   </v-card-title>

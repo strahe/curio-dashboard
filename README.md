@@ -18,7 +18,7 @@ cd curio-dashboard
 make all
 ```
 
-### Start
+### Run 
 ```shell
 # Run Server
 
@@ -28,7 +28,7 @@ export CURIO_HARMONYDB_URL="postgres://yugabyte:yugabyte@localhost:5433/curio?se
 # If you insist on using the master node (ensure you know what you're doing), 
 # add '&target_session_attrs=any' to the end of CURIO_HARMONYDB_URL
 
-./curio-dashboard --debug
+./curio-dashboard --debug run
 
 # Run Frontend
 cd web && yarn dev

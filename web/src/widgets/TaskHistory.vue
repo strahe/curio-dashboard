@@ -52,7 +52,7 @@ const headers = ref([
   </v-alert>
   <v-card-title class="d-flex justify-space-between">
     <div>Task History</div>
-    <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading"></v-btn>
+    <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
   </v-card-title>
   <v-data-table
     :items="items"

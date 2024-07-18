@@ -75,7 +75,7 @@ function loadForPagination() {
     <v-col cols="12">
       <Card title="Sectors" :error="error as Error">
         <template #titleAction>
-          <v-btn icon="mdi-refresh" @click="loadForPagination" :disabled="loading"></v-btn>
+          <v-btn icon="mdi-refresh" @click="loadForPagination" :disabled="loading" size="small"></v-btn>
         </template>
         <v-row>
           <v-col cols="3">
@@ -93,6 +93,7 @@ function loadForPagination() {
           <v-col cols="3">
             <v-text-field
               v-model="inputSector"
+              type="number"
               label="Sector Number"
               prepend-inner-icon="mdi-magnify"
               variant="outlined"
@@ -151,7 +152,7 @@ function loadForPagination() {
                   <template v-for="(value, key) in item" :key="key">
                     <v-col cols="6" v-if="String(key) !== '__typename'">
                       <v-text-field
-                        :label="key"
+                        :label="String(key)"
                         :model-value="value"
                         readonly
                         disabled

@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/strahe/curio-dashboard/aggregator"
-
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
@@ -23,7 +21,11 @@ import (
 	cliutil "github.com/filecoin-project/lotus/cli/util"
 	"github.com/gorilla/websocket"
 	logging "github.com/ipfs/go-log/v2"
+	"github.com/robfig/cron/v3"
 	"github.com/rs/cors"
+	"github.com/strahe/curio-dashboard/aggregator"
+	"github.com/strahe/curio-dashboard/aggregator/jobs"
+	"github.com/strahe/curio-dashboard/aggregator/query"
 	"github.com/strahe/curio-dashboard/db"
 	"github.com/strahe/curio-dashboard/graph"
 	cachecontrol "github.com/strahe/curio-dashboard/graph/cache_control"
@@ -38,7 +40,7 @@ var log = logging.Logger("main")
 func main() {
 	app := &cli.App{
 		Name:                 "curio-dashboard",
-		Usage:                "Curio dashboard server for GraphQL API",
+		Usage:                "A dashboard for the Curio",
 		Version:              "0.0.1", // todo:
 		EnableBashCompletion: true,
 		Flags: []cli.Flag{
@@ -47,118 +49,119 @@ func main() {
 				Usage: "Enable debug logging",
 				Value: false,
 			},
-			&cli.StringFlag{
-				Name:  "listen",
-				Usage: "host address and port will listen on",
-				Value: "127.0.0.1:9091",
-			},
-			&cli.StringFlag{
-				Name:    "harmonydb-url",
-				EnvVars: []string{"CURIO_HARMONYDB_URL"},
-				Usage:   "URL to connect to harmonydb, e.g. postgres://username:password@localhost:5433/database_name?search_path=curio",
-			},
-			&cli.StringFlag{
-				Name:    "appdb-url",
-				EnvVars: []string{"CURIO_APPDB_URL"},
-				Value:   "sqlite3://app.sqlite",
-				Usage:   "URL to connect to appdb, e.g. postgres://username:password@localhost:5433/database_name?search_path=dashboard",
-			},
-			cliutil.FlagVeryVerbose,
 		},
 		Before: func(c *cli.Context) error {
 			if c.Bool("debug") {
 				return logging.SetLogLevel("*", "DEBUG")
+			} else {
+				return logging.SetLogLevel("*", "INFO")
 			}
-			return nil
 		},
-		Action: runAction,
 		After: func(c *cli.Context) error {
 			return nil
+		},
+		Commands: []*cli.Command{
+			runCmd,
+			fillCmd,
 		},
 	}
 	app.Setup()
 	lcli.RunApp(app)
 }
 
-var runAction = func(cctx *cli.Context) error {
-	harmonyDB, err := db.NewHarmonyDB(cctx.Context, cctx.String("harmonydb-url"))
-	if err != nil {
-		return fmt.Errorf("failed to connect to harmonydb: %w", err)
-	}
-	defer harmonyDB.Close()
-	if os.Getenv("FULLNODE_API_INFO") == "" {
-		return fmt.Errorf("FULLNODE_API_INFO not set")
-	}
-	apiInfo := strings.Split(os.Getenv("FULLNODE_API_INFO"), ",")
-	fullNode, closer, err := getFullNodeAPIV1(cctx, apiInfo)
-	if err != nil {
-		return fmt.Errorf("failed to get full node API: %w", err)
-	}
-	defer closer()
-
-	// get network name
-	ntn, err := fullNode.StateNetworkName(cctx.Context)
-	if err != nil {
-		return fmt.Errorf("failed to get network name: %w", err)
-	}
-	log.Infof("Using network: %s", ntn)
-	if err := build.UseNetworkBundle(string(ntn)); err != nil {
-		return fmt.Errorf("failed to use network bundle: %w", err)
-	}
-
-	appDB, err := db.NewAppDb(cctx.Context, cctx.String("appdb-url"))
-	if err != nil {
-		return fmt.Errorf("failed to connect to appdb: %w", err)
-	}
-
-	agg, err := aggregator.NewManager(fullNode, harmonyDB, appDB)
-	if err != nil {
-		return fmt.Errorf("failed to create aggregator manager: %w", err)
-	}
-	agg.Start()
-	defer agg.Stop()
-
-	router := http.NewServeMux()
-	var fn func(r *http.Request) bool
-	if cctx.Bool("debug") {
-		fn = func(r *http.Request) bool {
-			return true
-		}
-	}
-
-	var srv = handler.New(
-		graph.NewExecutableSchema(graph.Config{Resolvers: resolvers.NewResolver(harmonyDB, fullNode)}))
-	srv.AddTransport(transport.Websocket{
-		KeepAlivePingInterval: 10 * time.Second,
-		Upgrader: websocket.Upgrader{
-			CheckOrigin: fn,
+var runCmd = &cli.Command{
+	Name:  "run",
+	Usage: "run the Curio dashboard server",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:  "listen",
+			Usage: "host address and port will listen on",
+			Value: "127.0.0.1:9091",
 		},
-	})
-	srv.AddTransport(transport.Options{})
-	srv.AddTransport(transport.GET{})
-	srv.AddTransport(transport.POST{})
-	srv.AddTransport(transport.MultipartForm{})
-	srv.SetQueryCache(lru.New(1000))
-	srv.Use(extension.Introspection{})
-	srv.Use(extension.AutomaticPersistedQuery{
-		Cache: lru.New(100),
-	})
-	srv.Use(cachecontrol.Extension{})
+		harmonydbFlag,
+		appdbFlag,
+		cliutil.FlagVeryVerbose,
+	},
+	Action: func(cctx *cli.Context) error {
+		harmonyDB, err := db.NewHarmonyDB(cctx.Context, cctx.String("harmonydb-url"))
+		if err != nil {
+			return fmt.Errorf("failed to connect to harmonydb: %w", err)
+		}
+		defer harmonyDB.Close()
+		if os.Getenv("FULLNODE_API_INFO") == "" {
+			return fmt.Errorf("FULLNODE_API_INFO not set")
+		}
+		apiInfo := strings.Split(os.Getenv("FULLNODE_API_INFO"), ",")
+		fullNode, closer, err := getFullNodeAPIV1(cctx, apiInfo)
+		if err != nil {
+			return fmt.Errorf("failed to get full node API: %w", err)
+		}
+		defer closer()
 
-	assets, _ := web.Assets()
-	fs := http.FileServer(http.FS(assets))
-	router.Handle("/", http.StripPrefix("/", fs))
-	router.Handle("/playground", playground.Handler("GraphQL playground", "/graphql"))
-	if cctx.Bool("debug") {
-		router.Handle("/graphql", cors.AllowAll().Handler(srv))
-	} else {
-		router.Handle("/graphql", srv)
-	}
-	listen := cctx.String("listen")
+		// get network name
+		ntn, err := fullNode.StateNetworkName(cctx.Context)
+		if err != nil {
+			return fmt.Errorf("failed to get network name: %w", err)
+		}
+		log.Infof("Using network: %s", ntn)
+		if err := build.UseNetworkBundle(string(ntn)); err != nil {
+			return fmt.Errorf("failed to use network bundle: %w", err)
+		}
 
-	log.Infof("connect to %s for GraphQL playground", listen)
-	log.Fatal(http.ListenAndServe(listen, router))
-	return nil
+		appDB, err := db.NewAppDb(cctx.Context, cctx.String("appdb-url"))
+		if err != nil {
+			return fmt.Errorf("failed to connect to appdb: %w", err)
+		}
+
+		agg, err := aggregator.NewManager(fullNode, harmonyDB, appDB)
+		if err != nil {
+			return fmt.Errorf("failed to create aggregator manager: %w", err)
+		}
+		agg.Start()
+		defer agg.Stop()
+
+		router := http.NewServeMux()
+		var fn func(r *http.Request) bool
+		if cctx.Bool("debug") {
+			fn = func(r *http.Request) bool {
+				return true
+			}
+		}
+
+		var srv = handler.New(
+			graph.NewExecutableSchema(graph.Config{Resolvers: resolvers.NewResolver(harmonyDB, appDB, fullNode)}))
+		srv.AddTransport(transport.Websocket{
+			KeepAlivePingInterval: 10 * time.Second,
+			Upgrader: websocket.Upgrader{
+				CheckOrigin: fn,
+			},
+		})
+		srv.AddTransport(transport.Options{})
+		srv.AddTransport(transport.GET{})
+		srv.AddTransport(transport.POST{})
+		srv.AddTransport(transport.MultipartForm{})
+		srv.SetQueryCache(lru.New(1000))
+		srv.Use(extension.Introspection{})
+		srv.Use(extension.AutomaticPersistedQuery{
+			Cache: lru.New(100),
+		})
+		srv.Use(cachecontrol.Extension{})
+
+		assets, _ := web.Assets()
+		fs := http.FileServer(http.FS(assets))
+		router.Handle("/", http.StripPrefix("/", fs))
+		router.Handle("/playground", playground.Handler("GraphQL playground", "/graphql"))
+		if cctx.Bool("debug") {
+			router.Handle("/graphql", cors.AllowAll().Handler(srv))
+		} else {
+			router.Handle("/graphql", srv)
+		}
+		listen := cctx.String("listen")
+
+		log.Infof("connect to %s for GraphQL playground", listen)
+		log.Fatal(http.ListenAndServe(listen, router))
+		return nil
+	},
 }
 
 func getFullNodeAPIV1(ctx *cli.Context, aiCfg []string, opts ...cliutil.GetFullNodeOption) (v1api.FullNode, jsonrpc.ClientCloser, error) {
@@ -234,4 +237,80 @@ func getFullNodeAPIV1(ctx *cli.Context, aiCfg []string, opts ...cliutil.GetFullN
 type httpHead struct {
 	addr   string
 	header http.Header
+}
+
+var fillCmd = &cli.Command{
+	Name:  "fill",
+	Usage: "fill gaps in the aggregator database for a given range and set of jobs",
+	Flags: []cli.Flag{
+		&cli.TimestampFlag{
+			Name:     "start",
+			Usage:    "start time for the fill, e.g., '2006-01-02 15:04:05'",
+			Layout:   time.DateTime,
+			Required: true,
+		},
+		&cli.TimestampFlag{
+			Name:        "end",
+			Usage:       "end time for the fill, e.g., '2006-01-02 15:04:05'",
+			Layout:      time.DateTime,
+			DefaultText: time.Now().Format(time.DateTime),
+			Value:       cli.NewTimestamp(time.Now()),
+		},
+		&cli.StringSliceFlag{
+			Name:  "jobs",
+			Usage: "list of jobs to run, all jobs will run if not specified",
+		},
+		harmonydbFlag,
+		appdbFlag,
+	},
+	Action: func(cctx *cli.Context) error {
+		startTime := cctx.Timestamp("start")
+		endTime := cctx.Timestamp("end")
+
+		harmonyDB, err := db.NewHarmonyDB(cctx.Context, cctx.String("harmonydb-url"))
+		if err != nil {
+			return fmt.Errorf("failed to connect to harmonydb: %w", err)
+		}
+		defer harmonyDB.Close()
+
+		appDB, err := db.NewAppDb(cctx.Context, cctx.String("appdb-url"))
+		if err != nil {
+			return fmt.Errorf("failed to connect to appdb: %w", err)
+		}
+
+		var runJobs []jobs.Job
+		if cctx.IsSet("jobs") {
+			// todo: parse jobs
+		} else {
+			runJobs = aggregator.AllJobs(query.NewQuery(harmonyDB), harmonyDB, appDB)
+		}
+
+		parser := cron.NewParser(cron.Second | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor)
+		for _, job := range runJobs {
+			jobSchedule, err := parser.Parse(job.Spec())
+			if err != nil {
+				return fmt.Errorf("parsing job schedule: %w", err)
+			}
+			// todo: maybe parallelize this
+			for t := jobSchedule.Next(*startTime); t.Before(*endTime); t = jobSchedule.Next(t) {
+				log.Infof("Running job %s at %s", job.Name(), t)
+				job.RunWith(t)
+			}
+		}
+		return nil
+	},
+}
+
+var harmonydbFlag = &cli.StringFlag{
+	Name:     "harmonydb-url",
+	EnvVars:  []string{"CURIO_HARMONYDB_URL"},
+	Usage:    "URL to connect to harmonydb, e.g. postgres://username:password@localhost:5433/database_name?search_path=curio",
+	Required: true,
+}
+
+var appdbFlag = &cli.StringFlag{
+	Name:    "appdb-url",
+	EnvVars: []string{"CURIO_APPDB_URL"},
+	Value:   "sqlite3://app.sqlite",
+	Usage:   "URL to connect to appdb, e.g. postgres://username:password@localhost:5433/database_name?search_path=dashboard",
 }

@@ -5,15 +5,11 @@ import {GetRunningTasks} from "@/query/task";
 import {Task} from "@/typed-graph";
 import {ComputedRef} from "vue";
 
-const props = defineProps({
+defineProps({
   title: {
     type: String,
-    default: 'Running Tasks'
+    default: null
   },
-  type: {
-    type: String,
-    default: 'Pie'
-  }
 })
 
 const { result, loading, refetch, error } = useQuery(GetRunningTasks,  null, ()=>({
@@ -27,35 +23,41 @@ const nameCounts = computed(() => {
   }, {});
 });
 
-const chartData = computed(() => ({
-  data: {
-    labels: Object.keys(nameCounts.value),
-    datasets: [{ label: 'value', data: Object.values(nameCounts.value) }],
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'left',
-        display: props.type === 'Pie',
+const chartData = computed(() => {
+  return {
+    series: [{
+      name: 'Running',
+      data: Object.values(nameCounts.value)
+    }],
+    options: {
+      chart: {
+        type: 'bar',
+        toolbar: { show: false }
       },
-      colors: {
-        enabled: true,
-        forceOverride: true
+      plotOptions: {
+        bar: {
+          borderRadius: 4,
+          borderRadiusApplication: 'end',
+          horizontal: false,
+        }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      xaxis: {
+        categories: Object.keys(nameCounts.value),
       }
     },
   }
-}));
-
+})
 </script>
 
 <template>
 <ChartCard
+  v-bind="$attrs"
   :loading="loading"
   :title="title"
-  :type="type"
-  :data="chartData.data"
+  :series="chartData.series"
   :options="chartData.options"
   :error="error as Error"
 >

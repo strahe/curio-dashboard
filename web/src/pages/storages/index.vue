@@ -5,6 +5,7 @@ import {StoragePath, StorageStats} from "@/typed-graph";
 import {formatBytes} from "@/utils/formatBytes";
 import {format} from "timeago.js";
 import {definePage} from "unplugin-vue-router/runtime";
+import {ComputedRef} from "vue";
 
 definePage({
   meta: {
@@ -107,7 +108,7 @@ function percentUsed(type: string) {
       <v-col cols="12">
         <Card title="Storage Paths" :error="error as Error">
           <template #titleAction>
-            <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading"></v-btn>
+            <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
           </template>
           <v-data-table
             :group-by="groupBy"

@@ -5,6 +5,7 @@ import {GetMachines} from "@/pages/machines/query";
 import {formatBytes} from "@/utils/formatBytes";
 import {format} from "timeago.js";
 import {definePage} from "unplugin-vue-router/runtime";
+import {ComputedRef} from "vue";
 
 definePage({
   meta: {
@@ -77,7 +78,7 @@ const headers = ref([
       <v-col cols="12">
         <Card title="Machines" :error="error as Error">
           <template #titleAction>
-            <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading"></v-btn>
+            <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
           </template>
           <v-data-table
             :headers="headers"

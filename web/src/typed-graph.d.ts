@@ -141,6 +141,7 @@ export type Pipeline = {
   seedEpoch?: Maybe<Scalars['Int']['output']>;
   seedValue?: Maybe<Scalars['ByteArray']['output']>;
   spId: Scalars['ActorID']['output'];
+  status: PipelineStatus;
   taskIdCommitMsg?: Maybe<Scalars['Int']['output']>;
   taskIdFinalize?: Maybe<Scalars['Int']['output']>;
   taskIdMoveStorage?: Maybe<Scalars['Int']['output']>;
@@ -155,6 +156,22 @@ export type Pipeline = {
   treeDCid?: Maybe<Scalars['String']['output']>;
   treeRCid?: Maybe<Scalars['String']['output']>;
 };
+
+export enum PipelineStatus {
+  Commit = 'Commit',
+  CommitMsg = 'CommitMsg',
+  Failed = 'Failed',
+  Finalize = 'Finalize',
+  MoveStorage = 'MoveStorage',
+  PoRep = 'PoRep',
+  PreCommit = 'PreCommit',
+  PreCommitMsg = 'PreCommitMsg',
+  Sdr = 'SDR',
+  Started = 'Started',
+  TreeC = 'TreeC',
+  TreeD = 'TreeD',
+  TreeR = 'TreeR'
+}
 
 export type PipelineSummary = {
   __typename?: 'PipelineSummary';
@@ -188,9 +205,9 @@ export type Query = {
   storagePaths?: Maybe<Array<Maybe<StoragePath>>>;
   storageStats?: Maybe<Array<Maybe<StorageStats>>>;
   task?: Maybe<Task>;
+  taskAggregatesByDay?: Maybe<Array<Maybe<TaskAggregate>>>;
+  taskAggregatesByHour?: Maybe<Array<Maybe<TaskAggregate>>>;
   taskHistories?: Maybe<Array<Maybe<TaskHistory>>>;
-  taskSummary?: Maybe<Array<Maybe<TaskSummary>>>;
-  taskSummaryByDay?: Maybe<Array<Maybe<TaskSummaryDay>>>;
   tasks?: Maybe<Array<Maybe<Task>>>;
 };
 
@@ -239,19 +256,19 @@ export type QueryTaskArgs = {
 };
 
 
+export type QueryTaskAggregatesByDayArgs = {
+  lastDays: Scalars['Int']['input'];
+};
+
+
+export type QueryTaskAggregatesByHourArgs = {
+  lastHours: Scalars['Int']['input'];
+};
+
+
 export type QueryTaskHistoriesArgs = {
   limit: Scalars['Int']['input'];
   offset: Scalars['Int']['input'];
-};
-
-
-export type QueryTaskSummaryArgs = {
-  lastDays: Scalars['Int']['input'];
-};
-
-
-export type QueryTaskSummaryByDayArgs = {
-  lastDays: Scalars['Int']['input'];
 };
 
 export type Sector = {
@@ -340,6 +357,15 @@ export type Task = {
   updateTime: Scalars['Time']['output'];
 };
 
+export type TaskAggregate = {
+  __typename?: 'TaskAggregate';
+  failure: Scalars['Int']['output'];
+  success: Scalars['Int']['output'];
+  tasks: Array<Maybe<TaskNameAggregate>>;
+  time: Scalars['Time']['output'];
+  total: Scalars['Int']['output'];
+};
+
 export type TaskHistory = {
   __typename?: 'TaskHistory';
   completedByHostAndPort: Scalars['String']['output'];
@@ -351,6 +377,14 @@ export type TaskHistory = {
   taskId: Scalars['Int']['output'];
   workEnd: Scalars['Time']['output'];
   workStart: Scalars['Time']['output'];
+};
+
+export type TaskNameAggregate = {
+  __typename?: 'TaskNameAggregate';
+  failure: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  success: Scalars['Int']['output'];
+  total: Scalars['Int']['output'];
 };
 
 export type TaskSummary = {

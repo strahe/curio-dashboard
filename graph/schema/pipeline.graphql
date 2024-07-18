@@ -39,4 +39,22 @@ type Pipeline {
     failedAt: Time
     failedReason: String!
     failedReasonMsg: String!
+
+    status: PipelineStatus!
+}
+
+enum PipelineStatus {
+    Started
+    SDR
+    TreeD
+    TreeC
+    TreeR
+    PreCommit
+    PreCommitMsg
+    PoRep
+    Finalize
+    MoveStorage
+    Commit
+    CommitMsg
+    Failed
 }

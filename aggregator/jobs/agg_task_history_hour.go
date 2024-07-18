@@ -33,13 +33,13 @@ func (j *AggTaskHistoryHour) Name() string {
 	return "AggTaskHistoryHour"
 }
 
-func (j *AggTaskHistoryHour) Run() {
-	now := time.Now()
+func (j *AggTaskHistoryHour) RunWith(t time.Time) {
+	start := time.Now()
 	defer func() {
-		log.Infof("AggTaskHistoryHour finished in %s", time.Since(now))
+		log.Infof("AggTaskHistoryHour finished in %s", time.Since(start))
 	}()
 
-	currentHour := now.Truncate(time.Hour)
+	currentHour := t.Truncate(time.Hour)
 	ags, err := j.query.AggregateTaskHistory(context.TODO(), currentHour.Add(-time.Hour), currentHour)
 	if err != nil {
 		log.Errorf("Failed to aggregate task history: %s", err)
@@ -54,7 +54,7 @@ func (j *AggTaskHistoryHour) Run() {
 			Task:    ag.Name,
 			Total:   ag.Total,
 			Success: ag.Success,
-			Failed:  ag.Failure,
+			Failure: ag.Failure,
 		})
 	}
 	if len(records) == 0 {
@@ -63,4 +63,9 @@ func (j *AggTaskHistoryHour) Run() {
 	j.appDB.Clauses(clause.OnConflict{
 		UpdateAll: true,
 	}).Save(records)
+}
+
+func (j *AggTaskHistoryHour) Run() {
+	t := time.Now()
+	j.RunWith(t)
 }

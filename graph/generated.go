@@ -50,6 +50,7 @@ type ResolverRoot interface {
 	Sector() SectorResolver
 	SectorMeta() SectorMetaResolver
 	Task() TaskResolver
+	TaskAggregate() TaskAggregateResolver
 }
 
 type DirectiveRoot struct {
@@ -164,6 +165,7 @@ type ComplexityRoot struct {
 		SeedEpoch                func(childComplexity int) int
 		SeedValue                func(childComplexity int) int
 		SpID                     func(childComplexity int) int
+		Status                   func(childComplexity int) int
 		TaskIDCommitMsg          func(childComplexity int) int
 		TaskIDFinalize           func(childComplexity int) int
 		TaskIDMoveStorage        func(childComplexity int) int
@@ -192,27 +194,27 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Actor              func(childComplexity int, address model.Address) int
-		Actors             func(childComplexity int) int
-		Config             func(childComplexity int, layer string) int
-		Configs            func(childComplexity int) int
-		Machine            func(childComplexity int, id int) int
-		MachineSummary     func(childComplexity int) int
-		Machines           func(childComplexity int) int
-		MiningSummaryByDay func(childComplexity int, lastDays int) int
-		NodesInfo          func(childComplexity int) int
-		Pipelines          func(childComplexity int) int
-		PipelinesSummary   func(childComplexity int) int
-		Sector             func(childComplexity int, actor model.ActorID, sectorNumber int) int
-		Sectors            func(childComplexity int, actor *model.ActorID, sectorNumber *int, offset int, limit int) int
-		SectorsCount       func(childComplexity int, actor *model.ActorID) int
-		StoragePaths       func(childComplexity int) int
-		StorageStats       func(childComplexity int) int
-		Task               func(childComplexity int, id int) int
-		TaskHistories      func(childComplexity int, offset int, limit int) int
-		TaskSummary        func(childComplexity int, lastDays int) int
-		TaskSummaryByDay   func(childComplexity int, lastDays int) int
-		Tasks              func(childComplexity int) int
+		Actor                func(childComplexity int, address model.Address) int
+		Actors               func(childComplexity int) int
+		Config               func(childComplexity int, layer string) int
+		Configs              func(childComplexity int) int
+		Machine              func(childComplexity int, id int) int
+		MachineSummary       func(childComplexity int) int
+		Machines             func(childComplexity int) int
+		MiningSummaryByDay   func(childComplexity int, lastDays int) int
+		NodesInfo            func(childComplexity int) int
+		Pipelines            func(childComplexity int) int
+		PipelinesSummary     func(childComplexity int) int
+		Sector               func(childComplexity int, actor model.ActorID, sectorNumber int) int
+		Sectors              func(childComplexity int, actor *model.ActorID, sectorNumber *int, offset int, limit int) int
+		SectorsCount         func(childComplexity int, actor *model.ActorID) int
+		StoragePaths         func(childComplexity int) int
+		StorageStats         func(childComplexity int) int
+		Task                 func(childComplexity int, id int) int
+		TaskAggregatesByDay  func(childComplexity int, lastDays int) int
+		TaskAggregatesByHour func(childComplexity int, lastHours int) int
+		TaskHistories        func(childComplexity int, offset int, limit int) int
+		Tasks                func(childComplexity int) int
 	}
 
 	Sector struct {
@@ -289,6 +291,14 @@ type ComplexityRoot struct {
 		UpdateTime     func(childComplexity int) int
 	}
 
+	TaskAggregate struct {
+		Failure func(childComplexity int) int
+		Success func(childComplexity int) int
+		Tasks   func(childComplexity int) int
+		Time    func(childComplexity int) int
+		Total   func(childComplexity int) int
+	}
+
 	TaskHistory struct {
 		CompletedByHostAndPort func(childComplexity int) int
 		Err                    func(childComplexity int) int
@@ -299,6 +309,13 @@ type ComplexityRoot struct {
 		TaskID                 func(childComplexity int) int
 		WorkEnd                func(childComplexity int) int
 		WorkStart              func(childComplexity int) int
+	}
+
+	TaskNameAggregate struct {
+		Failure func(childComplexity int) int
+		Name    func(childComplexity int) int
+		Success func(childComplexity int) int
+		Total   func(childComplexity int) int
 	}
 
 	TaskSummary struct {
@@ -345,6 +362,8 @@ type MachineSummaryResolver interface {
 }
 type PipelineResolver interface {
 	ID(ctx context.Context, obj *model.Pipeline) (string, error)
+
+	Status(ctx context.Context, obj *model.Pipeline) (model.PipelineStatus, error)
 }
 type PipelineSummaryResolver interface {
 	Sdr(ctx context.Context, obj *model.PipelineSummary) (int, error)
@@ -365,8 +384,8 @@ type QueryResolver interface {
 	Task(ctx context.Context, id int) (*model.Task, error)
 	Tasks(ctx context.Context) ([]*model.Task, error)
 	TaskHistories(ctx context.Context, offset int, limit int) ([]*model.TaskHistory, error)
-	TaskSummary(ctx context.Context, lastDays int) ([]*model.TaskSummary, error)
-	TaskSummaryByDay(ctx context.Context, lastDays int) ([]*model.TaskSummaryDay, error)
+	TaskAggregatesByDay(ctx context.Context, lastDays int) ([]*model.TaskAggregate, error)
+	TaskAggregatesByHour(ctx context.Context, lastHours int) ([]*model.TaskAggregate, error)
 	StoragePaths(ctx context.Context) ([]*model.StoragePath, error)
 	StorageStats(ctx context.Context) ([]*model.StorageStats, error)
 	Sectors(ctx context.Context, actor *model.ActorID, sectorNumber *int, offset int, limit int) ([]*model.Sector, error)
@@ -397,6 +416,9 @@ type TaskResolver interface {
 	PreviousTask(ctx context.Context, obj *model.Task) (*model.TaskHistory, error)
 
 	Histories(ctx context.Context, obj *model.Task) ([]*model.TaskHistory, error)
+}
+type TaskAggregateResolver interface {
+	Tasks(ctx context.Context, obj *model.TaskAggregate) ([]*model.TaskNameAggregate, error)
 }
 
 type executableSchema struct {
@@ -1004,6 +1026,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Pipeline.SpID(childComplexity), true
 
+	case "Pipeline.status":
+		if e.complexity.Pipeline.Status == nil {
+			break
+		}
+
+		return e.complexity.Pipeline.Status(childComplexity), true
+
 	case "Pipeline.taskIdCommitMsg":
 		if e.complexity.Pipeline.TaskIDCommitMsg == nil {
 			break
@@ -1317,6 +1346,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Task(childComplexity, args["id"].(int)), true
 
+	case "Query.taskAggregatesByDay":
+		if e.complexity.Query.TaskAggregatesByDay == nil {
+			break
+		}
+
+		args, err := ec.field_Query_taskAggregatesByDay_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.TaskAggregatesByDay(childComplexity, args["lastDays"].(int)), true
+
+	case "Query.taskAggregatesByHour":
+		if e.complexity.Query.TaskAggregatesByHour == nil {
+			break
+		}
+
+		args, err := ec.field_Query_taskAggregatesByHour_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.TaskAggregatesByHour(childComplexity, args["lastHours"].(int)), true
+
 	case "Query.taskHistories":
 		if e.complexity.Query.TaskHistories == nil {
 			break
@@ -1328,30 +1381,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.TaskHistories(childComplexity, args["offset"].(int), args["limit"].(int)), true
-
-	case "Query.taskSummary":
-		if e.complexity.Query.TaskSummary == nil {
-			break
-		}
-
-		args, err := ec.field_Query_taskSummary_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.TaskSummary(childComplexity, args["lastDays"].(int)), true
-
-	case "Query.taskSummaryByDay":
-		if e.complexity.Query.TaskSummaryByDay == nil {
-			break
-		}
-
-		args, err := ec.field_Query_taskSummaryByDay_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.TaskSummaryByDay(childComplexity, args["lastDays"].(int)), true
 
 	case "Query.tasks":
 		if e.complexity.Query.Tasks == nil {
@@ -1773,6 +1802,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Task.UpdateTime(childComplexity), true
 
+	case "TaskAggregate.failure":
+		if e.complexity.TaskAggregate.Failure == nil {
+			break
+		}
+
+		return e.complexity.TaskAggregate.Failure(childComplexity), true
+
+	case "TaskAggregate.success":
+		if e.complexity.TaskAggregate.Success == nil {
+			break
+		}
+
+		return e.complexity.TaskAggregate.Success(childComplexity), true
+
+	case "TaskAggregate.tasks":
+		if e.complexity.TaskAggregate.Tasks == nil {
+			break
+		}
+
+		return e.complexity.TaskAggregate.Tasks(childComplexity), true
+
+	case "TaskAggregate.time":
+		if e.complexity.TaskAggregate.Time == nil {
+			break
+		}
+
+		return e.complexity.TaskAggregate.Time(childComplexity), true
+
+	case "TaskAggregate.total":
+		if e.complexity.TaskAggregate.Total == nil {
+			break
+		}
+
+		return e.complexity.TaskAggregate.Total(childComplexity), true
+
 	case "TaskHistory.completedByHostAndPort":
 		if e.complexity.TaskHistory.CompletedByHostAndPort == nil {
 			break
@@ -1835,6 +1899,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.TaskHistory.WorkStart(childComplexity), true
+
+	case "TaskNameAggregate.failure":
+		if e.complexity.TaskNameAggregate.Failure == nil {
+			break
+		}
+
+		return e.complexity.TaskNameAggregate.Failure(childComplexity), true
+
+	case "TaskNameAggregate.name":
+		if e.complexity.TaskNameAggregate.Name == nil {
+			break
+		}
+
+		return e.complexity.TaskNameAggregate.Name(childComplexity), true
+
+	case "TaskNameAggregate.success":
+		if e.complexity.TaskNameAggregate.Success == nil {
+			break
+		}
+
+		return e.complexity.TaskNameAggregate.Success(childComplexity), true
+
+	case "TaskNameAggregate.total":
+		if e.complexity.TaskNameAggregate.Total == nil {
+			break
+		}
+
+		return e.complexity.TaskNameAggregate.Total(childComplexity), true
 
 	case "TaskSummary.falseCount":
 		if e.complexity.TaskSummary.FalseCount == nil {
@@ -1980,7 +2072,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
-//go:embed "schema/actor.graphql" "schema/actor_deadline.graphql" "schema/config.graphql" "schema/machine.graphql" "schema/machine_detail.graphql" "schema/machine_summary.graphql" "schema/mining_summary.graphql" "schema/node.graphql" "schema/pipeline.graphql" "schema/pipeline_summary.graphql" "schema/query.graphql" "schema/sector.graphql" "schema/sector_meta.graphql" "schema/storage_path.graphql" "schema/storage_stats.graphql" "schema/storage_type.graphql" "schema/task.graphql" "schema/task_history.graphql" "schema/task_summary.graphql"
+//go:embed "schema/actor.graphql" "schema/actor_deadline.graphql" "schema/config.graphql" "schema/machine.graphql" "schema/machine_detail.graphql" "schema/machine_summary.graphql" "schema/mining_summary.graphql" "schema/node.graphql" "schema/pipeline.graphql" "schema/pipeline_summary.graphql" "schema/query.graphql" "schema/sector.graphql" "schema/sector_meta.graphql" "schema/storage_path.graphql" "schema/storage_stats.graphql" "schema/storage_type.graphql" "schema/task.graphql" "schema/task_aggregate.graphql" "schema/task_history.graphql" "schema/task_summary.graphql"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -2009,6 +2101,7 @@ var sources = []*ast.Source{
 	{Name: "schema/storage_stats.graphql", Input: sourceData("schema/storage_stats.graphql"), BuiltIn: false},
 	{Name: "schema/storage_type.graphql", Input: sourceData("schema/storage_type.graphql"), BuiltIn: false},
 	{Name: "schema/task.graphql", Input: sourceData("schema/task.graphql"), BuiltIn: false},
+	{Name: "schema/task_aggregate.graphql", Input: sourceData("schema/task_aggregate.graphql"), BuiltIn: false},
 	{Name: "schema/task_history.graphql", Input: sourceData("schema/task_history.graphql"), BuiltIn: false},
 	{Name: "schema/task_summary.graphql", Input: sourceData("schema/task_summary.graphql"), BuiltIn: false},
 }
@@ -2189,6 +2282,36 @@ func (ec *executionContext) field_Query_sectors_args(ctx context.Context, rawArg
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_taskAggregatesByDay_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["lastDays"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastDays"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["lastDays"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_taskAggregatesByHour_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["lastHours"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastHours"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["lastHours"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_taskHistories_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2210,36 +2333,6 @@ func (ec *executionContext) field_Query_taskHistories_args(ctx context.Context, 
 		}
 	}
 	args["limit"] = arg1
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_taskSummaryByDay_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 int
-	if tmp, ok := rawArgs["lastDays"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastDays"))
-		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["lastDays"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_taskSummary_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 int
-	if tmp, ok := rawArgs["lastDays"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastDays"))
-		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["lastDays"] = arg0
 	return args, nil
 }
 
@@ -6548,6 +6641,50 @@ func (ec *executionContext) fieldContext_Pipeline_failedReasonMsg(_ context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _Pipeline_status(ctx context.Context, field graphql.CollectedField, obj *model.Pipeline) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Pipeline_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Pipeline().Status(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.PipelineStatus)
+	fc.Result = res
+	return ec.marshalNPipelineStatus2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐPipelineStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Pipeline_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Pipeline",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type PipelineStatus does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PipelineSummary_id(ctx context.Context, field graphql.CollectedField, obj *model.PipelineSummary) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PipelineSummary_id(ctx, field)
 	if err != nil {
@@ -7472,8 +7609,8 @@ func (ec *executionContext) fieldContext_Query_taskHistories(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_taskSummary(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_taskSummary(ctx, field)
+func (ec *executionContext) _Query_taskAggregatesByDay(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_taskAggregatesByDay(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -7486,7 +7623,7 @@ func (ec *executionContext) _Query_taskSummary(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().TaskSummary(rctx, fc.Args["lastDays"].(int))
+		return ec.resolvers.Query().TaskAggregatesByDay(rctx, fc.Args["lastDays"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7495,12 +7632,12 @@ func (ec *executionContext) _Query_taskSummary(ctx context.Context, field graphq
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.TaskSummary)
+	res := resTmp.([]*model.TaskAggregate)
 	fc.Result = res
-	return ec.marshalOTaskSummary2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskSummary(ctx, field.Selections, res)
+	return ec.marshalOTaskAggregate2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskAggregate(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_taskSummary(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_taskAggregatesByDay(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -7508,16 +7645,18 @@ func (ec *executionContext) fieldContext_Query_taskSummary(ctx context.Context, 
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "name":
-				return ec.fieldContext_TaskSummary_name(ctx, field)
-			case "trueCount":
-				return ec.fieldContext_TaskSummary_trueCount(ctx, field)
-			case "falseCount":
-				return ec.fieldContext_TaskSummary_falseCount(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_TaskSummary_totalCount(ctx, field)
+			case "time":
+				return ec.fieldContext_TaskAggregate_time(ctx, field)
+			case "total":
+				return ec.fieldContext_TaskAggregate_total(ctx, field)
+			case "success":
+				return ec.fieldContext_TaskAggregate_success(ctx, field)
+			case "failure":
+				return ec.fieldContext_TaskAggregate_failure(ctx, field)
+			case "tasks":
+				return ec.fieldContext_TaskAggregate_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type TaskSummary", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type TaskAggregate", field.Name)
 		},
 	}
 	defer func() {
@@ -7527,15 +7666,15 @@ func (ec *executionContext) fieldContext_Query_taskSummary(ctx context.Context, 
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_taskSummary_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_taskAggregatesByDay_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_taskSummaryByDay(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_taskSummaryByDay(ctx, field)
+func (ec *executionContext) _Query_taskAggregatesByHour(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_taskAggregatesByHour(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -7548,7 +7687,7 @@ func (ec *executionContext) _Query_taskSummaryByDay(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().TaskSummaryByDay(rctx, fc.Args["lastDays"].(int))
+		return ec.resolvers.Query().TaskAggregatesByHour(rctx, fc.Args["lastHours"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7557,12 +7696,12 @@ func (ec *executionContext) _Query_taskSummaryByDay(ctx context.Context, field g
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.TaskSummaryDay)
+	res := resTmp.([]*model.TaskAggregate)
 	fc.Result = res
-	return ec.marshalOTaskSummaryDay2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskSummaryDay(ctx, field.Selections, res)
+	return ec.marshalOTaskAggregate2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskAggregate(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_taskSummaryByDay(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_taskAggregatesByHour(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -7570,16 +7709,18 @@ func (ec *executionContext) fieldContext_Query_taskSummaryByDay(ctx context.Cont
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "day":
-				return ec.fieldContext_TaskSummaryDay_day(ctx, field)
-			case "trueCount":
-				return ec.fieldContext_TaskSummaryDay_trueCount(ctx, field)
-			case "falseCount":
-				return ec.fieldContext_TaskSummaryDay_falseCount(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_TaskSummaryDay_totalCount(ctx, field)
+			case "time":
+				return ec.fieldContext_TaskAggregate_time(ctx, field)
+			case "total":
+				return ec.fieldContext_TaskAggregate_total(ctx, field)
+			case "success":
+				return ec.fieldContext_TaskAggregate_success(ctx, field)
+			case "failure":
+				return ec.fieldContext_TaskAggregate_failure(ctx, field)
+			case "tasks":
+				return ec.fieldContext_TaskAggregate_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type TaskSummaryDay", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type TaskAggregate", field.Name)
 		},
 	}
 	defer func() {
@@ -7589,7 +7730,7 @@ func (ec *executionContext) fieldContext_Query_taskSummaryByDay(ctx context.Cont
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_taskSummaryByDay_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_taskAggregatesByHour_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -8160,6 +8301,8 @@ func (ec *executionContext) fieldContext_Query_pipelines(_ context.Context, fiel
 				return ec.fieldContext_Pipeline_failedReason(ctx, field)
 			case "failedReasonMsg":
 				return ec.fieldContext_Pipeline_failedReasonMsg(ctx, field)
+			case "status":
+				return ec.fieldContext_Pipeline_status(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Pipeline", field.Name)
 		},
@@ -11233,6 +11376,236 @@ func (ec *executionContext) fieldContext_Task_histories(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _TaskAggregate_time(ctx context.Context, field graphql.CollectedField, obj *model.TaskAggregate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_TaskAggregate_time(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Time, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_TaskAggregate_time(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TaskAggregate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _TaskAggregate_total(ctx context.Context, field graphql.CollectedField, obj *model.TaskAggregate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_TaskAggregate_total(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Total, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_TaskAggregate_total(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TaskAggregate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _TaskAggregate_success(ctx context.Context, field graphql.CollectedField, obj *model.TaskAggregate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_TaskAggregate_success(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Success, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_TaskAggregate_success(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TaskAggregate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _TaskAggregate_failure(ctx context.Context, field graphql.CollectedField, obj *model.TaskAggregate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_TaskAggregate_failure(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Failure, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_TaskAggregate_failure(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TaskAggregate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _TaskAggregate_tasks(ctx context.Context, field graphql.CollectedField, obj *model.TaskAggregate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_TaskAggregate_tasks(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TaskAggregate().Tasks(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.TaskNameAggregate)
+	fc.Result = res
+	return ec.marshalNTaskNameAggregate2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskNameAggregate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_TaskAggregate_tasks(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TaskAggregate",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_TaskNameAggregate_name(ctx, field)
+			case "total":
+				return ec.fieldContext_TaskNameAggregate_total(ctx, field)
+			case "success":
+				return ec.fieldContext_TaskNameAggregate_success(ctx, field)
+			case "failure":
+				return ec.fieldContext_TaskNameAggregate_failure(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type TaskNameAggregate", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _TaskHistory_id(ctx context.Context, field graphql.CollectedField, obj *model.TaskHistory) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_TaskHistory_id(ctx, field)
 	if err != nil {
@@ -11621,6 +11994,182 @@ func (ec *executionContext) fieldContext_TaskHistory_completedByHostAndPort(_ co
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _TaskNameAggregate_name(ctx context.Context, field graphql.CollectedField, obj *model.TaskNameAggregate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_TaskNameAggregate_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_TaskNameAggregate_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TaskNameAggregate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _TaskNameAggregate_total(ctx context.Context, field graphql.CollectedField, obj *model.TaskNameAggregate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_TaskNameAggregate_total(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Total, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_TaskNameAggregate_total(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TaskNameAggregate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _TaskNameAggregate_success(ctx context.Context, field graphql.CollectedField, obj *model.TaskNameAggregate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_TaskNameAggregate_success(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Success, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_TaskNameAggregate_success(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TaskNameAggregate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _TaskNameAggregate_failure(ctx context.Context, field graphql.CollectedField, obj *model.TaskNameAggregate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_TaskNameAggregate_failure(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Failure, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_TaskNameAggregate_failure(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TaskNameAggregate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -15055,6 +15604,42 @@ func (ec *executionContext) _Pipeline(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "status":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Pipeline_status(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -15576,7 +16161,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "taskSummary":
+		case "taskAggregatesByDay":
 			field := field
 
 			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
@@ -15585,7 +16170,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_taskSummary(ctx, field)
+				res = ec._Query_taskAggregatesByDay(ctx, field)
 				return res
 			}
 
@@ -15595,7 +16180,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "taskSummaryByDay":
+		case "taskAggregatesByHour":
 			field := field
 
 			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
@@ -15604,7 +16189,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_taskSummaryByDay(ctx, field)
+				res = ec._Query_taskAggregatesByHour(ctx, field)
 				return res
 			}
 
@@ -16538,6 +17123,96 @@ func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
+var taskAggregateImplementors = []string{"TaskAggregate"}
+
+func (ec *executionContext) _TaskAggregate(ctx context.Context, sel ast.SelectionSet, obj *model.TaskAggregate) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, taskAggregateImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TaskAggregate")
+		case "time":
+			out.Values[i] = ec._TaskAggregate_time(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "total":
+			out.Values[i] = ec._TaskAggregate_total(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "success":
+			out.Values[i] = ec._TaskAggregate_success(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "failure":
+			out.Values[i] = ec._TaskAggregate_failure(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "tasks":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TaskAggregate_tasks(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var taskHistoryImplementors = []string{"TaskHistory"}
 
 func (ec *executionContext) _TaskHistory(ctx context.Context, sel ast.SelectionSet, obj *model.TaskHistory) graphql.Marshaler {
@@ -16588,6 +17263,60 @@ func (ec *executionContext) _TaskHistory(ctx context.Context, sel ast.SelectionS
 			out.Values[i] = ec._TaskHistory_err(ctx, field, obj)
 		case "completedByHostAndPort":
 			out.Values[i] = ec._TaskHistory_completedByHostAndPort(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var taskNameAggregateImplementors = []string{"TaskNameAggregate"}
+
+func (ec *executionContext) _TaskNameAggregate(ctx context.Context, sel ast.SelectionSet, obj *model.TaskNameAggregate) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, taskNameAggregateImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TaskNameAggregate")
+		case "name":
+			out.Values[i] = ec._TaskNameAggregate_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "total":
+			out.Values[i] = ec._TaskNameAggregate_total(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "success":
+			out.Values[i] = ec._TaskNameAggregate_success(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "failure":
+			out.Values[i] = ec._TaskNameAggregate_failure(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -17206,6 +17935,16 @@ func (ec *executionContext) marshalNMachineDetail2ᚕᚖgithubᚗcomᚋstraheᚋ
 	return ret
 }
 
+func (ec *executionContext) unmarshalNPipelineStatus2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐPipelineStatus(ctx context.Context, v interface{}) (model.PipelineStatus, error) {
+	var res model.PipelineStatus
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNPipelineStatus2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐPipelineStatus(ctx context.Context, sel ast.SelectionSet, v model.PipelineStatus) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) unmarshalNStorageType2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐStorageType(ctx context.Context, v interface{}) (model.StorageType, error) {
 	var res model.StorageType
 	err := res.UnmarshalGQL(v)
@@ -17229,6 +17968,44 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNTaskNameAggregate2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskNameAggregate(ctx context.Context, sel ast.SelectionSet, v []*model.TaskNameAggregate) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOTaskNameAggregate2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskNameAggregate(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
@@ -18224,6 +19001,54 @@ func (ec *executionContext) marshalOTask2ᚖgithubᚗcomᚋstraheᚋcurioᚑdash
 	return ec._Task(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalOTaskAggregate2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskAggregate(ctx context.Context, sel ast.SelectionSet, v []*model.TaskAggregate) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOTaskAggregate2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskAggregate(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOTaskAggregate2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskAggregate(ctx context.Context, sel ast.SelectionSet, v *model.TaskAggregate) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._TaskAggregate(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalOTaskHistory2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskHistory(ctx context.Context, sel ast.SelectionSet, v []*model.TaskHistory) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -18272,100 +19097,11 @@ func (ec *executionContext) marshalOTaskHistory2ᚖgithubᚗcomᚋstraheᚋcurio
 	return ec._TaskHistory(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOTaskSummary2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskSummary(ctx context.Context, sel ast.SelectionSet, v []*model.TaskSummary) graphql.Marshaler {
+func (ec *executionContext) marshalOTaskNameAggregate2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskNameAggregate(ctx context.Context, sel ast.SelectionSet, v *model.TaskNameAggregate) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOTaskSummary2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskSummary(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	return ret
-}
-
-func (ec *executionContext) marshalOTaskSummary2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskSummary(ctx context.Context, sel ast.SelectionSet, v *model.TaskSummary) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._TaskSummary(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOTaskSummaryDay2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskSummaryDay(ctx context.Context, sel ast.SelectionSet, v []*model.TaskSummaryDay) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOTaskSummaryDay2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskSummaryDay(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	return ret
-}
-
-func (ec *executionContext) marshalOTaskSummaryDay2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTaskSummaryDay(ctx context.Context, sel ast.SelectionSet, v *model.TaskSummaryDay) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._TaskSummaryDay(ctx, sel, v)
+	return ec._TaskNameAggregate(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {

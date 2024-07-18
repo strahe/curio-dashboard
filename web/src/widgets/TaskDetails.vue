@@ -57,7 +57,7 @@ const data: ComputedRef<Task> = computed(() => result.value?.task || {});
         </v-alert>
         <v-card-title class="d-flex justify-space-between">
           <div>Details</div>
-          <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading"></v-btn>
+          <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
         </v-card-title>
         <v-card-text>
             <v-row>

@@ -13,11 +13,13 @@ import router from '../router'
 import type { App } from 'vue'
 import {apolloClient} from "@/plugins/apollo";
 import {DefaultApolloClient} from "@vue/apollo-composable";
+import VueApexCharts from "vue3-apexcharts";
 
 export function registerPlugins (app: App) {
   app
     .use(vuetify)
     .use(router)
     .use(pinia)
+    .use(VueApexCharts)
     .provide(DefaultApolloClient, apolloClient)
 }

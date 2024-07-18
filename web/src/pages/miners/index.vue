@@ -96,7 +96,7 @@ const totalWorkerBalance = computed(() => items.value.reduce((acc, item) => acc 
       <v-col cols="12">
         <Card title="Miners" :error="error as Error">
           <template #titleAction>
-            <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading"></v-btn>
+            <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
           </template>
           <v-data-table
             :headers="headers"

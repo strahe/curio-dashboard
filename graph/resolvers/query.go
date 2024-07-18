@@ -64,16 +64,20 @@ func (r *queryResolver) TaskHistories(ctx context.Context, offset int, limit int
 	return r.loader.TaskHistories(ctx, offset, limit)
 }
 
-// TaskSummary is the resolver for the taskSummary field.
-func (r *queryResolver) TaskSummary(ctx context.Context, lastDays int) ([]*model.TaskSummary, error) {
-	cachecontrol.SetHint(ctx, cachecontrol.ScopePrivate, time.Minute*5)
-	return r.loader.TaskSummary(ctx, lastDays)
+// TaskAggregatesByDay is the resolver for the taskAggregatesByDay field.
+func (r *queryResolver) TaskAggregatesByDay(ctx context.Context, lastDays int) ([]*model.TaskAggregate, error) {
+	now := time.Now()
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+
+	return r.loader.TaskAggregatesByDay(ctx, today.Add(-time.Hour*24*time.Duration(lastDays)), now)
 }
 
-// TaskSummaryByDay is the resolver for the taskSummaryByDay field.
-func (r *queryResolver) TaskSummaryByDay(ctx context.Context, lastDays int) ([]*model.TaskSummaryDay, error) {
-	cachecontrol.SetHint(ctx, cachecontrol.ScopePrivate, time.Minute*5)
-	return r.loader.TaskSummaryByDay(ctx, lastDays)
+// TaskAggregatesByHour is the resolver for the taskAggregatesByHour field.
+func (r *queryResolver) TaskAggregatesByHour(ctx context.Context, lastHours int) ([]*model.TaskAggregate, error) {
+	now := time.Now()
+	currentHour := time.Now().Truncate(time.Hour)
+	start := currentHour.Add(-time.Hour * time.Duration(lastHours))
+	return r.loader.TaskAggregatesByHour(ctx, start, now)
 }
 
 // StoragePaths is the resolver for the storagePaths field.

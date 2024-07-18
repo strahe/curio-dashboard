@@ -1,14 +1,11 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col cols="12" lg="4">
-        <TaskSummaryByDay color="info"></TaskSummaryByDay>
+      <v-col cols="12" lg="6">
+        <TaskHeatmap></TaskHeatmap>
       </v-col>
       <v-col cols="12" lg="4">
-        <MiningSummaryByDay color="info"></MiningSummaryByDay>
-      </v-col>
-      <v-col cols="12" lg="4">
-        <RunningTaskPieChart type="Pie"></RunningTaskPieChart>
+<!--        <RunningTaskPieChart type="Pie"></RunningTaskPieChart>-->
       </v-col>
 
       <v-col cols="12" lg="3">
@@ -69,8 +66,6 @@
 <script lang="ts" setup>
 import PipelineSummary from "@/widgets/PipelineSummary.vue";
 import ChainConnectivity from "@/widgets/ChainConnectivity.vue";
-import TaskSummaryByDay from "@/widgets/TaskSummaryByDay.vue";
-import MiningSummaryByDay from "@/widgets/MiningSummaryByDay.vue";
-import RunningTaskPieChart from "@/widgets/RunningTaskChart.vue";
 import RecentTasks from "@/widgets/RecentTasks.vue";
+import TaskHeatmap from "@/widgets/TaskHeatmap.vue";
 </script>

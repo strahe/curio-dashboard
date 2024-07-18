@@ -53,6 +53,7 @@ watch(route, (val) => {
 onMounted(() => {
   appStore.setDrawer(responsive.value);
   title.value = route.name;
+  theme.global.name.value = cookieTheme.get('theme') || 'light';
 });
 
 const onClick = () => {

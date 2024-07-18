@@ -8,37 +8,7 @@ export const GetSectorsSdrPipeline = gql`
       sectorNumber
       createTime
       regSealProof
-      ticketEpoch
-      ticketValue
-      taskIdSdr
-      afterSdr
-      treeDCid
-      taskIdTreeD
-      afterTreeD
-      taskIdTreeC
-      afterTreeC
-      treeRCid
-      taskIdTreeR
-      afterTreeR
-      precommitMsgCid
-      taskIdPrecommitMsg
-      afterPrecommitMsg
-      seedEpoch
-      precommitMsgTsk
-      afterPrecommitMsgSuccess
-      seedValue
-      taskIdPorep
-      porepProof
-      afterPorep
-      taskIdFinalize
-      afterFinalize
-      taskIdMoveStorage
-      afterMoveStorage
-      commitMsgCid
-      taskIdCommitMsg
-      afterCommitMsg
-      commitMsgTsk
-      afterCommitMsgSuccess
+      status
       failed
       failedAt
       failedReason

@@ -98,3 +98,5 @@ models:
     fields:
       id:
         resolver: true
+      status:
+        resolver: true

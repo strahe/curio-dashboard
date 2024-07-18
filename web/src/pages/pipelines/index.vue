@@ -5,7 +5,8 @@ import {Pipeline} from "@/typed-graph";
 import {format} from "timeago.js";
 import {definePage} from "unplugin-vue-router/runtime";
 import PipelineSummary from "@/widgets/PipelineSummary.vue";
-import PipelineState from "@/widgets/PipelineState.vue";
+import {ComputedRef} from "vue";
+import PipelineTreeMapChart from "@/widgets/PipelineTreeMapChart.vue";
 
 definePage({
   meta: {
@@ -18,10 +19,11 @@ const { result, loading, refetch, error } = useQuery(GetSectorsSdrPipeline,  nul
 }))
 const items: ComputedRef<[Pipeline]> = computed(() => result.value?.pipelines || []);
 const headers = [
+  { title: 'ID', key: 'id'},
   { title: 'Miner', key: 'spId' },
   { title: 'Sector', key: 'sectorNumber' },
   { title: 'Created', key: 'createTime' },
-  { title: 'State', key: 'state',maxWidth: '600px',sortable: false },
+  { title: 'Status', key: 'status' },
   { title: '  ', key: 'data-table-expand' },
 ];
 </script>
@@ -35,21 +37,30 @@ const headers = [
       <v-col cols="12">
         <Card title="Pipelines" :error="error as Error">
           <template #titleAction>
-            <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading"></v-btn>
+            <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
           </template>
           <v-data-table
             :headers="headers"
             :items="items"
             :loading="loading"
-            items-per-page="5"
+            items-per-page="15"
             show-expand
           >
             <template v-slot:[`item.createTime`]="{value}">
               {{format(value)}}
             </template>
-            <template v-slot:[`item.state`]="{item}">
-              <PipelineState :data="item"></PipelineState>
+            <template v-slot:[`item.status`]="{item}">
+              <v-chip :color="item.status === 'Failed' ? 'red' :'green'">{{item.status}}</v-chip>
             </template>
+            <template v-slot:expanded-row="{ columns }">
+              <tr>
+                <td :colspan="columns.length">
+<!--                  demo-->
+                  <PipelineTreeMapChart></PipelineTreeMapChart>
+                </td>
+              </tr>
+            </template>
+
           </v-data-table>
         </Card>
       </v-col>

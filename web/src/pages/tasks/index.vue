@@ -6,6 +6,7 @@ import TaskDetails from "@/widgets/TaskDetails.vue";
 import {definePage} from "unplugin-vue-router/runtime";
 import {GetRunningTasks} from "@/query/task";
 import RunningTaskPieChart from "@/widgets/RunningTaskChart.vue";
+import {ComputedRef} from "vue";
 
 definePage({
   meta: {
@@ -34,32 +35,13 @@ const nameCounts = computed(() => {
   }, {});
 });
 
-const chartData = computed(() => ({
-  labels: Object.keys(nameCounts.value),
-  datasets: [{ data: Object.values(nameCounts.value) }],
-}));
-
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false,
-    },
-    colors: {
-      enabled: true,
-      forceOverride: true
-    }
-  },
-}
-
 </script>
 
 <template>
 <v-container fill-height fluid grid-list-xl>
   <v-row justify="center">
     <v-col cols="12">
-      <RunningTaskPieChart type="Bar"></RunningTaskPieChart>
+      <RunningTaskPieChart height="200"></RunningTaskPieChart>
     </v-col>
     <v-col cols="12">
       <v-card>
@@ -68,7 +50,7 @@ const chartOptions = {
         </v-alert>
         <v-card-title class="d-flex justify-space-between">
           <div>Running Tasks</div>
-          <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading"></v-btn>
+          <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
         </v-card-title>
         <v-card-text>
           <v-data-table
