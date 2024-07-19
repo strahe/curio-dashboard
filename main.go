@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/filecoin-project/go-address"
-	"github.com/strahe/curio-dashboard/graph/loaders"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/filecoin-project/go-address"
+	"github.com/strahe/curio-dashboard/graph/loaders"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"

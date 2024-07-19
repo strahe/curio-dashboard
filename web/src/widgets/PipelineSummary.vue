@@ -3,6 +3,9 @@
 import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import {PipelineSummary} from "@/typed-graph";
+import {useTheme} from "vuetify";
+
+const theme = useTheme();
 
 const props = defineProps({
   title: {
@@ -70,6 +73,7 @@ const chartData = computed(() => {
     series: series.value,
     options: {
       chart: {
+        id: 'pipeline-summary',
         stacked: true,
       },
       plotOptions: {
@@ -113,6 +117,9 @@ const chartData = computed(() => {
         horizontalAlign: 'left',
         offsetX: 40
       },
+      theme: {
+        mode: theme.current.value.dark ? 'dark' : 'light'
+      }
     }
   }
 })

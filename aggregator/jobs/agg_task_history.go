@@ -36,7 +36,7 @@ func (j *AggTaskHistory) Name() string {
 func (j *AggTaskHistory) RunWith(t time.Time) {
 	start := time.Now()
 	defer func() {
-		log.Infof("%s run on %s finished in %s", j.Name(), t, time.Since(start))
+		log.Infof("%s finished in %s", j.Name(), time.Since(start))
 	}()
 
 	currentHour := t.Truncate(time.Hour)

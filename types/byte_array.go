@@ -20,6 +20,8 @@ func (b *ByteArray) UnmarshalGQL(v interface{}) error {
 		*b = arr
 	case []byte: // for database
 		*b = value
+	case nil:
+		*b = nil
 	default:
 		return fmt.Errorf("invalid ByteArray: %v", v)
 	}

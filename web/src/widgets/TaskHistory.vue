@@ -4,6 +4,7 @@ import { formatDurationFromStrings} from "@/utils/formatDuration";
 import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { TaskHistory} from "@/typed-graph";
+import {ComputedRef} from "vue";
 
 const props = defineProps({
   id: {
@@ -33,6 +34,7 @@ const { result, loading,refetch, error } = useQuery(gql`
 }, () => ({
   fetchPolicy: 'cache-first',
 }));
+
 const items: ComputedRef<[TaskHistory]> = computed(() => result.value?.task.histories || []);
 
 const headers = ref([

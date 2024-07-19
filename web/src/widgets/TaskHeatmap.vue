@@ -4,6 +4,9 @@ import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import {ComputedRef} from "vue";
 import {TaskAggregate} from "@/typed-graph";
+import {useTheme} from "vuetify";
+
+const theme = useTheme();
 
 const props = defineProps({
   title: {
@@ -74,13 +77,35 @@ const chartData = computed(() => {
     options: {
       chart: {
         id: 'task-heatmap',
+        toolbar: {
+          show: true,
+          tools: {
+            download: true,
+            selection: false,
+            zoom: false,
+            zoomin: false,
+            zoomout: false,
+            pan: false,
+            reset: false
+          },
+        },
       },
       dataLabels: {
         enabled: false
       },
-      // colors: [theme.global.current.value.colors.primary],
-      colors: ['#0848e8'],
-    },
+      title: {
+        text: props.title,
+      },
+      colors: [theme.current.value.colors.success],
+      theme: {
+        mode: theme.current.value.dark ? 'dark' : 'light'
+      },
+      plotOptions: {
+        heatmap: {
+          radius: 2,
+          enableShades: true,
+        }}
+      }
   }
 })
 </script>

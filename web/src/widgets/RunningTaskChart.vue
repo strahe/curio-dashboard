@@ -4,6 +4,9 @@ import {useQuery} from "@vue/apollo-composable";
 import {GetRunningTasks} from "@/query/task";
 import {Task} from "@/typed-graph";
 import {ComputedRef} from "vue";
+import {useTheme} from "vuetify";
+
+const theme = useTheme();
 
 const props = defineProps({
   title: {
@@ -52,6 +55,9 @@ const chartData = computed(() => {
       },
       xaxis: {
         categories: Object.keys(nameCounts.value),
+      },
+      theme: {
+        mode: theme.current.value.dark ? 'dark' : 'light'
       }
     },
   }
