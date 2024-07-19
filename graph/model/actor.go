@@ -14,11 +14,12 @@ import (
 
 	"github.com/filecoin-project/lotus/api/v1api"
 	"github.com/filecoin-project/lotus/chain/types"
+	dTypes "github.com/strahe/curio-dashboard/types"
 )
 
 type Actor struct {
-	Address Address  `json:"address"`
-	Layers  []string `json:"layers,omitempty"`
+	Address dTypes.Address `json:"address"`
+	Layers  []string       `json:"layers,omitempty"`
 
 	powerMux sync.Mutex
 	power    *api.MinerPower

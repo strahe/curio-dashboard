@@ -41,7 +41,7 @@ const nameCounts = computed(() => {
 <v-container fill-height fluid grid-list-xl>
   <v-row justify="center">
     <v-col cols="12">
-      <RunningTaskPieChart height="200"></RunningTaskPieChart>
+      <RunningTaskPieChart :height="250"></RunningTaskPieChart>
     </v-col>
     <v-col cols="12">
       <v-card>

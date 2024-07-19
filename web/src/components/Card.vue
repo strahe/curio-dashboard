@@ -18,10 +18,10 @@ defineProps({
 
 <template>
 <v-card v-bind="$attrs">
-  <v-card-title v-if="title !== null" :style="color ? `color: ${color};` : ''" class="d-flex justify-space-between">
+  <v-card-subtitle v-if="title !== null" :style="color ? `color: ${color};` : ''" class="d-flex justify-space-between">
     <div>{{ title }}</div>
     <slot name="titleAction" />
-  </v-card-title>
+  </v-card-subtitle>
   <v-card-text>
     <v-alert v-if="error" type="error">
       {{ error.message }}

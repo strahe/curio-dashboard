@@ -2,19 +2,20 @@
 
 import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import {PipelineSummary} from "@/typed-graph";
 
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     default: undefined,
   },
-  color: {
-    type: String,
-    default: undefined,
+  height: {
+    type: Number,
+    default: 250
   }
 })
 
-const { result, loading, refetch, error } = useQuery(gql`
+const { result, loading, error } = useQuery(gql`
     query GetPipelineSummary {
         pipelinesSummary {
         id
@@ -33,29 +34,94 @@ const { result, loading, refetch, error } = useQuery(gql`
 }))
 
 const items = computed(() => result.value?.pipelinesSummary || []);
-const headers = [
-  { title: 'Miner', key: 'id' },
-  { title: 'SDR', key: 'sdr' },
-  { title: 'Trees', key: 'trees' },
-  { title: 'Precommit', key: 'precommitMsg' },
-  { title: 'Wait Seed', key: 'waitSeed' },
-  { title: 'PoRep', key: 'porep' },
-  { title: 'Commit', key: 'commitMsg' },
-  { title: 'Done', key: 'done' },
-  { title: 'Failed', key: 'failed' },
-]
+const categories = computed(() => items.value.map((item: PipelineSummary) => item.id))
+const series = computed(() => {
+  return [
+    {
+      name: 'SDR',
+      data: items.value.map((item: any) => item.sdr)
+    },{
+      name: 'Trees',
+      data: items.value.map((item: any) => item.trees)
+    },{
+      name: 'Precommit',
+      data: items.value.map((item: any) => item.precommitMsg)
+    },{
+      name: 'Wait Seed',
+      data: items.value.map((item: any) => item.waitSeed)
+    },{
+      name: 'PoRep',
+      data: items.value.map((item: any) => item.porep)
+    },{
+      name: 'Commit',
+      data: items.value.map((item: any) => item.commitMsg)
+    },{
+      name: 'Done',
+      data: items.value.map((item: any) => item.done)
+    },{
+      name: 'Failed',
+      data: items.value.map((item: any) => item.failed)
+    }
+  ]
+})
+
+const chartData = computed(() => {
+  return {
+    series: series.value,
+    options: {
+      chart: {
+        stacked: true,
+      },
+      plotOptions: {
+        bar: {
+          horizontal: true,
+          dataLabels: {
+            total: {
+              enabled: true,
+              offsetX: 0,
+              style: {
+                fontSize: '13px',
+                fontWeight: 900
+              }
+            }
+          }
+        },
+      },
+      title: {
+        text: props.title,
+      },
+      stroke: {
+        width: 1,
+        colors: ['#fff']
+      },
+      xaxis: {
+        categories: categories.value,
+        labels: {
+          show: false
+        }
+      },
+      yaxis: {
+        title: {
+          text: undefined
+        },
+      },
+      fill: {
+        opacity: 1
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'left',
+        offsetX: 40
+      },
+    }
+  }
+})
+
 </script>
 
 <template>
-  <Card :title="title" :color="color" :error="error as Error">
-    <template #titleAction>
-      <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
-    </template>
-    <v-data-table-virtual
-      :loading="loading"
-      :headers="headers"
-      :items="items"
-    ></v-data-table-virtual>
+  <Card :loading="loading" :error="error as Error">
+    <apexchart :options="chartData.options" :series="chartData.series" type="bar" :height="height"></apexchart>
   </Card>
 </template>
 

@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/filecoin-project/go-address"
+	"github.com/strahe/curio-dashboard/graph/loaders"
 	"net/http"
 	"os"
 	"strings"
@@ -25,7 +27,6 @@ import (
 	"github.com/rs/cors"
 	"github.com/strahe/curio-dashboard/aggregator"
 	"github.com/strahe/curio-dashboard/aggregator/jobs"
-	"github.com/strahe/curio-dashboard/aggregator/query"
 	"github.com/strahe/curio-dashboard/db"
 	"github.com/strahe/curio-dashboard/graph"
 	cachecontrol "github.com/strahe/curio-dashboard/graph/cache_control"
@@ -106,6 +107,11 @@ var runCmd = &cli.Command{
 		log.Infof("Using network: %s", ntn)
 		if err := build.UseNetworkBundle(string(ntn)); err != nil {
 			return fmt.Errorf("failed to use network bundle: %w", err)
+		}
+		if ntn == "calibrationnet" {
+			address.CurrentNetwork = address.Testnet
+		} else {
+			address.CurrentNetwork = address.Mainnet
 		}
 
 		appDB, err := db.NewAppDb(cctx.Context, cctx.String("appdb-url"))
@@ -278,11 +284,21 @@ var fillCmd = &cli.Command{
 			return fmt.Errorf("failed to connect to appdb: %w", err)
 		}
 
+		if os.Getenv("FULLNODE_API_INFO") == "" {
+			return fmt.Errorf("FULLNODE_API_INFO not set")
+		}
+		apiInfo := strings.Split(os.Getenv("FULLNODE_API_INFO"), ",")
+		fullNode, closer, err := getFullNodeAPIV1(cctx, apiInfo)
+		if err != nil {
+			return fmt.Errorf("failed to get full node API: %w", err)
+		}
+		defer closer()
+
 		var runJobs []jobs.Job
 		if cctx.IsSet("jobs") {
 			// todo: parse jobs
 		} else {
-			runJobs = aggregator.AllJobs(query.NewQuery(harmonyDB), harmonyDB, appDB)
+			runJobs = aggregator.AllOnlyRealtimeJobs(appDB, fullNode, loaders.NewLoader(harmonyDB, appDB, 1000))
 		}
 
 		parser := cron.NewParser(cron.Second | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor)

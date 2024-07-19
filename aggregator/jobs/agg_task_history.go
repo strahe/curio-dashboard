@@ -11,32 +11,32 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-type AggTaskHistoryHour struct {
+type AggTaskHistory struct {
 	query *query.Query
 	db    *db.HarmonyDB
 	appDB *gorm.DB
 }
 
-func NewAggTaskHistoryHour(query *query.Query, db *db.HarmonyDB, appDB *gorm.DB) *AggTaskHistoryHour {
-	return &AggTaskHistoryHour{
+func NewAggTaskHistory(query *query.Query, db *db.HarmonyDB, appDB *gorm.DB) *AggTaskHistory {
+	return &AggTaskHistory{
 		query: query,
 		db:    db,
 		appDB: appDB,
 	}
 }
 
-func (j *AggTaskHistoryHour) Spec() string {
-	return "0 * * * *"
+func (j *AggTaskHistory) Spec() string {
+	return "@hourly"
 }
 
-func (j *AggTaskHistoryHour) Name() string {
-	return "AggTaskHistoryHour"
+func (j *AggTaskHistory) Name() string {
+	return "AggTaskHistory"
 }
 
-func (j *AggTaskHistoryHour) RunWith(t time.Time) {
+func (j *AggTaskHistory) RunWith(t time.Time) {
 	start := time.Now()
 	defer func() {
-		log.Infof("AggTaskHistoryHour finished in %s", time.Since(start))
+		log.Infof("%s run on %s finished in %s", j.Name(), t, time.Since(start))
 	}()
 
 	currentHour := t.Truncate(time.Hour)
@@ -65,7 +65,7 @@ func (j *AggTaskHistoryHour) RunWith(t time.Time) {
 	}).Save(records)
 }
 
-func (j *AggTaskHistoryHour) Run() {
+func (j *AggTaskHistory) Run() {
 	t := time.Now()
 	j.RunWith(t)
 }

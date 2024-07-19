@@ -12,43 +12,44 @@ import (
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/strahe/curio-dashboard/graph"
 	"github.com/strahe/curio-dashboard/graph/model"
+	types1 "github.com/strahe/curio-dashboard/types"
 )
 
 // QualityAdjustedPower is the resolver for the qualityAdjustedPower field.
-func (r *actorResolver) QualityAdjustedPower(ctx context.Context, obj *model.Actor) (*model.BigInt, error) {
+func (r *actorResolver) QualityAdjustedPower(ctx context.Context, obj *model.Actor) (*types1.BigInt, error) {
 	p, err := obj.Power(ctx, r.fullNode)
 	if err != nil {
 		return nil, err
 	}
 	if p.HasMinPower {
-		return &model.BigInt{Int: p.MinerPower.QualityAdjPower.Int}, nil
+		return &types1.BigInt{Int: p.MinerPower.QualityAdjPower.Int}, nil
 	}
-	return &model.BigInt{Int: big.NewInt(0)}, nil
+	return &types1.BigInt{Int: big.NewInt(0)}, nil
 }
 
 // RawBytePower is the resolver for the rawBytePower field.
-func (r *actorResolver) RawBytePower(ctx context.Context, obj *model.Actor) (*model.BigInt, error) {
+func (r *actorResolver) RawBytePower(ctx context.Context, obj *model.Actor) (*types1.BigInt, error) {
 	p, err := obj.Power(ctx, r.fullNode)
 	if err != nil {
 		return nil, err
 	}
 	if p.HasMinPower {
-		return &model.BigInt{Int: p.MinerPower.RawBytePower.Int}, nil
+		return &types1.BigInt{Int: p.MinerPower.RawBytePower.Int}, nil
 	}
-	return &model.BigInt{Int: big.NewInt(0)}, nil
+	return &types1.BigInt{Int: big.NewInt(0)}, nil
 }
 
 // ActorBalance is the resolver for the actorBalance field.
-func (r *actorResolver) ActorBalance(ctx context.Context, obj *model.Actor) (*model.BigInt, error) {
+func (r *actorResolver) ActorBalance(ctx context.Context, obj *model.Actor) (*types1.BigInt, error) {
 	actor, err := obj.ChainActor(ctx, r.fullNode)
 	if err != nil {
 		return nil, err
 	}
-	return &model.BigInt{Int: actor.Balance.Int}, nil
+	return &types1.BigInt{Int: actor.Balance.Int}, nil
 }
 
 // ActorAvailableBalance is the resolver for the actorAvailableBalance field.
-func (r *actorResolver) ActorAvailableBalance(ctx context.Context, obj *model.Actor) (*model.BigInt, error) {
+func (r *actorResolver) ActorAvailableBalance(ctx context.Context, obj *model.Actor) (*types1.BigInt, error) {
 	ms, err := obj.MinerState(ctx, r.fullNode)
 	if err != nil {
 		return nil, err
@@ -61,11 +62,11 @@ func (r *actorResolver) ActorAvailableBalance(ctx context.Context, obj *model.Ac
 	if err != nil {
 		return nil, err
 	}
-	return &model.BigInt{Int: avail.Int}, nil
+	return &types1.BigInt{Int: avail.Int}, nil
 }
 
 // WorkerBalance is the resolver for the workerBalance field.
-func (r *actorResolver) WorkerBalance(ctx context.Context, obj *model.Actor) (*model.BigInt, error) {
+func (r *actorResolver) WorkerBalance(ctx context.Context, obj *model.Actor) (*types1.BigInt, error) {
 	ms, err := obj.MinerState(ctx, r.fullNode)
 	if err != nil {
 		return nil, err
@@ -78,7 +79,7 @@ func (r *actorResolver) WorkerBalance(ctx context.Context, obj *model.Actor) (*m
 	if err != nil {
 		return nil, fmt.Errorf("getting worker balance: %w", err)
 	}
-	return &model.BigInt{Int: wb.Int}, nil
+	return &types1.BigInt{Int: wb.Int}, nil
 }
 
 // Deadlines is the resolver for the deadlines field.

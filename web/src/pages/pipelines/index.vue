@@ -52,11 +52,10 @@ const headers = [
             <template v-slot:[`item.status`]="{item}">
               <v-chip :color="item.status === 'Failed' ? 'red' :'green'">{{item.status}}</v-chip>
             </template>
-            <template v-slot:expanded-row="{ columns }">
+            <template v-slot:expanded-row="{ columns, item }">
               <tr>
                 <td :colspan="columns.length">
-<!--                  demo-->
-                  <PipelineTreeMapChart></PipelineTreeMapChart>
+                  <PipelineTreeMapChart :data="item"></PipelineTreeMapChart>
                 </td>
               </tr>
             </template>

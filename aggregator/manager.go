@@ -9,6 +9,7 @@ import (
 	"github.com/strahe/curio-dashboard/aggregator/jobs"
 	"github.com/strahe/curio-dashboard/aggregator/query"
 	"github.com/strahe/curio-dashboard/db"
+	"github.com/strahe/curio-dashboard/graph/loaders"
 	"gorm.io/gorm"
 )
 
@@ -43,7 +44,8 @@ func (m *Manager) Stop() {
 }
 
 func (m *Manager) initAggregators() error {
-	allJobs := AllJobs(query.NewQuery(m.db), m.db, m.appDB)
+	allJobs := AllJobs(query.NewQuery(m.db), m.db, m.appDB,
+		m.fullNode, loaders.NewLoader(m.db, m.appDB, 1000))
 	for _, job := range allJobs {
 		log.Infof("Adding job %s with spec: %s", job.Name(), job.Spec())
 		_, err := m.cron.AddJob(job.Spec(), job)
@@ -54,8 +56,16 @@ func (m *Manager) initAggregators() error {
 	return nil
 }
 
-func AllJobs(query *query.Query, db *db.HarmonyDB, appDB *gorm.DB) []jobs.Job {
+func AllJobs(query *query.Query, db *db.HarmonyDB, appDB *gorm.DB, fullNode v1api.FullNode, loader *loaders.Loader) []jobs.Job {
+	res := []jobs.Job{
+		jobs.NewAggTaskHistory(query, db, appDB),
+	}
+	res = append(res, AllOnlyRealtimeJobs(appDB, fullNode, loader)...)
+	return res
+}
+
+func AllOnlyRealtimeJobs(appDB *gorm.DB, fullNode v1api.FullNode, loader *loaders.Loader) []jobs.Job {
 	return []jobs.Job{
-		jobs.NewAggTaskHistoryHour(query, db, appDB),
+		jobs.NewRecordMinerInfo(fullNode, loader, appDB),
 	}
 }

@@ -1,6 +1,7 @@
-package model
+package types
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"github.com/filecoin-project/go-address"
 	"io"
@@ -20,7 +21,7 @@ func (b *Address) UnmarshalGQL(v interface{}) error {
 		}
 		*b = Address{addr}
 	default:
-		return fmt.Errorf("invalid address")
+		return fmt.Errorf("invalid address: %v", v)
 	}
 	return nil
 }
@@ -28,4 +29,13 @@ func (b *Address) UnmarshalGQL(v interface{}) error {
 // MarshalGQL implements the graphql.Marshaler interface
 func (b Address) MarshalGQL(w io.Writer) {
 	_, _ = w.Write([]byte(`"` + b.String() + `"`))
+}
+
+func (b *Address) Scan(value interface{}) error {
+	return b.UnmarshalGQL(value)
+}
+
+// Value return json value, implement driver.Valuer interface
+func (b Address) Value() (driver.Value, error) {
+	return b.String(), nil
 }

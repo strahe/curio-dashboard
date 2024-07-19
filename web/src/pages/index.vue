@@ -2,10 +2,10 @@
   <v-container fluid>
     <v-row>
       <v-col cols="12" lg="6">
-        <TaskHeatmap></TaskHeatmap>
+        <TaskHeatmap title="task heatmap"></TaskHeatmap>
       </v-col>
-      <v-col cols="12" lg="4">
-<!--        <RunningTaskPieChart type="Pie"></RunningTaskPieChart>-->
+      <v-col cols="12" lg="6">
+        <TaskHeatmap title="task heatmap" title-on-card></TaskHeatmap>
       </v-col>
 
       <v-col cols="12" lg="3">

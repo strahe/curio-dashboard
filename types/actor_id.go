@@ -1,9 +1,11 @@
-package model
+package types
 
 import (
+	"database/sql/driver"
 	"fmt"
-	"github.com/filecoin-project/go-address"
 	"io"
+
+	"github.com/filecoin-project/go-address"
 )
 
 type ActorID uint64
@@ -12,6 +14,10 @@ type ActorID uint64
 func (b *ActorID) UnmarshalGQL(v interface{}) error {
 	switch value := v.(type) {
 	case int:
+		*b = ActorID(value)
+	case int64:
+		*b = ActorID(value)
+	case uint64:
 		*b = ActorID(value)
 	case string:
 		addr, err := address.NewFromString(value)
@@ -24,7 +30,7 @@ func (b *ActorID) UnmarshalGQL(v interface{}) error {
 		}
 		*b = ActorID(aid)
 	default:
-		return fmt.Errorf("invalid actor id type")
+		return fmt.Errorf("invalid actor id type: %s", value)
 	}
 	return nil
 }
@@ -33,4 +39,13 @@ func (b *ActorID) UnmarshalGQL(v interface{}) error {
 func (b ActorID) MarshalGQL(w io.Writer) {
 	addr, _ := address.NewIDAddress(uint64(b))
 	_, _ = w.Write([]byte(`"` + addr.String() + `"`))
+}
+
+func (b *ActorID) Scan(value interface{}) error {
+	return b.UnmarshalGQL(value)
+}
+
+// Value return json value, implement driver.Valuer interface
+func (b ActorID) Value() (driver.Value, error) {
+	return int(b), nil
 }

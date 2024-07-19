@@ -87,13 +87,13 @@ models:
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
   ActorID:
-    model: "github.com/strahe/curio-dashboard/graph/model.ActorID"
+    model: "github.com/strahe/curio-dashboard/types.ActorID"
   ByteArray:
-    model: "github.com/strahe/curio-dashboard/graph/model.ByteArray"
+    model: "github.com/strahe/curio-dashboard/types.ByteArray"
   Address:
-    model: "github.com/strahe/curio-dashboard/graph/model.Address"
+    model: "github.com/strahe/curio-dashboard/types.Address"
   BigInt:
-    model: "github.com/strahe/curio-dashboard/graph/model.BigInt"
+    model: "github.com/strahe/curio-dashboard/types.BigInt"
   Pipeline:
     fields:
       id:

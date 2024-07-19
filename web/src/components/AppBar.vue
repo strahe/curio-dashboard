@@ -34,7 +34,7 @@ const appStore = useAppStore()
 const { drawer } = storeToRefs(appStore)
 
 const toggleTheme = () => {
-  const themeValue = theme.global.current.value.dark ? 'light' : 'dark';
+  const themeValue = theme.global.current.value?.dark ? 'light' : 'dark';
   theme.global.name.value = themeValue;
   cookieTheme.set('theme', themeValue);
 };

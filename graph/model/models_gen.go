@@ -7,6 +7,8 @@ import (
 	"io"
 	"strconv"
 	"time"
+
+	"github.com/strahe/curio-dashboard/types"
 )
 
 type ActorDeadline struct {
@@ -31,9 +33,9 @@ type MachineDetail struct {
 }
 
 type MiningSummaryDay struct {
-	Day  time.Time `json:"day"`
-	SpID ActorID   `json:"sp_id"`
-	Won  int       `json:"won"`
+	Day  time.Time     `json:"day"`
+	SpID types.ActorID `json:"sp_id"`
+	Won  int           `json:"won"`
 }
 
 type NodeInfo struct {
@@ -48,47 +50,47 @@ type NodeInfo struct {
 }
 
 type Pipeline struct {
-	ID                       string         `json:"id"`
-	SpID                     ActorID        `json:"spId"`
-	SectorNumber             int            `json:"sectorNumber"`
-	CreateTime               time.Time      `json:"createTime"`
-	RegSealProof             int            `json:"regSealProof"`
-	TicketEpoch              *int           `json:"ticketEpoch,omitempty"`
-	TicketValue              ByteArray      `json:"ticketValue,omitempty"`
-	TaskIDSdr                *int           `json:"taskIdSdr,omitempty"`
-	AfterSdr                 bool           `json:"afterSdr"`
-	TreeDCid                 *string        `json:"treeDCid,omitempty"`
-	TaskIDTreeD              *int           `json:"taskIdTreeD,omitempty"`
-	AfterTreeD               bool           `json:"afterTreeD"`
-	TaskIDTreeC              *int           `json:"taskIdTreeC,omitempty"`
-	AfterTreeC               bool           `json:"afterTreeC"`
-	TreeRCid                 *string        `json:"treeRCid,omitempty"`
-	TaskIDTreeR              *int           `json:"taskIdTreeR,omitempty"`
-	AfterTreeR               bool           `json:"afterTreeR"`
-	PrecommitMsgCid          *string        `json:"precommitMsgCid,omitempty"`
-	TaskIDPrecommitMsg       *int           `json:"taskIdPrecommitMsg,omitempty"`
-	AfterPrecommitMsg        bool           `json:"afterPrecommitMsg"`
-	SeedEpoch                *int           `json:"seedEpoch,omitempty"`
-	PrecommitMsgTsk          ByteArray      `json:"precommitMsgTsk,omitempty"`
-	AfterPrecommitMsgSuccess bool           `json:"afterPrecommitMsgSuccess"`
-	SeedValue                ByteArray      `json:"seedValue,omitempty"`
-	TaskIDPorep              *int           `json:"taskIdPorep,omitempty"`
-	PorepProof               ByteArray      `json:"porepProof,omitempty"`
-	AfterPorep               bool           `json:"afterPorep"`
-	TaskIDFinalize           *int           `json:"taskIdFinalize,omitempty"`
-	AfterFinalize            bool           `json:"afterFinalize"`
-	TaskIDMoveStorage        *int           `json:"taskIdMoveStorage,omitempty"`
-	AfterMoveStorage         bool           `json:"afterMoveStorage"`
-	CommitMsgCid             *string        `json:"commitMsgCid,omitempty"`
-	TaskIDCommitMsg          *int           `json:"taskIdCommitMsg,omitempty"`
-	AfterCommitMsg           bool           `json:"afterCommitMsg"`
-	CommitMsgTsk             ByteArray      `json:"commitMsgTsk,omitempty"`
-	AfterCommitMsgSuccess    bool           `json:"afterCommitMsgSuccess"`
-	Failed                   bool           `json:"failed"`
-	FailedAt                 *time.Time     `json:"failedAt,omitempty"`
-	FailedReason             string         `json:"failedReason"`
-	FailedReasonMsg          string         `json:"failedReasonMsg"`
-	Status                   PipelineStatus `json:"status"`
+	ID                       string          `json:"id"`
+	SpID                     types.ActorID   `json:"spId"`
+	SectorNumber             int             `json:"sectorNumber"`
+	CreateTime               time.Time       `json:"createTime"`
+	RegSealProof             int             `json:"regSealProof"`
+	TicketEpoch              *int            `json:"ticketEpoch,omitempty"`
+	TicketValue              types.ByteArray `json:"ticketValue,omitempty"`
+	TaskIDSdr                *int            `json:"taskIdSdr,omitempty"`
+	AfterSdr                 bool            `json:"afterSdr"`
+	TreeDCid                 *string         `json:"treeDCid,omitempty"`
+	TaskIDTreeD              *int            `json:"taskIdTreeD,omitempty"`
+	AfterTreeD               bool            `json:"afterTreeD"`
+	TaskIDTreeC              *int            `json:"taskIdTreeC,omitempty"`
+	AfterTreeC               bool            `json:"afterTreeC"`
+	TreeRCid                 *string         `json:"treeRCid,omitempty"`
+	TaskIDTreeR              *int            `json:"taskIdTreeR,omitempty"`
+	AfterTreeR               bool            `json:"afterTreeR"`
+	PrecommitMsgCid          *string         `json:"precommitMsgCid,omitempty"`
+	TaskIDPrecommitMsg       *int            `json:"taskIdPrecommitMsg,omitempty"`
+	AfterPrecommitMsg        bool            `json:"afterPrecommitMsg"`
+	SeedEpoch                *int            `json:"seedEpoch,omitempty"`
+	PrecommitMsgTsk          types.ByteArray `json:"precommitMsgTsk,omitempty"`
+	AfterPrecommitMsgSuccess bool            `json:"afterPrecommitMsgSuccess"`
+	SeedValue                types.ByteArray `json:"seedValue,omitempty"`
+	TaskIDPorep              *int            `json:"taskIdPorep,omitempty"`
+	PorepProof               types.ByteArray `json:"porepProof,omitempty"`
+	AfterPorep               bool            `json:"afterPorep"`
+	TaskIDFinalize           *int            `json:"taskIdFinalize,omitempty"`
+	AfterFinalize            bool            `json:"afterFinalize"`
+	TaskIDMoveStorage        *int            `json:"taskIdMoveStorage,omitempty"`
+	AfterMoveStorage         bool            `json:"afterMoveStorage"`
+	CommitMsgCid             *string         `json:"commitMsgCid,omitempty"`
+	TaskIDCommitMsg          *int            `json:"taskIdCommitMsg,omitempty"`
+	AfterCommitMsg           bool            `json:"afterCommitMsg"`
+	CommitMsgTsk             types.ByteArray `json:"commitMsgTsk,omitempty"`
+	AfterCommitMsgSuccess    bool            `json:"afterCommitMsgSuccess"`
+	Failed                   bool            `json:"failed"`
+	FailedAt                 *time.Time      `json:"failedAt,omitempty"`
+	FailedReason             string          `json:"failedReason"`
+	FailedReasonMsg          string          `json:"failedReasonMsg"`
+	Status                   PipelineStatus  `json:"status"`
 }
 
 type Query struct {

@@ -2,6 +2,7 @@ package loaders
 
 import (
 	"context"
+	"github.com/strahe/curio-dashboard/types"
 
 	"github.com/BurntSushi/toml"
 	"github.com/filecoin-project/go-address"
@@ -38,14 +39,14 @@ func (l *Loader) Actors(ctx context.Context) ([]*model.Actor, error) {
 	var out []*model.Actor
 	for addr, names := range confNameToAddr {
 		out = append(out, &model.Actor{
-			Address: model.Address{Address: addr},
+			Address: types.Address{Address: addr},
 			Layers:  names,
 		})
 	}
 	return out, nil
 }
 
-func (l *Loader) Actor(ctx context.Context, address model.Address) (*model.Actor, error) {
+func (l *Loader) Actor(ctx context.Context, address types.Address) (*model.Actor, error) {
 	cfgs, err := l.Configs(ctx)
 	if err != nil {
 		return nil, err

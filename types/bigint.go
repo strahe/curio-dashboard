@@ -1,6 +1,7 @@
-package model
+package types
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"io"
 	"math/big"
@@ -18,7 +19,7 @@ func (b *BigInt) UnmarshalGQL(v interface{}) error {
 		v.SetString(value, 10)
 		*b = BigInt{&v}
 	default:
-		return fmt.Errorf("invalid bigint")
+		return fmt.Errorf("invalid bigint: %v", v)
 	}
 	return nil
 }
@@ -26,4 +27,13 @@ func (b *BigInt) UnmarshalGQL(v interface{}) error {
 // MarshalGQL implements the graphql.Marshaler interface
 func (b BigInt) MarshalGQL(w io.Writer) {
 	_, _ = w.Write([]byte(b.String()))
+}
+
+func (b *BigInt) Scan(value interface{}) error {
+	return b.UnmarshalGQL(value)
+}
+
+// Value return json value, implement driver.Valuer interface
+func (b BigInt) Value() (driver.Value, error) {
+	return b.String(), nil
 }

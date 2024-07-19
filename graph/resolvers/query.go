@@ -16,6 +16,7 @@ import (
 	"github.com/strahe/curio-dashboard/graph"
 	cachecontrol "github.com/strahe/curio-dashboard/graph/cache_control"
 	"github.com/strahe/curio-dashboard/graph/model"
+	"github.com/strahe/curio-dashboard/types"
 	pgx "github.com/yugabyte/pgx/v5"
 	"golang.org/x/xerrors"
 )
@@ -93,7 +94,7 @@ func (r *queryResolver) StorageStats(ctx context.Context) ([]*model.StorageStats
 }
 
 // Sectors is the resolver for the sectors field.
-func (r *queryResolver) Sectors(ctx context.Context, actor *model.ActorID, sectorNumber *int, offset int, limit int) ([]*model.Sector, error) {
+func (r *queryResolver) Sectors(ctx context.Context, actor *types.ActorID, sectorNumber *int, offset int, limit int) ([]*model.Sector, error) {
 	cachecontrol.SetHint(ctx, cachecontrol.ScopePrivate, time.Minute*5)
 	if actor != nil && sectorNumber != nil {
 		sector, err := r.loader.Sector(ctx, *actor, *sectorNumber)
@@ -109,13 +110,13 @@ func (r *queryResolver) Sectors(ctx context.Context, actor *model.ActorID, secto
 }
 
 // SectorsCount is the resolver for the sectorsCount field.
-func (r *queryResolver) SectorsCount(ctx context.Context, actor *model.ActorID) (int, error) {
+func (r *queryResolver) SectorsCount(ctx context.Context, actor *types.ActorID) (int, error) {
 	cachecontrol.SetHint(ctx, cachecontrol.ScopePrivate, time.Minute*5)
 	return r.loader.SectorsCount(ctx, actor)
 }
 
 // Sector is the resolver for the sector field.
-func (r *queryResolver) Sector(ctx context.Context, actor model.ActorID, sectorNumber int) (*model.Sector, error) {
+func (r *queryResolver) Sector(ctx context.Context, actor types.ActorID, sectorNumber int) (*model.Sector, error) {
 	return r.loader.Sector(ctx, actor, sectorNumber)
 }
 
@@ -126,7 +127,7 @@ func (r *queryResolver) Actors(ctx context.Context) ([]*model.Actor, error) {
 }
 
 // Actor is the resolver for the actor field.
-func (r *queryResolver) Actor(ctx context.Context, address model.Address) (*model.Actor, error) {
+func (r *queryResolver) Actor(ctx context.Context, address types.Address) (*model.Actor, error) {
 	return r.loader.Actor(ctx, address)
 }
 

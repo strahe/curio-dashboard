@@ -16,6 +16,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/strahe/curio-dashboard/graph/model"
+	"github.com/strahe/curio-dashboard/types"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -194,7 +195,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Actor                func(childComplexity int, address model.Address) int
+		Actor                func(childComplexity int, address types.Address) int
 		Actors               func(childComplexity int) int
 		Config               func(childComplexity int, layer string) int
 		Configs              func(childComplexity int) int
@@ -205,9 +206,9 @@ type ComplexityRoot struct {
 		NodesInfo            func(childComplexity int) int
 		Pipelines            func(childComplexity int) int
 		PipelinesSummary     func(childComplexity int) int
-		Sector               func(childComplexity int, actor model.ActorID, sectorNumber int) int
-		Sectors              func(childComplexity int, actor *model.ActorID, sectorNumber *int, offset int, limit int) int
-		SectorsCount         func(childComplexity int, actor *model.ActorID) int
+		Sector               func(childComplexity int, actor types.ActorID, sectorNumber int) int
+		Sectors              func(childComplexity int, actor *types.ActorID, sectorNumber *int, offset int, limit int) int
+		SectorsCount         func(childComplexity int, actor *types.ActorID) int
 		StoragePaths         func(childComplexity int) int
 		StorageStats         func(childComplexity int) int
 		Task                 func(childComplexity int, id int) int
@@ -334,11 +335,11 @@ type ComplexityRoot struct {
 }
 
 type ActorResolver interface {
-	QualityAdjustedPower(ctx context.Context, obj *model.Actor) (*model.BigInt, error)
-	RawBytePower(ctx context.Context, obj *model.Actor) (*model.BigInt, error)
-	ActorBalance(ctx context.Context, obj *model.Actor) (*model.BigInt, error)
-	ActorAvailableBalance(ctx context.Context, obj *model.Actor) (*model.BigInt, error)
-	WorkerBalance(ctx context.Context, obj *model.Actor) (*model.BigInt, error)
+	QualityAdjustedPower(ctx context.Context, obj *model.Actor) (*types.BigInt, error)
+	RawBytePower(ctx context.Context, obj *model.Actor) (*types.BigInt, error)
+	ActorBalance(ctx context.Context, obj *model.Actor) (*types.BigInt, error)
+	ActorAvailableBalance(ctx context.Context, obj *model.Actor) (*types.BigInt, error)
+	WorkerBalance(ctx context.Context, obj *model.Actor) (*types.BigInt, error)
 	Deadlines(ctx context.Context, obj *model.Actor) ([]*model.ActorDeadline, error)
 }
 type ConfigResolver interface {
@@ -388,11 +389,11 @@ type QueryResolver interface {
 	TaskAggregatesByHour(ctx context.Context, lastHours int) ([]*model.TaskAggregate, error)
 	StoragePaths(ctx context.Context) ([]*model.StoragePath, error)
 	StorageStats(ctx context.Context) ([]*model.StorageStats, error)
-	Sectors(ctx context.Context, actor *model.ActorID, sectorNumber *int, offset int, limit int) ([]*model.Sector, error)
-	SectorsCount(ctx context.Context, actor *model.ActorID) (int, error)
-	Sector(ctx context.Context, actor model.ActorID, sectorNumber int) (*model.Sector, error)
+	Sectors(ctx context.Context, actor *types.ActorID, sectorNumber *int, offset int, limit int) ([]*model.Sector, error)
+	SectorsCount(ctx context.Context, actor *types.ActorID) (int, error)
+	Sector(ctx context.Context, actor types.ActorID, sectorNumber int) (*model.Sector, error)
 	Actors(ctx context.Context) ([]*model.Actor, error)
-	Actor(ctx context.Context, address model.Address) (*model.Actor, error)
+	Actor(ctx context.Context, address types.Address) (*model.Actor, error)
 	Pipelines(ctx context.Context) ([]*model.Pipeline, error)
 	PipelinesSummary(ctx context.Context) ([]*model.PipelineSummary, error)
 	NodesInfo(ctx context.Context) ([]*model.NodeInfo, error)
@@ -1197,7 +1198,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Actor(childComplexity, args["address"].(model.Address)), true
+		return e.complexity.Query.Actor(childComplexity, args["address"].(types.Address)), true
 
 	case "Query.actors":
 		if e.complexity.Query.Actors == nil {
@@ -1294,7 +1295,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Sector(childComplexity, args["actor"].(model.ActorID), args["sectorNumber"].(int)), true
+		return e.complexity.Query.Sector(childComplexity, args["actor"].(types.ActorID), args["sectorNumber"].(int)), true
 
 	case "Query.sectors":
 		if e.complexity.Query.Sectors == nil {
@@ -1306,7 +1307,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Sectors(childComplexity, args["actor"].(*model.ActorID), args["sectorNumber"].(*int), args["offset"].(int), args["limit"].(int)), true
+		return e.complexity.Query.Sectors(childComplexity, args["actor"].(*types.ActorID), args["sectorNumber"].(*int), args["offset"].(int), args["limit"].(int)), true
 
 	case "Query.sectorsCount":
 		if e.complexity.Query.SectorsCount == nil {
@@ -1318,7 +1319,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.SectorsCount(childComplexity, args["actor"].(*model.ActorID)), true
+		return e.complexity.Query.SectorsCount(childComplexity, args["actor"].(*types.ActorID)), true
 
 	case "Query.storagePaths":
 		if e.complexity.Query.StoragePaths == nil {
@@ -2144,10 +2145,10 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_actor_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.Address
+	var arg0 types.Address
 	if tmp, ok := rawArgs["address"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
-		arg0, err = ec.unmarshalNAddress2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐAddress(ctx, tmp)
+		arg0, err = ec.unmarshalNAddress2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐAddress(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2204,10 +2205,10 @@ func (ec *executionContext) field_Query_miningSummaryByDay_args(ctx context.Cont
 func (ec *executionContext) field_Query_sector_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.ActorID
+	var arg0 types.ActorID
 	if tmp, ok := rawArgs["actor"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("actor"))
-		arg0, err = ec.unmarshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐActorID(ctx, tmp)
+		arg0, err = ec.unmarshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐActorID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2228,10 +2229,10 @@ func (ec *executionContext) field_Query_sector_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_sectorsCount_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.ActorID
+	var arg0 *types.ActorID
 	if tmp, ok := rawArgs["actor"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("actor"))
-		arg0, err = ec.unmarshalOActorID2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐActorID(ctx, tmp)
+		arg0, err = ec.unmarshalOActorID2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐActorID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2243,10 +2244,10 @@ func (ec *executionContext) field_Query_sectorsCount_args(ctx context.Context, r
 func (ec *executionContext) field_Query_sectors_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.ActorID
+	var arg0 *types.ActorID
 	if tmp, ok := rawArgs["actor"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("actor"))
-		arg0, err = ec.unmarshalOActorID2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐActorID(ctx, tmp)
+		arg0, err = ec.unmarshalOActorID2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐActorID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2415,9 +2416,9 @@ func (ec *executionContext) _Actor_address(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.Address)
+	res := resTmp.(types.Address)
 	fc.Result = res
-	return ec.marshalNAddress2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐAddress(ctx, field.Selections, res)
+	return ec.marshalNAddress2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐAddress(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Actor_address(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2500,9 +2501,9 @@ func (ec *executionContext) _Actor_qualityAdjustedPower(ctx context.Context, fie
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.BigInt)
+	res := resTmp.(*types.BigInt)
 	fc.Result = res
-	return ec.marshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐBigInt(ctx, field.Selections, res)
+	return ec.marshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐBigInt(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Actor_qualityAdjustedPower(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2544,9 +2545,9 @@ func (ec *executionContext) _Actor_rawBytePower(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.BigInt)
+	res := resTmp.(*types.BigInt)
 	fc.Result = res
-	return ec.marshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐBigInt(ctx, field.Selections, res)
+	return ec.marshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐBigInt(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Actor_rawBytePower(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2588,9 +2589,9 @@ func (ec *executionContext) _Actor_actorBalance(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.BigInt)
+	res := resTmp.(*types.BigInt)
 	fc.Result = res
-	return ec.marshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐBigInt(ctx, field.Selections, res)
+	return ec.marshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐBigInt(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Actor_actorBalance(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2632,9 +2633,9 @@ func (ec *executionContext) _Actor_actorAvailableBalance(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.BigInt)
+	res := resTmp.(*types.BigInt)
 	fc.Result = res
-	return ec.marshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐBigInt(ctx, field.Selections, res)
+	return ec.marshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐBigInt(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Actor_actorAvailableBalance(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2676,9 +2677,9 @@ func (ec *executionContext) _Actor_workerBalance(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.BigInt)
+	res := resTmp.(*types.BigInt)
 	fc.Result = res
-	return ec.marshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐBigInt(ctx, field.Selections, res)
+	return ec.marshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐBigInt(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Actor_workerBalance(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4530,9 +4531,9 @@ func (ec *executionContext) _MiningSummaryDay_sp_id(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.ActorID)
+	res := resTmp.(types.ActorID)
 	fc.Result = res
-	return ec.marshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐActorID(ctx, field.Selections, res)
+	return ec.marshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐActorID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_MiningSummaryDay_sp_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5014,9 +5015,9 @@ func (ec *executionContext) _Pipeline_spId(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.ActorID)
+	res := resTmp.(types.ActorID)
 	fc.Result = res
-	return ec.marshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐActorID(ctx, field.Selections, res)
+	return ec.marshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐActorID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Pipeline_spId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5228,9 +5229,9 @@ func (ec *executionContext) _Pipeline_ticketValue(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(model.ByteArray)
+	res := resTmp.(types.ByteArray)
 	fc.Result = res
-	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐByteArray(ctx, field.Selections, res)
+	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐByteArray(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Pipeline_ticketValue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5858,9 +5859,9 @@ func (ec *executionContext) _Pipeline_precommitMsgTsk(ctx context.Context, field
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(model.ByteArray)
+	res := resTmp.(types.ByteArray)
 	fc.Result = res
-	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐByteArray(ctx, field.Selections, res)
+	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐByteArray(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Pipeline_precommitMsgTsk(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5943,9 +5944,9 @@ func (ec *executionContext) _Pipeline_seedValue(ctx context.Context, field graph
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(model.ByteArray)
+	res := resTmp.(types.ByteArray)
 	fc.Result = res
-	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐByteArray(ctx, field.Selections, res)
+	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐByteArray(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Pipeline_seedValue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6025,9 +6026,9 @@ func (ec *executionContext) _Pipeline_porepProof(ctx context.Context, field grap
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(model.ByteArray)
+	res := resTmp.(types.ByteArray)
 	fc.Result = res
-	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐByteArray(ctx, field.Selections, res)
+	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐByteArray(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Pipeline_porepProof(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6406,9 +6407,9 @@ func (ec *executionContext) _Pipeline_commitMsgTsk(ctx context.Context, field gr
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(model.ByteArray)
+	res := resTmp.(types.ByteArray)
 	fc.Result = res
-	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐByteArray(ctx, field.Selections, res)
+	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐByteArray(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Pipeline_commitMsgTsk(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6711,9 +6712,9 @@ func (ec *executionContext) _PipelineSummary_id(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.ActorID)
+	res := resTmp.(types.ActorID)
 	fc.Result = res
-	return ec.marshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐActorID(ctx, field.Selections, res)
+	return ec.marshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐActorID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_PipelineSummary_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7891,7 +7892,7 @@ func (ec *executionContext) _Query_sectors(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Sectors(rctx, fc.Args["actor"].(*model.ActorID), fc.Args["sectorNumber"].(*int), fc.Args["offset"].(int), fc.Args["limit"].(int))
+		return ec.resolvers.Query().Sectors(rctx, fc.Args["actor"].(*types.ActorID), fc.Args["sectorNumber"].(*int), fc.Args["offset"].(int), fc.Args["limit"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7953,7 +7954,7 @@ func (ec *executionContext) _Query_sectorsCount(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().SectorsCount(rctx, fc.Args["actor"].(*model.ActorID))
+		return ec.resolvers.Query().SectorsCount(rctx, fc.Args["actor"].(*types.ActorID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8008,7 +8009,7 @@ func (ec *executionContext) _Query_sector(ctx context.Context, field graphql.Col
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Sector(rctx, fc.Args["actor"].(model.ActorID), fc.Args["sectorNumber"].(int))
+		return ec.resolvers.Query().Sector(rctx, fc.Args["actor"].(types.ActorID), fc.Args["sectorNumber"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8129,7 +8130,7 @@ func (ec *executionContext) _Query_actor(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Actor(rctx, fc.Args["address"].(model.Address))
+		return ec.resolvers.Query().Actor(rctx, fc.Args["address"].(types.Address))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8977,9 +8978,9 @@ func (ec *executionContext) _SectorMeta_spId(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.ActorID)
+	res := resTmp.(types.ActorID)
 	fc.Result = res
-	return ec.marshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐActorID(ctx, field.Selections, res)
+	return ec.marshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐActorID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_SectorMeta_spId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -9150,9 +9151,9 @@ func (ec *executionContext) _SectorMeta_ticketValue(ctx context.Context, field g
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(model.ByteArray)
+	res := resTmp.(types.ByteArray)
 	fc.Result = res
-	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐByteArray(ctx, field.Selections, res)
+	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐByteArray(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_SectorMeta_ticketValue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -9534,9 +9535,9 @@ func (ec *executionContext) _SectorMeta_seedValue(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(model.ByteArray)
+	res := resTmp.(types.ByteArray)
 	fc.Result = res
-	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐByteArray(ctx, field.Selections, res)
+	return ec.marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐByteArray(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_SectorMeta_seedValue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -17777,43 +17778,43 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) unmarshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐActorID(ctx context.Context, v interface{}) (model.ActorID, error) {
-	var res model.ActorID
+func (ec *executionContext) unmarshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐActorID(ctx context.Context, v interface{}) (types.ActorID, error) {
+	var res types.ActorID
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐActorID(ctx context.Context, sel ast.SelectionSet, v model.ActorID) graphql.Marshaler {
+func (ec *executionContext) marshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐActorID(ctx context.Context, sel ast.SelectionSet, v types.ActorID) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNAddress2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐAddress(ctx context.Context, v interface{}) (model.Address, error) {
-	var res model.Address
+func (ec *executionContext) unmarshalNAddress2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐAddress(ctx context.Context, v interface{}) (types.Address, error) {
+	var res types.Address
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNAddress2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐAddress(ctx context.Context, sel ast.SelectionSet, v model.Address) graphql.Marshaler {
+func (ec *executionContext) marshalNAddress2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐAddress(ctx context.Context, sel ast.SelectionSet, v types.Address) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNBigInt2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐBigInt(ctx context.Context, v interface{}) (model.BigInt, error) {
-	var res model.BigInt
+func (ec *executionContext) unmarshalNBigInt2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐBigInt(ctx context.Context, v interface{}) (types.BigInt, error) {
+	var res types.BigInt
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNBigInt2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐBigInt(ctx context.Context, sel ast.SelectionSet, v model.BigInt) graphql.Marshaler {
+func (ec *executionContext) marshalNBigInt2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐBigInt(ctx context.Context, sel ast.SelectionSet, v types.BigInt) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐBigInt(ctx context.Context, v interface{}) (*model.BigInt, error) {
-	var res = new(model.BigInt)
+func (ec *executionContext) unmarshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐBigInt(ctx context.Context, v interface{}) (*types.BigInt, error) {
+	var res = new(types.BigInt)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐBigInt(ctx context.Context, sel ast.SelectionSet, v *model.BigInt) graphql.Marshaler {
+func (ec *executionContext) marshalNBigInt2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐBigInt(ctx context.Context, sel ast.SelectionSet, v *types.BigInt) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -18372,16 +18373,16 @@ func (ec *executionContext) marshalOActorDeadline2ᚖgithubᚗcomᚋstraheᚋcur
 	return ec._ActorDeadline(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOActorID2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐActorID(ctx context.Context, v interface{}) (*model.ActorID, error) {
+func (ec *executionContext) unmarshalOActorID2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐActorID(ctx context.Context, v interface{}) (*types.ActorID, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(model.ActorID)
+	var res = new(types.ActorID)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOActorID2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐActorID(ctx context.Context, sel ast.SelectionSet, v *model.ActorID) graphql.Marshaler {
+func (ec *executionContext) marshalOActorID2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐActorID(ctx context.Context, sel ast.SelectionSet, v *types.ActorID) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -18414,16 +18415,16 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) unmarshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐByteArray(ctx context.Context, v interface{}) (model.ByteArray, error) {
+func (ec *executionContext) unmarshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐByteArray(ctx context.Context, v interface{}) (types.ByteArray, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var res model.ByteArray
+	var res types.ByteArray
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐByteArray(ctx context.Context, sel ast.SelectionSet, v model.ByteArray) graphql.Marshaler {
+func (ec *executionContext) marshalOByteArray2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐByteArray(ctx context.Context, sel ast.SelectionSet, v types.ByteArray) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

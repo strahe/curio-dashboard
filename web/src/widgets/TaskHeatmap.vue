@@ -6,12 +6,15 @@ import {ComputedRef} from "vue";
 import {TaskAggregate} from "@/typed-graph";
 
 const props = defineProps({
+  title: {
+    type: String,
+    default: undefined,
+  },
   lastDays: {
     type: Number,
     default: 7,
-  }
+  },
 })
-
 
 const { result, loading, refetch, error } = useQuery(gql`
   query GetTaskAggregates($lastHours: Int!) {
@@ -71,7 +74,6 @@ const chartData = computed(() => {
     options: {
       chart: {
         id: 'task-heatmap',
-        toolbar: { show: false }
       },
       dataLabels: {
         enabled: false
@@ -84,7 +86,7 @@ const chartData = computed(() => {
 </script>
 
 <template>
-  <Card title="tasks heatmap" :loading="loading" :error="error as Error">
+  <Card :loading="loading" :error="error as Error">
     <template #titleAction>
       <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
     </template>

@@ -5,11 +5,15 @@ import {GetRunningTasks} from "@/query/task";
 import {Task} from "@/typed-graph";
 import {ComputedRef} from "vue";
 
-defineProps({
+const props = defineProps({
   title: {
     type: String,
-    default: null
+    default: undefined
   },
+  height: {
+    type: Number,
+    default: 250
+  }
 })
 
 const { result, loading, refetch, error } = useQuery(GetRunningTasks,  null, ()=>({
@@ -32,7 +36,6 @@ const chartData = computed(() => {
     options: {
       chart: {
         type: 'bar',
-        toolbar: { show: false }
       },
       plotOptions: {
         bar: {
@@ -41,8 +44,11 @@ const chartData = computed(() => {
           horizontal: false,
         }
       },
+      title: {
+        text: props.title,
+      },
       dataLabels: {
-        enabled: false
+        enabled: true
       },
       xaxis: {
         categories: Object.keys(nameCounts.value),
@@ -53,18 +59,12 @@ const chartData = computed(() => {
 </script>
 
 <template>
-<ChartCard
-  v-bind="$attrs"
-  :loading="loading"
-  :title="title"
-  :series="chartData.series"
-  :options="chartData.options"
-  :error="error as Error"
->
-<template #titleAction>
-  <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
-</template>
-</ChartCard>
+  <Card :loading="loading" :error="error as Error">
+    <template #titleAction>
+      <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
+    </template>
+    <apexchart :options="chartData.options" :series="chartData.series" type="bar" :height="height"></apexchart>
+  </Card>
 </template>
 
 <style scoped>
