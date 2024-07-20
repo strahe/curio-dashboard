@@ -46,7 +46,11 @@ func NewAppDb(ctx context.Context, dbURL string) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	err = db.AutoMigrate(&model.TaskHistoryAggregates{}, &model.MinerInfo{})
+	err = db.AutoMigrate(
+		&model.TaskHistoryAggregates{},
+		&model.MinerInfo{},
+		&model.StorageUsage{},
+	)
 
 	return db, err
 }

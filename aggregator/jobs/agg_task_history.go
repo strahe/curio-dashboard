@@ -3,8 +3,8 @@ package jobs
 import (
 	"time"
 
-	"github.com/strahe/curio-dashboard/aggregator/query"
 	"github.com/strahe/curio-dashboard/db"
+	"github.com/strahe/curio-dashboard/graph/loaders"
 	"github.com/strahe/curio-dashboard/model"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
@@ -12,16 +12,16 @@ import (
 )
 
 type AggTaskHistory struct {
-	query *query.Query
-	db    *db.HarmonyDB
-	appDB *gorm.DB
+	loader *loaders.Loader
+	db     *db.HarmonyDB
+	appDB  *gorm.DB
 }
 
-func NewAggTaskHistory(query *query.Query, db *db.HarmonyDB, appDB *gorm.DB) *AggTaskHistory {
+func NewAggTaskHistory(loader *loaders.Loader, db *db.HarmonyDB, appDB *gorm.DB) *AggTaskHistory {
 	return &AggTaskHistory{
-		query: query,
-		db:    db,
-		appDB: appDB,
+		loader: loader,
+		db:     db,
+		appDB:  appDB,
 	}
 }
 
@@ -40,7 +40,7 @@ func (j *AggTaskHistory) RunWith(t time.Time) {
 	}()
 
 	currentHour := t.Truncate(time.Hour)
-	ags, err := j.query.AggregateTaskHistory(context.TODO(), currentHour.Add(-time.Hour), currentHour)
+	ags, err := j.loader.AggregateTaskHistory(context.TODO(), currentHour.Add(-time.Hour), currentHour)
 	if err != nil {
 		log.Errorf("Failed to aggregate task history: %s", err)
 		return

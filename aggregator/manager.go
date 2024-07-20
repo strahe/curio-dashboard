@@ -6,8 +6,8 @@ import (
 	"github.com/filecoin-project/lotus/api/v1api"
 	logging "github.com/ipfs/go-log/v2"
 	"github.com/robfig/cron/v3"
+	"github.com/samber/lo"
 	"github.com/strahe/curio-dashboard/aggregator/jobs"
-	"github.com/strahe/curio-dashboard/aggregator/query"
 	"github.com/strahe/curio-dashboard/db"
 	"github.com/strahe/curio-dashboard/graph/loaders"
 	"gorm.io/gorm"
@@ -44,7 +44,7 @@ func (m *Manager) Stop() {
 }
 
 func (m *Manager) initAggregators() error {
-	allJobs := AllJobs(query.NewQuery(m.db), m.db, m.appDB,
+	allJobs := AllJobs(m.db, m.appDB,
 		m.fullNode, loaders.NewLoader(m.db, m.appDB, 1000))
 	for _, job := range allJobs {
 		log.Infof("Adding job %s with spec: %s", job.Name(), job.Spec())
@@ -56,16 +56,27 @@ func (m *Manager) initAggregators() error {
 	return nil
 }
 
-func AllJobs(query *query.Query, db *db.HarmonyDB, appDB *gorm.DB, fullNode v1api.FullNode, loader *loaders.Loader) []jobs.Job {
-	res := []jobs.Job{
-		jobs.NewAggTaskHistory(query, db, appDB),
+func AllJobs(db *db.HarmonyDB, appDB *gorm.DB, fullNode v1api.FullNode, loader *loaders.Loader) []jobs.Job {
+	return []jobs.Job{
+		jobs.NewAggTaskHistory(loader, db, appDB),
+		jobs.NewRecordMinerInfo(fullNode, loader, appDB),
+		jobs.NewRecordStorageUsage(loader, appDB),
 	}
-	res = append(res, AllOnlyRealtimeJobs(appDB, fullNode, loader)...)
-	return res
 }
 
-func AllOnlyRealtimeJobs(appDB *gorm.DB, fullNode v1api.FullNode, loader *loaders.Loader) []jobs.Job {
-	return []jobs.Job{
-		jobs.NewRecordMinerInfo(fullNode, loader, appDB),
+func AllBackFillingJobs(js []jobs.Job) []jobs.BackFillingJob {
+	var backFillingJobs []jobs.BackFillingJob
+	for _, job := range js {
+		if bfJob, ok := job.(jobs.BackFillingJob); ok {
+			backFillingJobs = append(backFillingJobs, bfJob)
+		}
 	}
+	return backFillingJobs
+}
+
+func NoBackFillingJobs(js []jobs.Job) []jobs.Job {
+	return lo.Filter(js, func(j jobs.Job, index int) bool {
+		_, ok := j.(jobs.BackFillingJob)
+		return !ok
+	})
 }

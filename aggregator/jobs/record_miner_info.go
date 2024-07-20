@@ -2,6 +2,9 @@ package jobs
 
 import (
 	"context"
+	"sync"
+	"time"
+
 	"github.com/filecoin-project/lotus/api/v1api"
 	"github.com/strahe/curio-dashboard/graph/loaders"
 	graphModel "github.com/strahe/curio-dashboard/graph/model"
@@ -9,8 +12,6 @@ import (
 	"github.com/strahe/curio-dashboard/types"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"sync"
-	"time"
 )
 
 type RecordMinerInfo struct {
@@ -41,7 +42,6 @@ func (j *RecordMinerInfo) Run() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
 
-	currentHour := time.Now().Truncate(time.Hour)
 	var records []*model.MinerInfo
 	wg := sync.WaitGroup{}
 	wg.Add(len(actors))
@@ -49,7 +49,7 @@ func (j *RecordMinerInfo) Run() {
 		go func(act *graphModel.Actor) {
 			defer wg.Done()
 			m := &model.MinerInfo{
-				Time:    currentHour,
+				Time:    start,
 				Address: act.Address,
 			}
 			p, err := act.Power(ctx, j.fullNode)
@@ -101,11 +101,6 @@ func (j *RecordMinerInfo) Run() {
 			UpdateAll: true,
 		}).Save(records)
 	}
-}
-
-func (j *RecordMinerInfo) RunWith(time time.Time) {
-	// not support passing time
-	panic("implement me")
 }
 
 func (j *RecordMinerInfo) Name() string {

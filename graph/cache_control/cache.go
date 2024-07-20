@@ -65,15 +65,17 @@ func (cache *CacheControlExtension) OverallPolicy() OverallCachePolicy {
 	}
 }
 
-const key = "cacheControl"
+type cacheControlKey struct{}
+
+var cacheControlContextKey = cacheControlKey{}
 
 func WithCacheControlExtension(ctx context.Context) context.Context {
 	cache := &CacheControlExtension{Version: 1}
-	return context.WithValue(ctx, key, cache)
+	return context.WithValue(ctx, cacheControlContextKey, cache)
 }
 
 func CacheControl(ctx context.Context) *CacheControlExtension {
-	c := ctx.Value(key)
+	c := ctx.Value(cacheControlContextKey)
 	if c, ok := c.(*CacheControlExtension); ok {
 		return c
 	}
@@ -82,7 +84,7 @@ func CacheControl(ctx context.Context) *CacheControlExtension {
 }
 
 func SetHint(ctx context.Context, scope Scope, maxAge time.Duration) {
-	c := ctx.Value(key)
+	c := ctx.Value(cacheControlContextKey)
 	if c, ok := c.(*CacheControlExtension); ok {
 		c.AddHint(Hint{
 			Path:   graphql.GetFieldContext(ctx).Path(),

@@ -9,7 +9,7 @@ go-deps:
 	make -C extern/filecoin-ffi
 
 go:
-	go build -o curio-dashboard main.go
+	go build -o curio-dashboard ./cmd
 
 web-deps:
 	cd web && yarn install
