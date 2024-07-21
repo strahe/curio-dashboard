@@ -204,6 +204,7 @@ export type Query = {
   sectorsCount: Scalars['Int']['output'];
   storagePaths?: Maybe<Array<Maybe<StoragePath>>>;
   storageStats?: Maybe<Array<Maybe<StorageStats>>>;
+  storageUsages?: Maybe<Array<Maybe<StorageUsage>>>;
   task?: Maybe<Task>;
   taskAggregatesByDay?: Maybe<Array<Maybe<TaskAggregate>>>;
   taskAggregatesByHour?: Maybe<Array<Maybe<TaskAggregate>>>;
@@ -248,6 +249,12 @@ export type QuerySectorsArgs = {
 
 export type QuerySectorsCountArgs = {
   actor?: InputMaybe<Scalars['ActorID']['input']>;
+};
+
+
+export type QueryStorageUsagesArgs = {
+  lastDays: Scalars['Int']['input'];
+  storageID?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -339,6 +346,15 @@ export enum StorageType {
   Seal = 'Seal',
   Store = 'Store'
 }
+
+export type StorageUsage = {
+  __typename?: 'StorageUsage';
+  available: Scalars['Int']['output'];
+  fsAvailable: Scalars['Int']['output'];
+  reserved: Scalars['Int']['output'];
+  time: Scalars['Time']['output'];
+  used: Scalars['Int']['output'];
+};
 
 export type Task = {
   __typename?: 'Task';

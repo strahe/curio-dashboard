@@ -33,7 +33,7 @@ func (j RecordStorageUsage) Run() {
 	for _, p := range paths {
 		records = append(records, &model.StorageUsage{
 			Time:        now,
-			StorageID:   p.ID,
+			StorageID:   p.StorageID,
 			Available:   p.Available,
 			FsAvailable: p.FsAvailable,
 			Reserved:    p.Reserved,

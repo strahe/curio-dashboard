@@ -16,10 +16,10 @@ var harmonydbFlag = &cli.StringFlag{
 }
 
 var appdbFlag = &cli.StringFlag{
-	Name:    "appdb-url",
-	EnvVars: []string{"CURIO_APPDB_URL"},
-	Value:   "sqlite3://app.sqlite",
-	Usage:   "URL to connect to appdb, e.g. postgres://username:password@localhost:5433/database_name?search_path=dashboard",
+	Name:     "appdb-url",
+	EnvVars:  []string{"CURIO_APPDB_URL"},
+	Required: true,
+	Usage:    "URL to connect to appdb, e.g. postgres://username:password@localhost:5433/database_name?search_path=dashboard",
 }
 
 func main() {

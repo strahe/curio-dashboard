@@ -48,7 +48,7 @@ var fillCmd = &cli.Command{
 		}
 		defer harmonyDB.Close()
 
-		appDB, err := db.NewAppDb(cctx.Context, cctx.String("appdb-url"))
+		appDB, err := db.NewAppDb(cctx.String("appdb-url"))
 		if err != nil {
 			return fmt.Errorf("failed to connect to appdb: %w", err)
 		}

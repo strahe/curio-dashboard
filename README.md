@@ -22,11 +22,17 @@ make all
 ```shell
 # Run Server
 
+# Set the environment variable `FULLNODE_API_INFO` to the Lotus API endpoint.
 export FULLNODE_API_INFO=""
+
+# For the current phase, 
+# the dashboard only allows connections to read-only databases (slave nodes). 
+# If you insist on connecting to a read-write database (master node), 
+# add the `target_session_attrs=any` parameter to the URL.
 export CURIO_HARMONYDB_URL="postgres://yugabyte:yugabyte@localhost:5433/curio?search_path=curio"
-# For data safety, please use a read-only slave node of yugabyte, do not use the master node.
-# If you insist on using the master node (ensure you know what you're doing), 
-# add '&target_session_attrs=any' to the end of CURIO_HARMONYDB_URL
+
+# A database dedicated for dashboard use.
+export CURIO_APPDB_URL="postgres://yugabyte:yugabyte@localhost:5433/dashboard"
 
 ./curio-dashboard --debug run
 

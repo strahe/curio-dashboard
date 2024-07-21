@@ -21,6 +21,7 @@ type Query {
     # storage
     storagePaths: [StoragePath]
     storageStats: [StorageStats]
+    storageUsages(storageID: String, lastDays: Int!): [StorageUsage]
 
     # sector
     sectors(actor: ActorID, sectorNumber: Int, offset: Int!, limit: Int!): [Sector]

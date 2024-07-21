@@ -129,6 +129,14 @@ type StorageStats struct {
 	TotalFsAvailable int         `json:"totalFsAvailable"`
 }
 
+type StorageUsage struct {
+	Time        time.Time `json:"time"`
+	Available   int       `json:"available"`
+	Used        int       `json:"used"`
+	Reserved    int       `json:"reserved"`
+	FsAvailable int       `json:"fsAvailable"`
+}
+
 type TaskHistory struct {
 	ID                     int       `json:"id"`
 	TaskID                 int       `json:"taskId"`

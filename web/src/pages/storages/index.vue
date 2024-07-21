@@ -6,6 +6,7 @@ import {formatBytes} from "@/utils/formatBytes";
 import {format} from "timeago.js";
 import {definePage} from "unplugin-vue-router/runtime";
 import {ComputedRef} from "vue";
+import StorageUsagesChart from "@/widgets/StorageUsagesChart.vue";
 
 definePage({
   meta: {
@@ -104,6 +105,9 @@ function percentUsed(type: string) {
           icon="mdi-tune"
           color="warning"
         ></StatsCard>
+      </v-col>
+      <v-col cols="12">
+        <StorageUsagesChart></StorageUsagesChart>
       </v-col>
       <v-col cols="12">
         <Card title="Storage Paths" :error="error as Error">

@@ -211,6 +211,7 @@ type ComplexityRoot struct {
 		SectorsCount         func(childComplexity int, actor *types.ActorID) int
 		StoragePaths         func(childComplexity int) int
 		StorageStats         func(childComplexity int) int
+		StorageUsages        func(childComplexity int, storageID *string, lastDays int) int
 		Task                 func(childComplexity int, id int) int
 		TaskAggregatesByDay  func(childComplexity int, lastDays int) int
 		TaskAggregatesByHour func(childComplexity int, lastHours int) int
@@ -274,6 +275,14 @@ type ComplexityRoot struct {
 		TotalReserved    func(childComplexity int) int
 		TotalUsed        func(childComplexity int) int
 		Type             func(childComplexity int) int
+	}
+
+	StorageUsage struct {
+		Available   func(childComplexity int) int
+		FsAvailable func(childComplexity int) int
+		Reserved    func(childComplexity int) int
+		Time        func(childComplexity int) int
+		Used        func(childComplexity int) int
 	}
 
 	Task struct {
@@ -389,6 +398,7 @@ type QueryResolver interface {
 	TaskAggregatesByHour(ctx context.Context, lastHours int) ([]*model.TaskAggregate, error)
 	StoragePaths(ctx context.Context) ([]*model.StoragePath, error)
 	StorageStats(ctx context.Context) ([]*model.StorageStats, error)
+	StorageUsages(ctx context.Context, storageID *string, lastDays int) ([]*model.StorageUsage, error)
 	Sectors(ctx context.Context, actor *types.ActorID, sectorNumber *int, offset int, limit int) ([]*model.Sector, error)
 	SectorsCount(ctx context.Context, actor *types.ActorID) (int, error)
 	Sector(ctx context.Context, actor types.ActorID, sectorNumber int) (*model.Sector, error)
@@ -1335,6 +1345,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.StorageStats(childComplexity), true
 
+	case "Query.storageUsages":
+		if e.complexity.Query.StorageUsages == nil {
+			break
+		}
+
+		args, err := ec.field_Query_storageUsages_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.StorageUsages(childComplexity, args["storageID"].(*string), args["lastDays"].(int)), true
+
 	case "Query.task":
 		if e.complexity.Query.Task == nil {
 			break
@@ -1711,6 +1733,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.StorageStats.Type(childComplexity), true
+
+	case "StorageUsage.available":
+		if e.complexity.StorageUsage.Available == nil {
+			break
+		}
+
+		return e.complexity.StorageUsage.Available(childComplexity), true
+
+	case "StorageUsage.fsAvailable":
+		if e.complexity.StorageUsage.FsAvailable == nil {
+			break
+		}
+
+		return e.complexity.StorageUsage.FsAvailable(childComplexity), true
+
+	case "StorageUsage.reserved":
+		if e.complexity.StorageUsage.Reserved == nil {
+			break
+		}
+
+		return e.complexity.StorageUsage.Reserved(childComplexity), true
+
+	case "StorageUsage.time":
+		if e.complexity.StorageUsage.Time == nil {
+			break
+		}
+
+		return e.complexity.StorageUsage.Time(childComplexity), true
+
+	case "StorageUsage.used":
+		if e.complexity.StorageUsage.Used == nil {
+			break
+		}
+
+		return e.complexity.StorageUsage.Used(childComplexity), true
 
 	case "Task.addedBy":
 		if e.complexity.Task.AddedBy == nil {
@@ -2280,6 +2337,30 @@ func (ec *executionContext) field_Query_sectors_args(ctx context.Context, rawArg
 		}
 	}
 	args["limit"] = arg3
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_storageUsages_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["storageID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("storageID"))
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["storageID"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["lastDays"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastDays"))
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["lastDays"] = arg1
 	return args, nil
 }
 
@@ -7878,6 +7959,70 @@ func (ec *executionContext) fieldContext_Query_storageStats(_ context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_storageUsages(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_storageUsages(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().StorageUsages(rctx, fc.Args["storageID"].(*string), fc.Args["lastDays"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.StorageUsage)
+	fc.Result = res
+	return ec.marshalOStorageUsage2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐStorageUsage(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_storageUsages(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "time":
+				return ec.fieldContext_StorageUsage_time(ctx, field)
+			case "available":
+				return ec.fieldContext_StorageUsage_available(ctx, field)
+			case "used":
+				return ec.fieldContext_StorageUsage_used(ctx, field)
+			case "reserved":
+				return ec.fieldContext_StorageUsage_reserved(ctx, field)
+			case "fsAvailable":
+				return ec.fieldContext_StorageUsage_fsAvailable(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type StorageUsage", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_storageUsages_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_sectors(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_sectors(ctx, field)
 	if err != nil {
@@ -10716,6 +10861,226 @@ func (ec *executionContext) _StorageStats_totalFsAvailable(ctx context.Context, 
 func (ec *executionContext) fieldContext_StorageStats_totalFsAvailable(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "StorageStats",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _StorageUsage_time(ctx context.Context, field graphql.CollectedField, obj *model.StorageUsage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_StorageUsage_time(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Time, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_StorageUsage_time(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "StorageUsage",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _StorageUsage_available(ctx context.Context, field graphql.CollectedField, obj *model.StorageUsage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_StorageUsage_available(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Available, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_StorageUsage_available(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "StorageUsage",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _StorageUsage_used(ctx context.Context, field graphql.CollectedField, obj *model.StorageUsage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_StorageUsage_used(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Used, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_StorageUsage_used(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "StorageUsage",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _StorageUsage_reserved(ctx context.Context, field graphql.CollectedField, obj *model.StorageUsage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_StorageUsage_reserved(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Reserved, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_StorageUsage_reserved(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "StorageUsage",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _StorageUsage_fsAvailable(ctx context.Context, field graphql.CollectedField, obj *model.StorageUsage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_StorageUsage_fsAvailable(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FsAvailable, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_StorageUsage_fsAvailable(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "StorageUsage",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -16238,6 +16603,25 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "storageUsages":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_storageUsages(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "sectors":
 			field := field
 
@@ -16865,6 +17249,65 @@ func (ec *executionContext) _StorageStats(ctx context.Context, sel ast.Selection
 			}
 		case "totalFsAvailable":
 			out.Values[i] = ec._StorageStats_totalFsAvailable(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var storageUsageImplementors = []string{"StorageUsage"}
+
+func (ec *executionContext) _StorageUsage(ctx context.Context, sel ast.SelectionSet, obj *model.StorageUsage) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, storageUsageImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("StorageUsage")
+		case "time":
+			out.Values[i] = ec._StorageUsage_time(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "available":
+			out.Values[i] = ec._StorageUsage_available(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "used":
+			out.Values[i] = ec._StorageUsage_used(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "reserved":
+			out.Values[i] = ec._StorageUsage_reserved(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "fsAvailable":
+			out.Values[i] = ec._StorageUsage_fsAvailable(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -18898,6 +19341,54 @@ func (ec *executionContext) marshalOStorageStats2ᚖgithubᚗcomᚋstraheᚋcuri
 		return graphql.Null
 	}
 	return ec._StorageStats(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOStorageUsage2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐStorageUsage(ctx context.Context, sel ast.SelectionSet, v []*model.StorageUsage) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOStorageUsage2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐStorageUsage(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOStorageUsage2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐStorageUsage(ctx context.Context, sel ast.SelectionSet, v *model.StorageUsage) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._StorageUsage(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {

@@ -2,8 +2,10 @@ package loaders
 
 import (
 	"context"
+	"time"
 
 	"github.com/strahe/curio-dashboard/graph/model"
+	model2 "github.com/strahe/curio-dashboard/model"
 )
 
 func (l *Loader) StoragePaths(ctx context.Context) ([]*model.StoragePath, error) {
@@ -70,4 +72,63 @@ func (l *Loader) StorageStats(ctx context.Context) ([]*model.StorageStats, error
 	}
 
 	return res, nil
+}
+
+func (l *Loader) StorageUsages(_ context.Context, storageID *string, start, end time.Time) ([]*model2.StorageUsage, error) {
+	var args []interface{}
+	args = append(args, start, end)
+	var sql string
+	if storageID != nil {
+		// Aggregate data by hour for a specific storageID
+		sql = `SELECT to_char(time, 'YYYY-MM-DD HH24:00:00') AS time, storage_id, 
+                SUM(available) AS available, SUM(fs_available) AS fs_available, 
+                SUM(reserved) AS reserved, SUM(used) AS used
+                FROM storage_usages 
+                WHERE storage_id = ? AND time BETWEEN ? AND ? 
+                GROUP BY time,storage_id`
+		args = append([]interface{}{*storageID}, args...)
+	} else {
+		sql = `SELECT to_char(time, 'YYYY-MM-DD HH24:00:00') AS time, storage_id, 
+                SUM(available) AS available, SUM(fs_available) AS fs_available, 
+                SUM(reserved) AS reserved, SUM(used) AS used
+                FROM storage_usages 
+                WHERE time BETWEEN ? AND ? 
+                GROUP BY time,storage_id
+                ORDER BY time`
+	}
+
+	type tempStorageUsage struct {
+		Time        string
+		StorageID   string
+		Available   int
+		FsAvailable int
+		Reserved    int
+		Used        int
+	}
+
+	var tempUsages []*tempStorageUsage
+
+	err := l.appDB.Raw(sql, args...).Scan(&tempUsages).Error
+	if err != nil {
+		return nil, err
+	}
+	var usages []*model2.StorageUsage
+	const layout = "2006-01-02 15:04:05"
+
+	for _, tu := range tempUsages {
+		parsedTime, err := time.Parse(layout, tu.Time)
+		if err != nil {
+			return nil, err // Handle parsing error
+		}
+		usages = append(usages, &model2.StorageUsage{
+			Time:        parsedTime,
+			StorageID:   tu.StorageID,
+			Available:   tu.Available,
+			FsAvailable: tu.FsAvailable,
+			Reserved:    tu.Reserved,
+			Used:        tu.Used,
+		})
+	}
+
+	return usages, nil
 }

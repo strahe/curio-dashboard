@@ -93,6 +93,27 @@ func (r *queryResolver) StorageStats(ctx context.Context) ([]*model.StorageStats
 	return r.loader.StorageStats(ctx)
 }
 
+// StorageUsages is the resolver for the storageUsages field.
+func (r *queryResolver) StorageUsages(ctx context.Context, storageID *string, lastDays int) ([]*model.StorageUsage, error) {
+	usages, err := r.loader.StorageUsages(ctx, storageID,
+		time.Now().Add(-time.Hour*24*time.Duration(lastDays)), time.Now())
+
+	if err != nil {
+		return nil, err
+	}
+	var out []*model.StorageUsage
+	for _, usage := range usages {
+		out = append(out, &model.StorageUsage{
+			Time:        usage.Time,
+			Available:   usage.Available,
+			FsAvailable: usage.FsAvailable,
+			Reserved:    usage.Reserved,
+			Used:        usage.Used,
+		})
+	}
+	return out, nil
+}
+
 // Sectors is the resolver for the sectors field.
 func (r *queryResolver) Sectors(ctx context.Context, actor *types.ActorID, sectorNumber *int, offset int, limit int) ([]*model.Sector, error) {
 	cachecontrol.SetHint(ctx, cachecontrol.ScopePrivate, time.Minute*5)

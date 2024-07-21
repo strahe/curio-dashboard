@@ -23,7 +23,6 @@ require (
 	golang.org/x/net v0.26.0
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028
 	gorm.io/driver/postgres v1.5.9
-	gorm.io/driver/sqlite v1.5.6
 	gorm.io/gorm v1.25.11
 )
 
