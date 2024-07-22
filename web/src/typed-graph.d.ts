@@ -210,6 +210,7 @@ export type Query = {
   taskAggregatesByHour?: Maybe<Array<Maybe<TaskAggregate>>>;
   taskHistories?: Maybe<Array<Maybe<TaskHistory>>>;
   tasks?: Maybe<Array<Maybe<Task>>>;
+  tasksCount: Scalars['Int']['output'];
 };
 
 

@@ -65,6 +65,12 @@ func (r *queryResolver) TaskHistories(ctx context.Context, offset int, limit int
 	return r.loader.TaskHistories(ctx, offset, limit)
 }
 
+// TasksCount is the resolver for the tasksCount field.
+func (r *queryResolver) TasksCount(ctx context.Context) (int, error) {
+	cachecontrol.SetHint(ctx, cachecontrol.ScopePrivate, time.Minute)
+	return r.loader.TasksCount(ctx)
+}
+
 // TaskAggregatesByDay is the resolver for the taskAggregatesByDay field.
 func (r *queryResolver) TaskAggregatesByDay(ctx context.Context, lastDays int) ([]*model.TaskAggregate, error) {
 	now := time.Now()

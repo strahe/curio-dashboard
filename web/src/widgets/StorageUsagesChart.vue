@@ -8,6 +8,13 @@ import {formatBytes} from "@/utils/formatBytes";
 
 const theme = useTheme();
 
+const props = defineProps({
+  title: {
+    type: String,
+    default: undefined,
+  },
+})
+
 const { result, loading, refetch, error } = useQuery(gql`
     query GetStorageUsages($storageID: String, $lastDays: Int!) {
         storageUsages(storageID: $storageID, lastDays: $lastDays) {
@@ -53,6 +60,9 @@ const chartData = computed(() => {
         type: 'datetime',
         categories: items.value.map((item: any) => item.time)
       },
+      title: {
+        text: props.title,
+      },
       stroke: {
         curve: 'smooth'
       },
@@ -74,14 +84,14 @@ const chartData = computed(() => {
       },
       tooltip:{
         y: {
-          formatter: function(value) {
+          formatter: function(value: number) {
             return formatBytes(value).combined;
           }
         }
       },
       yaxis: {
         labels: {
-          formatter: function(value) {
+          formatter: function(value: number) {
             return formatBytes(value).combined;
           }
         }
@@ -90,7 +100,6 @@ const chartData = computed(() => {
   }
 })
 
-
 </script>
 
 <template>
@@ -98,7 +107,7 @@ const chartData = computed(() => {
     <template #titleAction>
       <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
     </template>
-    <apexchart :options="chartData.options" :series="chartData.series" type="area" height="250"></apexchart>
+    <apexchart ref="chartRef" :options="chartData.options" :series="chartData.series" type="area" height="250"></apexchart>
   </Card>
 </template>
 

@@ -2,6 +2,7 @@ package loaders
 
 import (
 	"context"
+
 	"github.com/strahe/curio-dashboard/graph/model"
 )
 
@@ -70,3 +71,10 @@ func (l *Loader) Tasks(ctx context.Context) ([]*model.Task, error) {
 //		return value
 //	}), nil
 //}
+
+// TasksCount returns the number of running tasks in the database.
+func (l *Loader) TasksCount(ctx context.Context) (int, error) {
+	var count int
+	err := l.db.QueryRow(ctx, "SELECT count(*) FROM harmony_task").Scan(&count)
+	return count, err
+}

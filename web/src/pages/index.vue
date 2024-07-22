@@ -1,11 +1,11 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col cols="12" lg="6">
-        <TaskHeatmap title="task heatmap"></TaskHeatmap>
+      <v-col cols="12" lg="4">
+        <TaskHeatmap title="Task Heatmap"></TaskHeatmap>
       </v-col>
-      <v-col cols="12" lg="6">
-        <TaskHeatmap title="task heatmap" title-on-card></TaskHeatmap>
+      <v-col cols="12" lg="8">
+        <StorageUsagesChart title="Storage Usage"></StorageUsagesChart>
       </v-col>
 
       <v-col cols="12" lg="3">
@@ -13,9 +13,9 @@
           color="green"
           icon="mdi-firework"
           title="Running Tasks"
-          value="223"
+          :loading="loading"
+          :value="String(taskCount)"
           sub-icon="mdi-calendar"
-          sub-text="Last 24 Hours"
         />
       </v-col>
       <v-col cols="12" lg="3">
@@ -68,4 +68,18 @@ import PipelineSummary from "@/widgets/PipelineSummary.vue";
 import ChainConnectivity from "@/widgets/ChainConnectivity.vue";
 import RecentTasks from "@/widgets/RecentTasks.vue";
 import TaskHeatmap from "@/widgets/TaskHeatmap.vue";
+import StorageUsagesChart from "@/widgets/StorageUsagesChart.vue";
+import {useQuery} from "@vue/apollo-composable";
+import gql from "graphql-tag";
+
+const { result, loading } = useQuery(gql`
+    query GetStats {
+        tasksCount
+    }
+`, null, () => ({
+  fetchPolicy: 'cache-first',
+}));
+
+const taskCount = computed(() => result.value?.tasksCount || 0);
+
 </script>
