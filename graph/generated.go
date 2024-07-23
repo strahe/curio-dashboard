@@ -221,10 +221,22 @@ type ComplexityRoot struct {
 	}
 
 	Sector struct {
+		Locations     func(childComplexity int) int
 		Meta          func(childComplexity int) int
-		Storages      func(childComplexity int) int
 		TaskHistories func(childComplexity int) int
 		Tasks         func(childComplexity int) int
+	}
+
+	SectorLocation struct {
+		IsPrimary      func(childComplexity int) int
+		MinerID        func(childComplexity int) int
+		ReadRefs       func(childComplexity int) int
+		ReadTs         func(childComplexity int) int
+		SectorFiletype func(childComplexity int) int
+		SectorNum      func(childComplexity int) int
+		StorageID      func(childComplexity int) int
+		WriteLockOwner func(childComplexity int) int
+		WriteTs        func(childComplexity int) int
 	}
 
 	SectorMeta struct {
@@ -412,7 +424,7 @@ type QueryResolver interface {
 	MiningSummaryByDay(ctx context.Context, lastDays int) ([]*model.MiningSummaryDay, error)
 }
 type SectorResolver interface {
-	Storages(ctx context.Context, obj *model.Sector) ([]*model.StoragePath, error)
+	Locations(ctx context.Context, obj *model.Sector) ([]*model.SectorLocation, error)
 	Tasks(ctx context.Context, obj *model.Sector) ([]*model.Task, error)
 	TaskHistories(ctx context.Context, obj *model.Sector) ([]*model.TaskHistory, error)
 }
@@ -1421,19 +1433,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.TasksCount(childComplexity), true
 
+	case "Sector.locations":
+		if e.complexity.Sector.Locations == nil {
+			break
+		}
+
+		return e.complexity.Sector.Locations(childComplexity), true
+
 	case "Sector.meta":
 		if e.complexity.Sector.Meta == nil {
 			break
 		}
 
 		return e.complexity.Sector.Meta(childComplexity), true
-
-	case "Sector.storages":
-		if e.complexity.Sector.Storages == nil {
-			break
-		}
-
-		return e.complexity.Sector.Storages(childComplexity), true
 
 	case "Sector.taskHistories":
 		if e.complexity.Sector.TaskHistories == nil {
@@ -1448,6 +1460,69 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Sector.Tasks(childComplexity), true
+
+	case "SectorLocation.isPrimary":
+		if e.complexity.SectorLocation.IsPrimary == nil {
+			break
+		}
+
+		return e.complexity.SectorLocation.IsPrimary(childComplexity), true
+
+	case "SectorLocation.minerId":
+		if e.complexity.SectorLocation.MinerID == nil {
+			break
+		}
+
+		return e.complexity.SectorLocation.MinerID(childComplexity), true
+
+	case "SectorLocation.readRefs":
+		if e.complexity.SectorLocation.ReadRefs == nil {
+			break
+		}
+
+		return e.complexity.SectorLocation.ReadRefs(childComplexity), true
+
+	case "SectorLocation.readTs":
+		if e.complexity.SectorLocation.ReadTs == nil {
+			break
+		}
+
+		return e.complexity.SectorLocation.ReadTs(childComplexity), true
+
+	case "SectorLocation.sectorFiletype":
+		if e.complexity.SectorLocation.SectorFiletype == nil {
+			break
+		}
+
+		return e.complexity.SectorLocation.SectorFiletype(childComplexity), true
+
+	case "SectorLocation.sectorNum":
+		if e.complexity.SectorLocation.SectorNum == nil {
+			break
+		}
+
+		return e.complexity.SectorLocation.SectorNum(childComplexity), true
+
+	case "SectorLocation.storageId":
+		if e.complexity.SectorLocation.StorageID == nil {
+			break
+		}
+
+		return e.complexity.SectorLocation.StorageID(childComplexity), true
+
+	case "SectorLocation.writeLockOwner":
+		if e.complexity.SectorLocation.WriteLockOwner == nil {
+			break
+		}
+
+		return e.complexity.SectorLocation.WriteLockOwner(childComplexity), true
+
+	case "SectorLocation.writeTs":
+		if e.complexity.SectorLocation.WriteTs == nil {
+			break
+		}
+
+		return e.complexity.SectorLocation.WriteTs(childComplexity), true
 
 	case "SectorMeta.curSealedCid":
 		if e.complexity.SectorMeta.CurSealedCid == nil {
@@ -8114,8 +8189,8 @@ func (ec *executionContext) fieldContext_Query_sectors(ctx context.Context, fiel
 			switch field.Name {
 			case "meta":
 				return ec.fieldContext_Sector_meta(ctx, field)
-			case "storages":
-				return ec.fieldContext_Sector_storages(ctx, field)
+			case "locations":
+				return ec.fieldContext_Sector_locations(ctx, field)
 			case "tasks":
 				return ec.fieldContext_Sector_tasks(ctx, field)
 			case "taskHistories":
@@ -8231,8 +8306,8 @@ func (ec *executionContext) fieldContext_Query_sector(ctx context.Context, field
 			switch field.Name {
 			case "meta":
 				return ec.fieldContext_Sector_meta(ctx, field)
-			case "storages":
-				return ec.fieldContext_Sector_storages(ctx, field)
+			case "locations":
+				return ec.fieldContext_Sector_locations(ctx, field)
 			case "tasks":
 				return ec.fieldContext_Sector_tasks(ctx, field)
 			case "taskHistories":
@@ -8891,8 +8966,8 @@ func (ec *executionContext) fieldContext_Sector_meta(_ context.Context, field gr
 	return fc, nil
 }
 
-func (ec *executionContext) _Sector_storages(ctx context.Context, field graphql.CollectedField, obj *model.Sector) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Sector_storages(ctx, field)
+func (ec *executionContext) _Sector_locations(ctx context.Context, field graphql.CollectedField, obj *model.Sector) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Sector_locations(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -8905,7 +8980,7 @@ func (ec *executionContext) _Sector_storages(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Sector().Storages(rctx, obj)
+		return ec.resolvers.Sector().Locations(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8914,12 +8989,12 @@ func (ec *executionContext) _Sector_storages(ctx context.Context, field graphql.
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.StoragePath)
+	res := resTmp.([]*model.SectorLocation)
 	fc.Result = res
-	return ec.marshalOStoragePath2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐStoragePath(ctx, field.Selections, res)
+	return ec.marshalOSectorLocation2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐSectorLocation(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Sector_storages(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Sector_locations(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Sector",
 		Field:      field,
@@ -8927,50 +9002,26 @@ func (ec *executionContext) fieldContext_Sector_storages(_ context.Context, fiel
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_StoragePath_id(ctx, field)
+			case "minerId":
+				return ec.fieldContext_SectorLocation_minerId(ctx, field)
+			case "sectorNum":
+				return ec.fieldContext_SectorLocation_sectorNum(ctx, field)
+			case "sectorFiletype":
+				return ec.fieldContext_SectorLocation_sectorFiletype(ctx, field)
 			case "storageId":
-				return ec.fieldContext_StoragePath_storageId(ctx, field)
-			case "type":
-				return ec.fieldContext_StoragePath_type(ctx, field)
-			case "urls":
-				return ec.fieldContext_StoragePath_urls(ctx, field)
-			case "weight":
-				return ec.fieldContext_StoragePath_weight(ctx, field)
-			case "maxStorage":
-				return ec.fieldContext_StoragePath_maxStorage(ctx, field)
-			case "canSeal":
-				return ec.fieldContext_StoragePath_canSeal(ctx, field)
-			case "canStore":
-				return ec.fieldContext_StoragePath_canStore(ctx, field)
-			case "groups":
-				return ec.fieldContext_StoragePath_groups(ctx, field)
-			case "allowTo":
-				return ec.fieldContext_StoragePath_allowTo(ctx, field)
-			case "allowTypes":
-				return ec.fieldContext_StoragePath_allowTypes(ctx, field)
-			case "denyTypes":
-				return ec.fieldContext_StoragePath_denyTypes(ctx, field)
-			case "capacity":
-				return ec.fieldContext_StoragePath_capacity(ctx, field)
-			case "available":
-				return ec.fieldContext_StoragePath_available(ctx, field)
-			case "fsAvailable":
-				return ec.fieldContext_StoragePath_fsAvailable(ctx, field)
-			case "reserved":
-				return ec.fieldContext_StoragePath_reserved(ctx, field)
-			case "used":
-				return ec.fieldContext_StoragePath_used(ctx, field)
-			case "lastHeartbeat":
-				return ec.fieldContext_StoragePath_lastHeartbeat(ctx, field)
-			case "heartbeatErr":
-				return ec.fieldContext_StoragePath_heartbeatErr(ctx, field)
-			case "allowMiners":
-				return ec.fieldContext_StoragePath_allowMiners(ctx, field)
-			case "denyMiners":
-				return ec.fieldContext_StoragePath_denyMiners(ctx, field)
+				return ec.fieldContext_SectorLocation_storageId(ctx, field)
+			case "isPrimary":
+				return ec.fieldContext_SectorLocation_isPrimary(ctx, field)
+			case "readTs":
+				return ec.fieldContext_SectorLocation_readTs(ctx, field)
+			case "readRefs":
+				return ec.fieldContext_SectorLocation_readRefs(ctx, field)
+			case "writeTs":
+				return ec.fieldContext_SectorLocation_writeTs(ctx, field)
+			case "writeLockOwner":
+				return ec.fieldContext_SectorLocation_writeLockOwner(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type StoragePath", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type SectorLocation", field.Name)
 		},
 	}
 	return fc, nil
@@ -9101,6 +9152,390 @@ func (ec *executionContext) fieldContext_Sector_taskHistories(_ context.Context,
 				return ec.fieldContext_TaskHistory_completedByHostAndPort(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TaskHistory", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SectorLocation_minerId(ctx context.Context, field graphql.CollectedField, obj *model.SectorLocation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SectorLocation_minerId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MinerID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SectorLocation_minerId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SectorLocation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SectorLocation_sectorNum(ctx context.Context, field graphql.CollectedField, obj *model.SectorLocation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SectorLocation_sectorNum(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SectorNum, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SectorLocation_sectorNum(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SectorLocation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SectorLocation_sectorFiletype(ctx context.Context, field graphql.CollectedField, obj *model.SectorLocation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SectorLocation_sectorFiletype(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SectorFiletype, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SectorLocation_sectorFiletype(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SectorLocation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SectorLocation_storageId(ctx context.Context, field graphql.CollectedField, obj *model.SectorLocation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SectorLocation_storageId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StorageID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SectorLocation_storageId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SectorLocation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SectorLocation_isPrimary(ctx context.Context, field graphql.CollectedField, obj *model.SectorLocation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SectorLocation_isPrimary(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsPrimary, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SectorLocation_isPrimary(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SectorLocation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SectorLocation_readTs(ctx context.Context, field graphql.CollectedField, obj *model.SectorLocation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SectorLocation_readTs(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ReadTs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SectorLocation_readTs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SectorLocation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SectorLocation_readRefs(ctx context.Context, field graphql.CollectedField, obj *model.SectorLocation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SectorLocation_readRefs(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ReadRefs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SectorLocation_readRefs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SectorLocation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SectorLocation_writeTs(ctx context.Context, field graphql.CollectedField, obj *model.SectorLocation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SectorLocation_writeTs(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WriteTs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SectorLocation_writeTs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SectorLocation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SectorLocation_writeLockOwner(ctx context.Context, field graphql.CollectedField, obj *model.SectorLocation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SectorLocation_writeLockOwner(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WriteLockOwner, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SectorLocation_writeLockOwner(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SectorLocation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -16915,7 +17350,7 @@ func (ec *executionContext) _Sector(ctx context.Context, sel ast.SelectionSet, o
 			out.Values[i] = graphql.MarshalString("Sector")
 		case "meta":
 			out.Values[i] = ec._Sector_meta(ctx, field, obj)
-		case "storages":
+		case "locations":
 			field := field
 
 			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
@@ -16924,7 +17359,7 @@ func (ec *executionContext) _Sector(ctx context.Context, sel ast.SelectionSet, o
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Sector_storages(ctx, field, obj)
+				res = ec._Sector_locations(ctx, field, obj)
 				return res
 			}
 
@@ -17014,6 +17449,73 @@ func (ec *executionContext) _Sector(ctx context.Context, sel ast.SelectionSet, o
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var sectorLocationImplementors = []string{"SectorLocation"}
+
+func (ec *executionContext) _SectorLocation(ctx context.Context, sel ast.SelectionSet, obj *model.SectorLocation) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, sectorLocationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SectorLocation")
+		case "minerId":
+			out.Values[i] = ec._SectorLocation_minerId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "sectorNum":
+			out.Values[i] = ec._SectorLocation_sectorNum(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "sectorFiletype":
+			out.Values[i] = ec._SectorLocation_sectorFiletype(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "storageId":
+			out.Values[i] = ec._SectorLocation_storageId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "isPrimary":
+			out.Values[i] = ec._SectorLocation_isPrimary(ctx, field, obj)
+		case "readTs":
+			out.Values[i] = ec._SectorLocation_readTs(ctx, field, obj)
+		case "readRefs":
+			out.Values[i] = ec._SectorLocation_readRefs(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "writeTs":
+			out.Values[i] = ec._SectorLocation_writeTs(ctx, field, obj)
+		case "writeLockOwner":
+			out.Values[i] = ec._SectorLocation_writeLockOwner(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -19313,6 +19815,54 @@ func (ec *executionContext) marshalOSector2ᚖgithubᚗcomᚋstraheᚋcurioᚑda
 		return graphql.Null
 	}
 	return ec._Sector(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOSectorLocation2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐSectorLocation(ctx context.Context, sel ast.SelectionSet, v []*model.SectorLocation) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOSectorLocation2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐSectorLocation(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOSectorLocation2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐSectorLocation(ctx context.Context, sel ast.SelectionSet, v *model.SectorLocation) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._SectorLocation(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOSectorMeta2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐSectorMeta(ctx context.Context, sel ast.SelectionSet, v *model.SectorMeta) graphql.Marshaler {

@@ -40,5 +40,6 @@ export CURIO_APPDB_URL="postgres://yugabyte:yugabyte@localhost:5433/dashboard"
 cd web && yarn dev
 
 # Open http://localhost:3000
-# Open http://localhost:9091 # for production
+# http://localhost:9091 # for production
+# http://127.0.0.1:9091/playground # for graphql playground
 ```

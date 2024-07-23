@@ -96,6 +96,18 @@ type Pipeline struct {
 type Query struct {
 }
 
+type SectorLocation struct {
+	MinerID        string  `json:"minerId"`
+	SectorNum      int     `json:"sectorNum"`
+	SectorFiletype int     `json:"sectorFiletype"`
+	StorageID      string  `json:"storageId"`
+	IsPrimary      *bool   `json:"isPrimary,omitempty"`
+	ReadTs         *string `json:"readTs,omitempty"`
+	ReadRefs       int     `json:"readRefs"`
+	WriteTs        *string `json:"writeTs,omitempty"`
+	WriteLockOwner *string `json:"writeLockOwner,omitempty"`
+}
+
 type StoragePath struct {
 	ID            string      `json:"id"`
 	StorageID     string      `json:"storageId"`

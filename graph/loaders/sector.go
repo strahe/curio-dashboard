@@ -2,6 +2,7 @@ package loaders
 
 import (
 	"context"
+
 	"github.com/strahe/curio-dashboard/types"
 
 	"github.com/strahe/curio-dashboard/graph/model"
@@ -57,4 +58,12 @@ func (l *Loader) SectorsCount(ctx context.Context, actor *types.ActorID) (int, e
 		return 0, err
 	}
 	return count, nil
+}
+
+func (l *Loader) SectorLocations(ctx context.Context, actor types.ActorID, sectorNumber int) ([]*model.SectorLocation, error) {
+	var locations []*model.SectorLocation
+	if err := l.db.Select(ctx, &locations, `SELECT * FROM sector_location WHERE miner_id = $1 AND sector_num = $2`, actor, sectorNumber); err != nil {
+		return nil, err
+	}
+	return locations, nil
 }

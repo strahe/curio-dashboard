@@ -1,6 +1,18 @@
 type Sector {
     meta: SectorMeta
-    storages: [StoragePath]
+    locations: [SectorLocation]
     tasks: [Task]
     taskHistories: [TaskHistory]
+}
+
+type SectorLocation {
+    minerId: ID!
+    sectorNum: Int!
+    sectorFiletype: Int!
+    storageId: String!
+    isPrimary: Boolean
+    readTs: String
+    readRefs: Int!
+    writeTs: String
+    writeLockOwner: String
 }

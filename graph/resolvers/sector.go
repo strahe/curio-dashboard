@@ -7,14 +7,17 @@ package resolvers
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/strahe/curio-dashboard/graph"
+	"github.com/strahe/curio-dashboard/graph/cache_control"
 	"github.com/strahe/curio-dashboard/graph/model"
 )
 
-// Storages is the resolver for the storages field.
-func (r *sectorResolver) Storages(ctx context.Context, obj *model.Sector) ([]*model.StoragePath, error) {
-	panic(fmt.Errorf("not implemented: Storages - storages"))
+// Locations is the resolver for the locations field.
+func (r *sectorResolver) Locations(ctx context.Context, obj *model.Sector) ([]*model.SectorLocation, error) {
+	cache_control.SetHint(ctx, cache_control.ScopePrivate, time.Minute*5)
+	return r.loader.SectorLocations(ctx, obj.SpID, obj.SectorNum)
 }
 
 // Tasks is the resolver for the tasks field.
@@ -31,22 +34,3 @@ func (r *sectorResolver) TaskHistories(ctx context.Context, obj *model.Sector) (
 func (r *Resolver) Sector() graph.SectorResolver { return &sectorResolver{r} }
 
 type sectorResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *sectorResolver) Meta(ctx context.Context, obj *model.Sector) (*model.SectorMeta, error) {
-	if obj.Meta != nil {
-		return obj.Meta, nil
-	}
-	var m model.SectorMeta
-	err := r.db.QueryRow(ctx, `SELECT sp_id, sector_num, reg_seal_proof, ticket_epoch, ticket_value, orig_sealed_cid, orig_unsealed_cid, cur_sealed_cid, cur_unsealed_cid, msg_cid_precommit, msg_cid_commit, msg_cid_update, seed_epoch, seed_value FROM sectors_meta WHERE sp_id = $1 AND sector_num = $2`, obj.SpID, obj.SectorNum).
-		Scan(&m.SpID, &m.SectorNum, &m.RegSealProof, &m.TicketEpoch, &m.TicketValue, &m.OrigSealedCid, &m.OrigUnsealedCid, &m.CurSealedCid, &m.CurUnsealedCid, &m.MsgCidPrecommit, &m.MsgCidCommit, &m.MsgCidUpdate, &m.SeedEpoch, &m.SeedValue)
-	if err != nil {
-		return nil, err
-	}
-	return &m, nil
-}

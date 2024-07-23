@@ -281,10 +281,23 @@ export type QueryTaskHistoriesArgs = {
 
 export type Sector = {
   __typename?: 'Sector';
+  locations?: Maybe<Array<Maybe<SectorLocation>>>;
   meta?: Maybe<SectorMeta>;
-  storages?: Maybe<Array<Maybe<StoragePath>>>;
   taskHistories?: Maybe<Array<Maybe<TaskHistory>>>;
   tasks?: Maybe<Array<Maybe<Task>>>;
+};
+
+export type SectorLocation = {
+  __typename?: 'SectorLocation';
+  isPrimary?: Maybe<Scalars['Boolean']['output']>;
+  minerId: Scalars['ID']['output'];
+  readRefs: Scalars['Int']['output'];
+  readTs?: Maybe<Scalars['String']['output']>;
+  sectorFiletype: Scalars['Int']['output'];
+  sectorNum: Scalars['Int']['output'];
+  storageId: Scalars['String']['output'];
+  writeLockOwner?: Maybe<Scalars['String']['output']>;
+  writeTs?: Maybe<Scalars['String']['output']>;
 };
 
 export type SectorMeta = {
