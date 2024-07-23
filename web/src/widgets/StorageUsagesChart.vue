@@ -49,6 +49,15 @@ const series = computed(() => {
   }]
 });
 
+const firstRender = ref(true);
+function updated(chartContext) {
+  if (firstRender.value) {
+    firstRender.value = false;
+    chartContext.hideSeries("FS Available");
+    chartContext.hideSeries("Reserved");
+  }
+}
+
 const chartData = computed(() => {
   return {
     series: series.value,
@@ -107,7 +116,13 @@ const chartData = computed(() => {
     <template #titleAction>
       <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
     </template>
-    <apexchart ref="chartRef" :options="chartData.options" :series="chartData.series" type="area" height="250"></apexchart>
+    <apexchart
+      :options="chartData.options"
+      :series="chartData.series"
+      type="area"
+      height="250"
+      @updated="updated"
+    ></apexchart>
   </Card>
 </template>
 
