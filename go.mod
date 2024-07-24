@@ -8,7 +8,7 @@ require (
 	github.com/filecoin-project/curio v1.22.2-0.20240719083504-f36f2ab7b2de
 	github.com/filecoin-project/go-address v1.1.0
 	github.com/filecoin-project/go-jsonrpc v0.5.0
-	github.com/filecoin-project/lotus v1.27.0-rc1.0.20240717025739-2714a8424809
+	github.com/filecoin-project/lotus v1.28.0
 	github.com/georgysavva/scany/v2 v2.1.3
 	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/golang-lru/v2 v2.0.7
@@ -62,13 +62,13 @@ require (
 	github.com/filecoin-project/go-cbor-util v0.0.1 // indirect
 	github.com/filecoin-project/go-commp-utils v0.1.3 // indirect
 	github.com/filecoin-project/go-crypto v0.0.1 // indirect
-	github.com/filecoin-project/go-f3 v0.0.4 // indirect
+	github.com/filecoin-project/go-f3 v0.0.5 // indirect
 	github.com/filecoin-project/go-fil-commcid v0.1.0 // indirect
 	github.com/filecoin-project/go-hamt-ipld v0.1.5 // indirect
 	github.com/filecoin-project/go-hamt-ipld/v2 v2.0.0 // indirect
 	github.com/filecoin-project/go-hamt-ipld/v3 v3.1.0 // indirect
 	github.com/filecoin-project/go-paramfetch v0.0.4 // indirect
-	github.com/filecoin-project/go-state-types v0.14.0-rc6 // indirect
+	github.com/filecoin-project/go-state-types v0.14.0 // indirect
 	github.com/filecoin-project/pubsub v1.0.0 // indirect
 	github.com/filecoin-project/specs-actors v0.9.15 // indirect
 	github.com/filecoin-project/specs-actors/v2 v2.3.6 // indirect
@@ -143,7 +143,7 @@ require (
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
 	github.com/libp2p/go-flow-metrics v0.1.0 // indirect
-	github.com/libp2p/go-libp2p v0.35.3 // indirect
+	github.com/libp2p/go-libp2p v0.35.4 // indirect
 	github.com/libp2p/go-libp2p-pubsub v0.11.0 // indirect
 	github.com/libp2p/go-msgio v0.3.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect

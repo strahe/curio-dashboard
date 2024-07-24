@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"github.com/filecoin-project/curio/lib/curiochain"
@@ -56,7 +57,7 @@ func (a *Actor) ChainActor(ctx context.Context, api v1api.FullNode) (*types.Acto
 
 	actor, err := api.StateGetActor(ctx, a.Address.Address, types.EmptyTSK)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get actor: %w", err)
 	}
 	a.actor = actor
 	return actor, nil
@@ -72,12 +73,12 @@ func (a *Actor) MinerState(ctx context.Context, api v1api.FullNode) (miner.State
 
 	actor, err := a.ChainActor(ctx, api)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get actor: %w", err)
 	}
 	sto := store.ActorStore(ctx, blockstore.NewReadCachedBlockstore(blockstore.NewAPIBlockstore(api), curiochain.ChainBlockCache))
 	mas, err := miner.Load(sto, actor)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to load miner state: %w", err)
 	}
 	a.minerState = mas
 	return mas, nil

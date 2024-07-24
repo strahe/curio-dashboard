@@ -66,6 +66,9 @@ var runCmd = &cli.Command{
 		}
 		if ntn == "calibrationnet" {
 			address.CurrentNetwork = address.Testnet
+		} else if strings.HasPrefix(string(ntn), "localnet") {
+			address.CurrentNetwork = address.Testnet
+			_ = build.UseNetworkBundle("devnet")
 		} else {
 			address.CurrentNetwork = address.Mainnet
 		}
