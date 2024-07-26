@@ -13,3 +13,23 @@ export const GetConfigs = gql`
         }
     }
 `
+
+export const UpdateConfig = gql`
+    mutation UpdateConfig($title: String!, $config: String!) {
+        updateConfig(title: $title, config: $config) {
+            id
+            title
+            config
+        }
+    }
+`
+
+export const CreateConfig = gql`
+    mutation CreateConfig($title: String!, $config: String!) {
+      createConfig(title: $title, config: $config) {
+        id
+        title
+        config
+      }
+  }
+`

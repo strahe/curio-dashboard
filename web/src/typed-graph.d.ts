@@ -100,6 +100,24 @@ export type MiningSummaryDay = {
   won: Scalars['Int']['output'];
 };
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  createConfig?: Maybe<Config>;
+  updateConfig?: Maybe<Config>;
+};
+
+
+export type MutationCreateConfigArgs = {
+  config: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateConfigArgs = {
+  config: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+};
+
 export type NodeInfo = {
   __typename?: 'NodeInfo';
   address: Scalars['String']['output'];

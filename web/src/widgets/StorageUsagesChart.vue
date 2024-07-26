@@ -50,7 +50,7 @@ const series = computed(() => {
 });
 
 const firstRender = ref(true);
-function updated(chartContext) {
+function updated(chartContext: ApexCharts) {
   if (firstRender.value) {
     firstRender.value = false;
     chartContext.hideSeries("FS Available");

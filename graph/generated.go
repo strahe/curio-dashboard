@@ -45,6 +45,7 @@ type ResolverRoot interface {
 	Config() ConfigResolver
 	Machine() MachineResolver
 	MachineSummary() MachineSummaryResolver
+	Mutation() MutationResolver
 	Pipeline() PipelineResolver
 	PipelineSummary() PipelineSummaryResolver
 	Query() QueryResolver
@@ -125,6 +126,11 @@ type ComplexityRoot struct {
 		Day  func(childComplexity int) int
 		SpID func(childComplexity int) int
 		Won  func(childComplexity int) int
+	}
+
+	Mutation struct {
+		CreateConfig func(childComplexity int, title string, config string) int
+		UpdateConfig func(childComplexity int, title string, config string) int
 	}
 
 	NodeInfo struct {
@@ -382,6 +388,10 @@ type MachineSummaryResolver interface {
 	TotalRAM(ctx context.Context, obj *model.MachineSummary) (int, error)
 	TotalCPU(ctx context.Context, obj *model.MachineSummary) (int, error)
 	TotalGpu(ctx context.Context, obj *model.MachineSummary) (float64, error)
+}
+type MutationResolver interface {
+	CreateConfig(ctx context.Context, title string, config string) (*model.Config, error)
+	UpdateConfig(ctx context.Context, title string, config string) (*model.Config, error)
 }
 type PipelineResolver interface {
 	ID(ctx context.Context, obj *model.Pipeline) (string, error)
@@ -805,6 +815,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.MiningSummaryDay.Won(childComplexity), true
+
+	case "Mutation.createConfig":
+		if e.complexity.Mutation.CreateConfig == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createConfig_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateConfig(childComplexity, args["title"].(string), args["config"].(string)), true
+
+	case "Mutation.updateConfig":
+		if e.complexity.Mutation.UpdateConfig == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateConfig_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateConfig(childComplexity, args["title"].(string), args["config"].(string)), true
 
 	case "NodeInfo.address":
 		if e.complexity.NodeInfo.Address == nil {
@@ -2167,6 +2201,21 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 
 			return &response
 		}
+	case ast.Mutation:
+		return func(ctx context.Context) *graphql.Response {
+			if !first {
+				return nil
+			}
+			first = false
+			ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
+			data := ec._Mutation(ctx, rc.Operation.SelectionSet)
+			var buf bytes.Buffer
+			data.MarshalGQL(&buf)
+
+			return &graphql.Response{
+				Data: buf.Bytes(),
+			}
+		}
 
 	default:
 		return graphql.OneShot(graphql.ErrorResponse(ctx, "unsupported GraphQL operation"))
@@ -2214,7 +2263,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
-//go:embed "schema/actor.graphql" "schema/actor_deadline.graphql" "schema/config.graphql" "schema/machine.graphql" "schema/machine_detail.graphql" "schema/machine_summary.graphql" "schema/mining_summary.graphql" "schema/node.graphql" "schema/pipeline.graphql" "schema/pipeline_summary.graphql" "schema/query.graphql" "schema/sector.graphql" "schema/sector_meta.graphql" "schema/storage_path.graphql" "schema/storage_stats.graphql" "schema/storage_type.graphql" "schema/task.graphql" "schema/task_aggregate.graphql" "schema/task_history.graphql" "schema/task_summary.graphql"
+//go:embed "schema/actor.graphql" "schema/actor_deadline.graphql" "schema/config.graphql" "schema/machine.graphql" "schema/machine_detail.graphql" "schema/machine_summary.graphql" "schema/mining_summary.graphql" "schema/mutation.graphql" "schema/node.graphql" "schema/pipeline.graphql" "schema/pipeline_summary.graphql" "schema/query.graphql" "schema/sector.graphql" "schema/sector_meta.graphql" "schema/storage_path.graphql" "schema/storage_stats.graphql" "schema/storage_type.graphql" "schema/task.graphql" "schema/task_aggregate.graphql" "schema/task_history.graphql" "schema/task_summary.graphql"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -2233,6 +2282,7 @@ var sources = []*ast.Source{
 	{Name: "schema/machine_detail.graphql", Input: sourceData("schema/machine_detail.graphql"), BuiltIn: false},
 	{Name: "schema/machine_summary.graphql", Input: sourceData("schema/machine_summary.graphql"), BuiltIn: false},
 	{Name: "schema/mining_summary.graphql", Input: sourceData("schema/mining_summary.graphql"), BuiltIn: false},
+	{Name: "schema/mutation.graphql", Input: sourceData("schema/mutation.graphql"), BuiltIn: false},
 	{Name: "schema/node.graphql", Input: sourceData("schema/node.graphql"), BuiltIn: false},
 	{Name: "schema/pipeline.graphql", Input: sourceData("schema/pipeline.graphql"), BuiltIn: false},
 	{Name: "schema/pipeline_summary.graphql", Input: sourceData("schema/pipeline_summary.graphql"), BuiltIn: false},
@@ -2265,6 +2315,54 @@ func (ec *executionContext) field_Machine_taskHistories_args(ctx context.Context
 		}
 	}
 	args["last"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createConfig_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["title"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["title"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["config"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("config"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["config"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateConfig_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["title"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["title"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["config"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("config"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["config"] = arg1
 	return args, nil
 }
 
@@ -4754,6 +4852,130 @@ func (ec *executionContext) fieldContext_MiningSummaryDay_won(_ context.Context,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Int does not have child fields")
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createConfig(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createConfig(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateConfig(rctx, fc.Args["title"].(string), fc.Args["config"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Config)
+	fc.Result = res
+	return ec.marshalOConfig2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐConfig(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createConfig(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Config_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Config_title(ctx, field)
+			case "config":
+				return ec.fieldContext_Config_config(ctx, field)
+			case "usedBy":
+				return ec.fieldContext_Config_usedBy(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Config", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createConfig_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateConfig(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateConfig(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateConfig(rctx, fc.Args["title"].(string), fc.Args["config"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Config)
+	fc.Result = res
+	return ec.marshalOConfig2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐConfig(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateConfig(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Config_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Config_title(ctx, field)
+			case "config":
+				return ec.fieldContext_Config_config(ctx, field)
+			case "usedBy":
+				return ec.fieldContext_Config_usedBy(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Config", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateConfig_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -16182,6 +16404,56 @@ func (ec *executionContext) _MiningSummaryDay(ctx context.Context, sel ast.Selec
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var mutationImplementors = []string{"Mutation"}
+
+func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, mutationImplementors)
+	ctx = graphql.WithFieldContext(ctx, &graphql.FieldContext{
+		Object: "Mutation",
+	})
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		innerCtx := graphql.WithRootFieldContext(ctx, &graphql.RootFieldContext{
+			Object: field.Name,
+			Field:  field,
+		})
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Mutation")
+		case "createConfig":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createConfig(ctx, field)
+			})
+		case "updateConfig":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateConfig(ctx, field)
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

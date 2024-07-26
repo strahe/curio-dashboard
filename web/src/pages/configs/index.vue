@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {useQuery} from "@vue/apollo-composable";
-import {GetConfigs} from "@/pages/configs/query";
+import {useMutation, useQuery} from "@vue/apollo-composable";
+import {CreateConfig, GetConfigs, UpdateConfig} from "@/pages/configs/query";
 import {Config} from "@/typed-graph";
 import {definePage} from "unplugin-vue-router/runtime";
 import {Codemirror} from "vue-codemirror";
@@ -27,17 +27,45 @@ const headers = ref([
 ]);
 
 const dialog = ref(false);
-const editItem = ref()
+const editTitle = ref('');
+const editConfig = ref('');
+const editCreate = ref(false);
+const saveLoading = ref(false);
 
 const extensions = [StreamLanguage.define(toml), oneDark]
-function openDialog(data: Config) {
+
+function openDialog(title: string, config: string, isCreate: boolean) {
+  editTitle.value = title;
+  editConfig.value = config;
+  editCreate.value = isCreate;
   dialog.value = true;
-  editItem.value = data;
+  saveLoading.value = false;
 }
 
 function saveEdit() {
-  dialog.value = false;
+  saveLoading.value = true;
+  if (editCreate.value) {
+    createConfig({
+      title: editTitle.value,
+      config: editConfig.value,
+    }).then(() => {
+      dialog.value = false;
+      refetch()
+    });
+    return;
+  }else {
+    updateConfig({
+      title: editTitle.value,
+      config: editConfig.value,
+    }).then(() => {
+      dialog.value = false;
+      refetch()
+    });
+  }
 }
+
+const { mutate: updateConfig  } = useMutation(UpdateConfig)
+const { mutate: createConfig } = useMutation(CreateConfig)
 
 </script>
 
@@ -49,6 +77,8 @@ function saveEdit() {
           <template #titleAction>
             <v-btn icon="mdi-refresh" @click="refetch" :disabled="loading" size="small"></v-btn>
           </template>
+          <v-btn color="primary" @click="openDialog('', '', true)">Create</v-btn>
+
           <v-data-table
             :headers="headers"
             :items="items"
@@ -69,7 +99,7 @@ function saveEdit() {
               <v-icon
                 class="me-2"
                 size="small"
-                @click="openDialog(item)"
+                @click="openDialog(item.title, item.config, false)"
               >
                 mdi-pencil
               </v-icon>
@@ -88,13 +118,21 @@ function saveEdit() {
                   @click="dialog = false"
                 ></v-btn>
 
-                <v-toolbar-title>{{editItem.title}}</v-toolbar-title>
+                <v-toolbar-title>
+                  <v-text-field
+                    v-model="editTitle"
+                    :label="editCreate ? 'Title' : ''"
+                    variant="underlined"
+                    :disabled="!editCreate"
+                  ></v-text-field>
+                </v-toolbar-title>
                 <v-spacer></v-spacer>
 
                 <v-toolbar-items>
                   <v-btn
+                    :loading="saveLoading"
+                    color="primary"
                     @click="saveEdit"
-                    disabled
                   >
                     Save
                   </v-btn>
@@ -103,7 +141,7 @@ function saveEdit() {
 
               <v-card-text>
                 <Codemirror
-                  v-model="editItem.config"
+                  v-model="editConfig"
                   :extensions="extensions"
                   :autofocus="true"
                   :indent-with-tab="true"

@@ -38,6 +38,9 @@ type MiningSummaryDay struct {
 	Won  int           `json:"won"`
 }
 
+type Mutation struct {
+}
+
 type NodeInfo struct {
 	ID                   string `json:"id"`
 	Address              string `json:"address"`
