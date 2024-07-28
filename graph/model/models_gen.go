@@ -52,6 +52,28 @@ type NodeInfo struct {
 	Version              string `json:"version"`
 }
 
+type OpenSectorPiece struct {
+	SpID                          types.ActorID `json:"spID"`
+	SectorNumber                  int           `json:"sectorNumber"`
+	PieceIndex                    int           `json:"pieceIndex"`
+	PieceCid                      string        `json:"pieceCID"`
+	PieceSize                     int           `json:"pieceSize"`
+	DataURL                       string        `json:"dataURL"`
+	DataHeaders                   string        `json:"dataHeaders"`
+	DataRawSize                   int           `json:"dataRawSize"`
+	DataDeleteOnFinalize          bool          `json:"dataDeleteOnFinalize"`
+	F05PublishCid                 *string       `json:"f05PublishCID,omitempty"`
+	F05DealID                     *int          `json:"f05DealID,omitempty"`
+	F05DealProposal               *string       `json:"f05DealProposal,omitempty"`
+	F05DealStartEpoch             *int          `json:"f05DealStartEpoch,omitempty"`
+	F05DealEndEpoch               *int          `json:"f05DealEndEpoch,omitempty"`
+	DirectStartEpoch              *int          `json:"directStartEpoch,omitempty"`
+	DirectEndEpoch                *int          `json:"directEndEpoch,omitempty"`
+	DirectPieceActivationManifest *string       `json:"directPieceActivationManifest,omitempty"`
+	CreatedAt                     time.Time     `json:"createdAt"`
+	IsSnap                        bool          `json:"isSnap"`
+}
+
 type Pipeline struct {
 	ID                       string          `json:"id"`
 	SpID                     types.ActorID   `json:"spId"`

@@ -16,6 +16,7 @@ export type Scalars = {
   Address: { input: any; output: any; }
   BigInt: { input: any; output: any; }
   ByteArray: { input: any; output: any; }
+  JSON: { input: any; output: any; }
   Time: { input: any; output: any; }
 };
 
@@ -130,6 +131,29 @@ export type NodeInfo = {
   version: Scalars['String']['output'];
 };
 
+export type OpenSectorPiece = {
+  __typename?: 'OpenSectorPiece';
+  createdAt: Scalars['Time']['output'];
+  dataDeleteOnFinalize: Scalars['Boolean']['output'];
+  dataHeaders: Scalars['JSON']['output'];
+  dataRawSize: Scalars['Int']['output'];
+  dataURL: Scalars['String']['output'];
+  directEndEpoch?: Maybe<Scalars['Int']['output']>;
+  directPieceActivationManifest?: Maybe<Scalars['JSON']['output']>;
+  directStartEpoch?: Maybe<Scalars['Int']['output']>;
+  f05DealEndEpoch?: Maybe<Scalars['Int']['output']>;
+  f05DealID?: Maybe<Scalars['Int']['output']>;
+  f05DealProposal?: Maybe<Scalars['JSON']['output']>;
+  f05DealStartEpoch?: Maybe<Scalars['Int']['output']>;
+  f05PublishCID?: Maybe<Scalars['String']['output']>;
+  isSnap: Scalars['Boolean']['output'];
+  pieceCID: Scalars['String']['output'];
+  pieceIndex: Scalars['Int']['output'];
+  pieceSize: Scalars['Int']['output'];
+  sectorNumber: Scalars['Int']['output'];
+  spID: Scalars['ActorID']['output'];
+};
+
 export type Pipeline = {
   __typename?: 'Pipeline';
   afterCommitMsg: Scalars['Boolean']['output'];
@@ -210,6 +234,7 @@ export type Query = {
   actors?: Maybe<Array<Maybe<Actor>>>;
   config?: Maybe<Config>;
   configs?: Maybe<Array<Maybe<Config>>>;
+  dealsPending?: Maybe<Array<Maybe<OpenSectorPiece>>>;
   machine?: Maybe<Machine>;
   machineSummary?: Maybe<MachineSummary>;
   machines?: Maybe<Array<Maybe<Machine>>>;

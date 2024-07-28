@@ -42,4 +42,6 @@ type Query {
 
     # mining
     miningSummaryByDay(lastDays: Int!): [MiningSummaryDay]
+
+    dealsPending: [OpenSectorPiece]
 }

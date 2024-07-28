@@ -70,6 +70,11 @@ const links = [
     text: 'Sectors',
   },
   {
+    to: '/deals',
+    icon: 'mdi-handshake',
+    text: 'Deals',
+  },
+  {
     to: '/storages',
     icon: 'mdi-nas',
     text: 'Storages',

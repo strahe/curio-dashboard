@@ -250,6 +250,12 @@ func (r *queryResolver) MiningSummaryByDay(ctx context.Context, lastDays int) ([
 	return r.loader.MiningSummaryByDay(ctx, lastDays)
 }
 
+// DealsPending is the resolver for the dealsPending field.
+func (r *queryResolver) DealsPending(ctx context.Context) ([]*model.OpenSectorPiece, error) {
+	cachecontrol.SetHint(ctx, cachecontrol.ScopePrivate, time.Minute)
+	return r.loader.OpenSectorPieces(ctx)
+}
+
 // Query returns graph.QueryResolver implementation.
 func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
 

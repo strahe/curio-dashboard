@@ -144,6 +144,28 @@ type ComplexityRoot struct {
 		Version              func(childComplexity int) int
 	}
 
+	OpenSectorPiece struct {
+		CreatedAt                     func(childComplexity int) int
+		DataDeleteOnFinalize          func(childComplexity int) int
+		DataHeaders                   func(childComplexity int) int
+		DataRawSize                   func(childComplexity int) int
+		DataURL                       func(childComplexity int) int
+		DirectEndEpoch                func(childComplexity int) int
+		DirectPieceActivationManifest func(childComplexity int) int
+		DirectStartEpoch              func(childComplexity int) int
+		F05DealEndEpoch               func(childComplexity int) int
+		F05DealID                     func(childComplexity int) int
+		F05DealProposal               func(childComplexity int) int
+		F05DealStartEpoch             func(childComplexity int) int
+		F05PublishCid                 func(childComplexity int) int
+		IsSnap                        func(childComplexity int) int
+		PieceCid                      func(childComplexity int) int
+		PieceIndex                    func(childComplexity int) int
+		PieceSize                     func(childComplexity int) int
+		SectorNumber                  func(childComplexity int) int
+		SpID                          func(childComplexity int) int
+	}
+
 	Pipeline struct {
 		AfterCommitMsg           func(childComplexity int) int
 		AfterCommitMsgSuccess    func(childComplexity int) int
@@ -205,6 +227,7 @@ type ComplexityRoot struct {
 		Actors               func(childComplexity int) int
 		Config               func(childComplexity int, layer string) int
 		Configs              func(childComplexity int) int
+		DealsPending         func(childComplexity int) int
 		Machine              func(childComplexity int, id int) int
 		MachineSummary       func(childComplexity int) int
 		Machines             func(childComplexity int) int
@@ -432,6 +455,7 @@ type QueryResolver interface {
 	PipelinesSummary(ctx context.Context) ([]*model.PipelineSummary, error)
 	NodesInfo(ctx context.Context) ([]*model.NodeInfo, error)
 	MiningSummaryByDay(ctx context.Context, lastDays int) ([]*model.MiningSummaryDay, error)
+	DealsPending(ctx context.Context) ([]*model.OpenSectorPiece, error)
 }
 type SectorResolver interface {
 	Locations(ctx context.Context, obj *model.Sector) ([]*model.SectorLocation, error)
@@ -896,6 +920,139 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.NodeInfo.Version(childComplexity), true
 
+	case "OpenSectorPiece.createdAt":
+		if e.complexity.OpenSectorPiece.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.CreatedAt(childComplexity), true
+
+	case "OpenSectorPiece.dataDeleteOnFinalize":
+		if e.complexity.OpenSectorPiece.DataDeleteOnFinalize == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.DataDeleteOnFinalize(childComplexity), true
+
+	case "OpenSectorPiece.dataHeaders":
+		if e.complexity.OpenSectorPiece.DataHeaders == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.DataHeaders(childComplexity), true
+
+	case "OpenSectorPiece.dataRawSize":
+		if e.complexity.OpenSectorPiece.DataRawSize == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.DataRawSize(childComplexity), true
+
+	case "OpenSectorPiece.dataURL":
+		if e.complexity.OpenSectorPiece.DataURL == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.DataURL(childComplexity), true
+
+	case "OpenSectorPiece.directEndEpoch":
+		if e.complexity.OpenSectorPiece.DirectEndEpoch == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.DirectEndEpoch(childComplexity), true
+
+	case "OpenSectorPiece.directPieceActivationManifest":
+		if e.complexity.OpenSectorPiece.DirectPieceActivationManifest == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.DirectPieceActivationManifest(childComplexity), true
+
+	case "OpenSectorPiece.directStartEpoch":
+		if e.complexity.OpenSectorPiece.DirectStartEpoch == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.DirectStartEpoch(childComplexity), true
+
+	case "OpenSectorPiece.f05DealEndEpoch":
+		if e.complexity.OpenSectorPiece.F05DealEndEpoch == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.F05DealEndEpoch(childComplexity), true
+
+	case "OpenSectorPiece.f05DealID":
+		if e.complexity.OpenSectorPiece.F05DealID == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.F05DealID(childComplexity), true
+
+	case "OpenSectorPiece.f05DealProposal":
+		if e.complexity.OpenSectorPiece.F05DealProposal == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.F05DealProposal(childComplexity), true
+
+	case "OpenSectorPiece.f05DealStartEpoch":
+		if e.complexity.OpenSectorPiece.F05DealStartEpoch == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.F05DealStartEpoch(childComplexity), true
+
+	case "OpenSectorPiece.f05PublishCID":
+		if e.complexity.OpenSectorPiece.F05PublishCid == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.F05PublishCid(childComplexity), true
+
+	case "OpenSectorPiece.isSnap":
+		if e.complexity.OpenSectorPiece.IsSnap == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.IsSnap(childComplexity), true
+
+	case "OpenSectorPiece.pieceCID":
+		if e.complexity.OpenSectorPiece.PieceCid == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.PieceCid(childComplexity), true
+
+	case "OpenSectorPiece.pieceIndex":
+		if e.complexity.OpenSectorPiece.PieceIndex == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.PieceIndex(childComplexity), true
+
+	case "OpenSectorPiece.pieceSize":
+		if e.complexity.OpenSectorPiece.PieceSize == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.PieceSize(childComplexity), true
+
+	case "OpenSectorPiece.sectorNumber":
+		if e.complexity.OpenSectorPiece.SectorNumber == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.SectorNumber(childComplexity), true
+
+	case "OpenSectorPiece.spID":
+		if e.complexity.OpenSectorPiece.SpID == nil {
+			break
+		}
+
+		return e.complexity.OpenSectorPiece.SpID(childComplexity), true
+
 	case "Pipeline.afterCommitMsg":
 		if e.complexity.Pipeline.AfterCommitMsg == nil {
 			break
@@ -1283,6 +1440,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Configs(childComplexity), true
+
+	case "Query.dealsPending":
+		if e.complexity.Query.DealsPending == nil {
+			break
+		}
+
+		return e.complexity.Query.DealsPending(childComplexity), true
 
 	case "Query.machine":
 		if e.complexity.Query.Machine == nil {
@@ -2263,7 +2427,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
-//go:embed "schema/actor.graphql" "schema/actor_deadline.graphql" "schema/config.graphql" "schema/machine.graphql" "schema/machine_detail.graphql" "schema/machine_summary.graphql" "schema/mining_summary.graphql" "schema/mutation.graphql" "schema/node.graphql" "schema/pipeline.graphql" "schema/pipeline_summary.graphql" "schema/query.graphql" "schema/sector.graphql" "schema/sector_meta.graphql" "schema/storage_path.graphql" "schema/storage_stats.graphql" "schema/storage_type.graphql" "schema/task.graphql" "schema/task_aggregate.graphql" "schema/task_history.graphql" "schema/task_summary.graphql"
+//go:embed "schema/actor.graphql" "schema/actor_deadline.graphql" "schema/config.graphql" "schema/machine.graphql" "schema/machine_detail.graphql" "schema/machine_summary.graphql" "schema/mining_summary.graphql" "schema/mutation.graphql" "schema/node.graphql" "schema/pipeline.graphql" "schema/pipeline_summary.graphql" "schema/query.graphql" "schema/sector.graphql" "schema/sector_meta.graphql" "schema/sector_open.graphql" "schema/storage_path.graphql" "schema/storage_stats.graphql" "schema/storage_type.graphql" "schema/task.graphql" "schema/task_aggregate.graphql" "schema/task_history.graphql" "schema/task_summary.graphql"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -2289,6 +2453,7 @@ var sources = []*ast.Source{
 	{Name: "schema/query.graphql", Input: sourceData("schema/query.graphql"), BuiltIn: false},
 	{Name: "schema/sector.graphql", Input: sourceData("schema/sector.graphql"), BuiltIn: false},
 	{Name: "schema/sector_meta.graphql", Input: sourceData("schema/sector_meta.graphql"), BuiltIn: false},
+	{Name: "schema/sector_open.graphql", Input: sourceData("schema/sector_open.graphql"), BuiltIn: false},
 	{Name: "schema/storage_path.graphql", Input: sourceData("schema/storage_path.graphql"), BuiltIn: false},
 	{Name: "schema/storage_stats.graphql", Input: sourceData("schema/storage_stats.graphql"), BuiltIn: false},
 	{Name: "schema/storage_type.graphql", Input: sourceData("schema/storage_type.graphql"), BuiltIn: false},
@@ -5327,6 +5492,818 @@ func (ec *executionContext) fieldContext_NodeInfo_version(_ context.Context, fie
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_spID(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_spID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SpID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(types.ActorID)
+	fc.Result = res
+	return ec.marshalNActorID2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋtypesᚐActorID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_spID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ActorID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_sectorNumber(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_sectorNumber(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SectorNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_sectorNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_pieceIndex(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_pieceIndex(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PieceIndex, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_pieceIndex(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_pieceCID(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_pieceCID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PieceCid, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_pieceCID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_pieceSize(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_pieceSize(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PieceSize, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_pieceSize(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_dataURL(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_dataURL(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DataURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_dataURL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_dataHeaders(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_dataHeaders(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DataHeaders, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNJSON2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_dataHeaders(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type JSON does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_dataRawSize(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_dataRawSize(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DataRawSize, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_dataRawSize(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_dataDeleteOnFinalize(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_dataDeleteOnFinalize(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DataDeleteOnFinalize, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_dataDeleteOnFinalize(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_f05PublishCID(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_f05PublishCID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.F05PublishCid, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_f05PublishCID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_f05DealID(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_f05DealID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.F05DealID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_f05DealID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_f05DealProposal(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_f05DealProposal(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.F05DealProposal, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOJSON2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_f05DealProposal(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type JSON does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_f05DealStartEpoch(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_f05DealStartEpoch(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.F05DealStartEpoch, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_f05DealStartEpoch(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_f05DealEndEpoch(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_f05DealEndEpoch(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.F05DealEndEpoch, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_f05DealEndEpoch(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_directStartEpoch(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_directStartEpoch(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DirectStartEpoch, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_directStartEpoch(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_directEndEpoch(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_directEndEpoch(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DirectEndEpoch, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_directEndEpoch(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_directPieceActivationManifest(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_directPieceActivationManifest(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DirectPieceActivationManifest, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOJSON2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_directPieceActivationManifest(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type JSON does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OpenSectorPiece_isSnap(ctx context.Context, field graphql.CollectedField, obj *model.OpenSectorPiece) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OpenSectorPiece_isSnap(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsSnap, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OpenSectorPiece_isSnap(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OpenSectorPiece",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -8982,6 +9959,87 @@ func (ec *executionContext) fieldContext_Query_miningSummaryByDay(ctx context.Co
 	if fc.Args, err = ec.field_Query_miningSummaryByDay_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_dealsPending(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_dealsPending(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DealsPending(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.OpenSectorPiece)
+	fc.Result = res
+	return ec.marshalOOpenSectorPiece2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐOpenSectorPiece(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_dealsPending(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "spID":
+				return ec.fieldContext_OpenSectorPiece_spID(ctx, field)
+			case "sectorNumber":
+				return ec.fieldContext_OpenSectorPiece_sectorNumber(ctx, field)
+			case "pieceIndex":
+				return ec.fieldContext_OpenSectorPiece_pieceIndex(ctx, field)
+			case "pieceCID":
+				return ec.fieldContext_OpenSectorPiece_pieceCID(ctx, field)
+			case "pieceSize":
+				return ec.fieldContext_OpenSectorPiece_pieceSize(ctx, field)
+			case "dataURL":
+				return ec.fieldContext_OpenSectorPiece_dataURL(ctx, field)
+			case "dataHeaders":
+				return ec.fieldContext_OpenSectorPiece_dataHeaders(ctx, field)
+			case "dataRawSize":
+				return ec.fieldContext_OpenSectorPiece_dataRawSize(ctx, field)
+			case "dataDeleteOnFinalize":
+				return ec.fieldContext_OpenSectorPiece_dataDeleteOnFinalize(ctx, field)
+			case "f05PublishCID":
+				return ec.fieldContext_OpenSectorPiece_f05PublishCID(ctx, field)
+			case "f05DealID":
+				return ec.fieldContext_OpenSectorPiece_f05DealID(ctx, field)
+			case "f05DealProposal":
+				return ec.fieldContext_OpenSectorPiece_f05DealProposal(ctx, field)
+			case "f05DealStartEpoch":
+				return ec.fieldContext_OpenSectorPiece_f05DealStartEpoch(ctx, field)
+			case "f05DealEndEpoch":
+				return ec.fieldContext_OpenSectorPiece_f05DealEndEpoch(ctx, field)
+			case "directStartEpoch":
+				return ec.fieldContext_OpenSectorPiece_directStartEpoch(ctx, field)
+			case "directEndEpoch":
+				return ec.fieldContext_OpenSectorPiece_directEndEpoch(ctx, field)
+			case "directPieceActivationManifest":
+				return ec.fieldContext_OpenSectorPiece_directPieceActivationManifest(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_OpenSectorPiece_createdAt(ctx, field)
+			case "isSnap":
+				return ec.fieldContext_OpenSectorPiece_isSnap(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type OpenSectorPiece", field.Name)
+		},
 	}
 	return fc, nil
 }
@@ -16551,6 +17609,111 @@ func (ec *executionContext) _NodeInfo(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var openSectorPieceImplementors = []string{"OpenSectorPiece"}
+
+func (ec *executionContext) _OpenSectorPiece(ctx context.Context, sel ast.SelectionSet, obj *model.OpenSectorPiece) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, openSectorPieceImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("OpenSectorPiece")
+		case "spID":
+			out.Values[i] = ec._OpenSectorPiece_spID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "sectorNumber":
+			out.Values[i] = ec._OpenSectorPiece_sectorNumber(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pieceIndex":
+			out.Values[i] = ec._OpenSectorPiece_pieceIndex(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pieceCID":
+			out.Values[i] = ec._OpenSectorPiece_pieceCID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pieceSize":
+			out.Values[i] = ec._OpenSectorPiece_pieceSize(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "dataURL":
+			out.Values[i] = ec._OpenSectorPiece_dataURL(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "dataHeaders":
+			out.Values[i] = ec._OpenSectorPiece_dataHeaders(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "dataRawSize":
+			out.Values[i] = ec._OpenSectorPiece_dataRawSize(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "dataDeleteOnFinalize":
+			out.Values[i] = ec._OpenSectorPiece_dataDeleteOnFinalize(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "f05PublishCID":
+			out.Values[i] = ec._OpenSectorPiece_f05PublishCID(ctx, field, obj)
+		case "f05DealID":
+			out.Values[i] = ec._OpenSectorPiece_f05DealID(ctx, field, obj)
+		case "f05DealProposal":
+			out.Values[i] = ec._OpenSectorPiece_f05DealProposal(ctx, field, obj)
+		case "f05DealStartEpoch":
+			out.Values[i] = ec._OpenSectorPiece_f05DealStartEpoch(ctx, field, obj)
+		case "f05DealEndEpoch":
+			out.Values[i] = ec._OpenSectorPiece_f05DealEndEpoch(ctx, field, obj)
+		case "directStartEpoch":
+			out.Values[i] = ec._OpenSectorPiece_directStartEpoch(ctx, field, obj)
+		case "directEndEpoch":
+			out.Values[i] = ec._OpenSectorPiece_directEndEpoch(ctx, field, obj)
+		case "directPieceActivationManifest":
+			out.Values[i] = ec._OpenSectorPiece_directPieceActivationManifest(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._OpenSectorPiece_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "isSnap":
+			out.Values[i] = ec._OpenSectorPiece_isSnap(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var pipelineImplementors = []string{"Pipeline"}
 
 func (ec *executionContext) _Pipeline(ctx context.Context, sel ast.SelectionSet, obj *model.Pipeline) graphql.Marshaler {
@@ -17569,6 +18732,25 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_miningSummaryByDay(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "dealsPending":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_dealsPending(ctx, field)
 				return res
 			}
 
@@ -19176,6 +20358,21 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
+func (ec *executionContext) unmarshalNJSON2string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNJSON2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) marshalNMachine2githubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐMachine(ctx context.Context, sel ast.SelectionSet, v model.Machine) graphql.Marshaler {
 	return ec._Machine(ctx, sel, &v)
 }
@@ -19787,6 +20984,22 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	return res
 }
 
+func (ec *executionContext) unmarshalOJSON2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalString(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOJSON2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalString(*v)
+	return res
+}
+
 func (ec *executionContext) marshalOMachine2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐMachine(ctx context.Context, sel ast.SelectionSet, v []*model.Machine) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -19943,6 +21156,54 @@ func (ec *executionContext) marshalONodeInfo2ᚖgithubᚗcomᚋstraheᚋcurioᚑ
 		return graphql.Null
 	}
 	return ec._NodeInfo(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOOpenSectorPiece2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐOpenSectorPiece(ctx context.Context, sel ast.SelectionSet, v []*model.OpenSectorPiece) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOOpenSectorPiece2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐOpenSectorPiece(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOOpenSectorPiece2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐOpenSectorPiece(ctx context.Context, sel ast.SelectionSet, v *model.OpenSectorPiece) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._OpenSectorPiece(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOPipeline2ᚕᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐPipeline(ctx context.Context, sel ast.SelectionSet, v []*model.Pipeline) graphql.Marshaler {
