@@ -33,9 +33,11 @@ const headers = ref([
   { title: 'Action', key: 'action', sortable: false },
 ]);
 
-const sortBy = [
-  { key: 'sectorNumber', order: 'asc' },
-  { key: 'pieceIndex', order: 'asc' }];
+type SortItem = {
+  key: string;
+  order?: 'asc' | 'desc';
+};
+const sortBy: readonly SortItem[] = [{ key: 'sectorNumber', order: 'asc' }, { key: 'pieceIndex', order: 'asc' }];
 
 function sealNow(item: OpenSectorPiece) {
   console.log('seal now ', item.sectorNumber)
