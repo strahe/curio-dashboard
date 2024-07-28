@@ -20,7 +20,7 @@ import (
 	"github.com/strahe/curio-dashboard/aggregator"
 	"github.com/strahe/curio-dashboard/db"
 	"github.com/strahe/curio-dashboard/graph"
-	cachecontrol "github.com/strahe/curio-dashboard/graph/cache_control"
+	cachecontrol "github.com/strahe/curio-dashboard/graph/cachecontrol"
 	"github.com/strahe/curio-dashboard/graph/resolvers"
 	"github.com/strahe/curio-dashboard/web"
 	"github.com/urfave/cli/v2"
@@ -68,7 +68,9 @@ var runCmd = &cli.Command{
 			address.CurrentNetwork = address.Testnet
 		} else if strings.HasPrefix(string(ntn), "localnet") {
 			address.CurrentNetwork = address.Testnet
-			_ = build.UseNetworkBundle("devnet")
+			if err := build.UseNetworkBundle("devnet"); err != nil {
+				return fmt.Errorf("failed to use network bundle: %w", err)
+			}
 		} else {
 			address.CurrentNetwork = address.Mainnet
 		}
@@ -88,7 +90,7 @@ var runCmd = &cli.Command{
 		router := http.NewServeMux()
 		var fn func(r *http.Request) bool
 		if cctx.Bool("debug") {
-			fn = func(r *http.Request) bool {
+			fn = func(*http.Request) bool {
 				return true
 			}
 		}
@@ -112,7 +114,7 @@ var runCmd = &cli.Command{
 		})
 		srv.Use(cachecontrol.Extension{})
 
-		assets, _ := web.Assets()
+		assets, _ := web.Assets() // nolint:errcheck
 		fs := http.FileServer(http.FS(assets))
 		router.Handle("/", http.StripPrefix("/", fs))
 		router.Handle("/playground", playground.Handler("GraphQL playground", "/graphql"))
@@ -124,7 +126,7 @@ var runCmd = &cli.Command{
 		listen := cctx.String("listen")
 
 		log.Infof("connect to %s for GraphQL playground", listen)
-		log.Fatal(http.ListenAndServe(listen, router))
+		log.Fatal(http.ListenAndServe(listen, router)) // nolint: gosec
 		return nil
 	},
 }

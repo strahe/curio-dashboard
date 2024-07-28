@@ -10,13 +10,13 @@ import (
 	"time"
 
 	"github.com/strahe/curio-dashboard/graph"
-	"github.com/strahe/curio-dashboard/graph/cache_control"
+	"github.com/strahe/curio-dashboard/graph/cachecontrol"
 	"github.com/strahe/curio-dashboard/graph/model"
 )
 
 // Locations is the resolver for the locations field.
 func (r *sectorResolver) Locations(ctx context.Context, obj *model.Sector) ([]*model.SectorLocation, error) {
-	cache_control.SetHint(ctx, cache_control.ScopePrivate, time.Minute*5)
+	cachecontrol.SetHint(ctx, cachecontrol.ScopePrivate, time.Minute*5)
 	return r.loader.SectorLocations(ctx, obj.SpID, obj.SectorNum)
 }
 

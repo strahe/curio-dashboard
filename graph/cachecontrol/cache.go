@@ -1,4 +1,4 @@
-package cache_control
+package cachecontrol
 
 import (
 	"context"
@@ -27,20 +27,20 @@ type OverallCachePolicy struct {
 	Scope  Scope
 }
 
-type CacheControlExtension struct {
+type CacheControl struct {
 	Version int    `json:"version"`
 	Hints   []Hint `json:"hints"`
 	mu      sync.Mutex
 }
 
-func (cache *CacheControlExtension) AddHint(h Hint) {
+func (cache *CacheControl) AddHint(h Hint) {
 	cache.mu.Lock()
 	defer cache.mu.Unlock()
 	cache.Hints = append(cache.Hints, h)
 }
 
 // OverallPolicy return a calculated cache policy
-func (cache *CacheControlExtension) OverallPolicy() OverallCachePolicy {
+func (cache *CacheControl) OverallPolicy() OverallCachePolicy {
 	var (
 		scope     = ScopePublic
 		maxAge    float64
@@ -70,13 +70,13 @@ type cacheControlKey struct{}
 var cacheControlContextKey = cacheControlKey{}
 
 func WithCacheControlExtension(ctx context.Context) context.Context {
-	cache := &CacheControlExtension{Version: 1}
+	cache := &CacheControl{Version: 1}
 	return context.WithValue(ctx, cacheControlContextKey, cache)
 }
 
-func CacheControl(ctx context.Context) *CacheControlExtension {
+func GetCacheControl(ctx context.Context) *CacheControl {
 	c := ctx.Value(cacheControlContextKey)
-	if c, ok := c.(*CacheControlExtension); ok {
+	if c, ok := c.(*CacheControl); ok {
 		return c
 	}
 
@@ -85,7 +85,7 @@ func CacheControl(ctx context.Context) *CacheControlExtension {
 
 func SetHint(ctx context.Context, scope Scope, maxAge time.Duration) {
 	c := ctx.Value(cacheControlContextKey)
-	if c, ok := c.(*CacheControlExtension); ok {
+	if c, ok := c.(*CacheControl); ok {
 		c.AddHint(Hint{
 			Path:   graphql.GetFieldContext(ctx).Path(),
 			MaxAge: maxAge.Seconds(),

@@ -14,13 +14,14 @@ func (l *Loader) StoragePaths(ctx context.Context) ([]*model.StoragePath, error)
 		return nil, err
 	}
 	for _, p := range m {
-		if p.CanStore && p.CanSeal {
+		switch {
+		case p.CanStore && p.CanSeal:
 			p.Type = model.StorageTypeHybrid
-		} else if p.CanSeal {
+		case p.CanSeal:
 			p.Type = model.StorageTypeSeal
-		} else if p.CanStore {
+		case p.CanStore:
 			p.Type = model.StorageTypeStore
-		} else {
+		default:
 			p.Type = model.StorageTypeReadonly
 		}
 		p.Used = p.Capacity - p.Available - p.Reserved // todo: debug this
@@ -45,15 +46,14 @@ func (l *Loader) StorageStats(ctx context.Context) ([]*model.StorageStats, error
 	}
 
 	for _, path := range paths {
-		var storageType model.StorageType
-		if path.CanSeal && path.CanStore {
+		storageType := model.StorageTypeReadonly
+		switch {
+		case path.CanSeal && path.CanStore:
 			storageType = model.StorageTypeHybrid
-		} else if path.CanStore {
+		case path.CanStore:
 			storageType = model.StorageTypeStore
-		} else if path.CanSeal {
+		case path.CanSeal:
 			storageType = model.StorageTypeSeal
-		} else {
-			storageType = model.StorageTypeReadonly
 		}
 
 		group, exists := statsMap[storageType]

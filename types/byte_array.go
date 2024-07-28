@@ -31,7 +31,7 @@ func (b *ByteArray) UnmarshalGQL(v interface{}) error {
 // MarshalGQL implements the graphql.Marshaler interface
 func (b ByteArray) MarshalGQL(w io.Writer) {
 	jsonStr := fmt.Sprintf(`"%s"`, base64.StdEncoding.EncodeToString(b))
-	_, _ = w.Write([]byte(jsonStr))
+	_, _ = w.Write([]byte(jsonStr)) // nolint: errcheck
 }
 
 func (b *ByteArray) Scan(value interface{}) error {

@@ -29,7 +29,7 @@ func NewHarmonyDB(ctx context.Context, url string) (*HarmonyDB, error) {
 		return nil, err
 	}
 	cfg.ConnConfig.RuntimeParams["application_name"] = "curio-dashboard"
-	cfg.ConnConfig.OnNotice = func(conn *pgconn.PgConn, n *pgconn.Notice) {
+	cfg.ConnConfig.OnNotice = func(_ *pgconn.PgConn, n *pgconn.Notice) {
 		log.Debug("database notice: " + n.Message + ": " + n.Detail)
 	}
 

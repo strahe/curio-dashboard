@@ -38,11 +38,10 @@ func main() {
 		Before: func(c *cli.Context) error {
 			if c.Bool("debug") {
 				return logging.SetLogLevel("*", "DEBUG")
-			} else {
-				return logging.SetLogLevel("*", "INFO")
 			}
+			return logging.SetLogLevel("*", "INFO")
 		},
-		After: func(c *cli.Context) error {
+		After: func(*cli.Context) error {
 			return nil
 		},
 		Commands: []*cli.Command{
