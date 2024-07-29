@@ -12,6 +12,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/filecoin-project/curio/deps"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/lotus/build"
 	cliutil "github.com/filecoin-project/lotus/cli/util"
@@ -49,7 +50,8 @@ var runCmd = &cli.Command{
 			return fmt.Errorf("FULLNODE_API_INFO not set")
 		}
 		apiInfo := strings.Split(os.Getenv("FULLNODE_API_INFO"), ",")
-		fullNode, closer, err := getFullNodeAPIV1(cctx, apiInfo)
+
+		fullNode, closer, err := deps.GetFullNodeAPIV1Curio(cctx, apiInfo)
 		if err != nil {
 			return fmt.Errorf("failed to get full node API: %w", err)
 		}

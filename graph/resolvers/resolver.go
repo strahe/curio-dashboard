@@ -2,6 +2,7 @@ package resolvers
 
 import (
 	"github.com/filecoin-project/lotus/api/v1api"
+	logging "github.com/ipfs/go-log/v2"
 	"github.com/strahe/curio-dashboard/db"
 	"github.com/strahe/curio-dashboard/graph/loaders"
 	"gorm.io/gorm"
@@ -10,6 +11,8 @@ import (
 // This file will not be regenerated automatically.
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
+
+var log = logging.Logger("resolvers")
 
 type Resolver struct {
 	db       *db.HarmonyDB

@@ -22,29 +22,68 @@ func (r *pipelineResolver) Status(ctx context.Context, obj *model.Pipeline) (mod
 	if obj.Failed {
 		return model.PipelineStatusFailed, nil
 	} else if obj.AfterCommitMsgSuccess {
-		return model.PipelineStatusCommitMsg, nil
+		return model.PipelineStatusSuccess, nil
 	} else if obj.AfterCommitMsg {
-		return model.PipelineStatusCommit, nil
-	} else if obj.AfterMoveStorage {
+		return model.PipelineStatusCommitMsgWait, nil
+	} else if !obj.AfterFinalize && obj.TaskIDFinalize != nil {
+		return model.PipelineStatusClearCache, nil
+	} else if !obj.AfterMoveStorage && obj.TaskIDMoveStorage != nil {
 		return model.PipelineStatusMoveStorage, nil
-	} else if obj.AfterFinalize {
-		return model.PipelineStatusFinalize, nil
-	} else if obj.AfterPorep {
+	} else if !obj.AfterPorep && obj.AfterPrecommitMsgSuccess {
 		return model.PipelineStatusPoRep, nil
-	} else if obj.AfterPrecommitMsgSuccess {
+	} else if !obj.AfterPrecommitMsgSuccess && obj.AfterPrecommitMsg {
+		return model.PipelineStatusPreCommitMsgWait, nil
+	} else if !obj.AfterPrecommitMsg && obj.AfterSynth {
 		return model.PipelineStatusPreCommitMsg, nil
-	} else if obj.AfterPrecommitMsg {
-		return model.PipelineStatusPreCommit, nil
-	} else if obj.AfterTreeR {
-		return model.PipelineStatusTreeR, nil
-	} else if obj.AfterTreeC {
-		return model.PipelineStatusTreeC, nil
-	} else if obj.AfterTreeD {
+	} else if !obj.AfterSynth && obj.AfterTreeR {
+		return model.PipelineStatusSynthetic, nil
+	} else if !obj.AfterTreeR && obj.AfterTreeD {
+		return model.PipelineStatusTreeRc, nil
+	} else if !obj.AfterTreeD && obj.AfterTreeR {
 		return model.PipelineStatusTreeD, nil
-	} else if obj.AfterSdr {
+	} else if !obj.AfterSdr {
 		return model.PipelineStatusSdr, nil
+	} else {
+		return model.PipelineStatusUnknown, nil
 	}
-	return model.PipelineStatusStarted, nil
+}
+
+// CurrentTask is the resolver for the currentTask field.
+func (r *pipelineResolver) CurrentTask(ctx context.Context, obj *model.Pipeline) (*model.Task, error) {
+	status, err := r.Status(ctx, obj)
+	if err != nil {
+		return nil, err
+	}
+	var taskID *int
+	switch status {
+	case model.PipelineStatusSdr:
+		taskID = obj.TaskIDSdr
+	case model.PipelineStatusTreeD:
+		taskID = obj.TaskIDTreeD
+	case model.PipelineStatusTreeRc:
+		taskID = obj.TaskIDTreeC
+	case model.PipelineStatusSynthetic:
+		taskID = obj.TaskIDSynth
+	case model.PipelineStatusPreCommitMsg:
+		taskID = obj.TaskIDPrecommitMsg
+	case model.PipelineStatusPoRep:
+		taskID = obj.TaskIDPorep
+	case model.PipelineStatusMoveStorage:
+		taskID = obj.TaskIDMoveStorage
+	case model.PipelineStatusClearCache:
+		taskID = obj.TaskIDFinalize
+	case model.PipelineStatusCommitMsgWait:
+		taskID = obj.TaskIDCommitMsg
+	}
+	if taskID != nil {
+		task, err := r.loader.Task(ctx, *taskID)
+		if err != nil {
+			log.Warnf("Failed to load task %d: %s", *taskID, err)
+			return nil, nil
+		}
+		return task, nil
+	}
+	return nil, nil
 }
 
 // Pipeline returns graph.PipelineResolver implementation.

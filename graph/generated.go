@@ -175,12 +175,14 @@ type ComplexityRoot struct {
 		AfterPrecommitMsg        func(childComplexity int) int
 		AfterPrecommitMsgSuccess func(childComplexity int) int
 		AfterSdr                 func(childComplexity int) int
+		AfterSynth               func(childComplexity int) int
 		AfterTreeC               func(childComplexity int) int
 		AfterTreeD               func(childComplexity int) int
 		AfterTreeR               func(childComplexity int) int
 		CommitMsgCid             func(childComplexity int) int
 		CommitMsgTsk             func(childComplexity int) int
 		CreateTime               func(childComplexity int) int
+		CurrentTask              func(childComplexity int) int
 		Failed                   func(childComplexity int) int
 		FailedAt                 func(childComplexity int) int
 		FailedReason             func(childComplexity int) int
@@ -201,6 +203,7 @@ type ComplexityRoot struct {
 		TaskIDPorep              func(childComplexity int) int
 		TaskIDPrecommitMsg       func(childComplexity int) int
 		TaskIDSdr                func(childComplexity int) int
+		TaskIDSynth              func(childComplexity int) int
 		TaskIDTreeC              func(childComplexity int) int
 		TaskIDTreeD              func(childComplexity int) int
 		TaskIDTreeR              func(childComplexity int) int
@@ -420,6 +423,7 @@ type PipelineResolver interface {
 	ID(ctx context.Context, obj *model.Pipeline) (string, error)
 
 	Status(ctx context.Context, obj *model.Pipeline) (model.PipelineStatus, error)
+	CurrentTask(ctx context.Context, obj *model.Pipeline) (*model.Task, error)
 }
 type PipelineSummaryResolver interface {
 	Sdr(ctx context.Context, obj *model.PipelineSummary) (int, error)
@@ -1109,6 +1113,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Pipeline.AfterSdr(childComplexity), true
 
+	case "Pipeline.afterSynth":
+		if e.complexity.Pipeline.AfterSynth == nil {
+			break
+		}
+
+		return e.complexity.Pipeline.AfterSynth(childComplexity), true
+
 	case "Pipeline.afterTreeC":
 		if e.complexity.Pipeline.AfterTreeC == nil {
 			break
@@ -1150,6 +1161,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Pipeline.CreateTime(childComplexity), true
+
+	case "Pipeline.currentTask":
+		if e.complexity.Pipeline.CurrentTask == nil {
+			break
+		}
+
+		return e.complexity.Pipeline.CurrentTask(childComplexity), true
 
 	case "Pipeline.failed":
 		if e.complexity.Pipeline.Failed == nil {
@@ -1290,6 +1308,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Pipeline.TaskIDSdr(childComplexity), true
+
+	case "Pipeline.taskIdSynth":
+		if e.complexity.Pipeline.TaskIDSynth == nil {
+			break
+		}
+
+		return e.complexity.Pipeline.TaskIDSynth(childComplexity), true
 
 	case "Pipeline.taskIdTreeC":
 		if e.complexity.Pipeline.TaskIDTreeC == nil {
@@ -8006,6 +8031,91 @@ func (ec *executionContext) fieldContext_Pipeline_failedReasonMsg(_ context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _Pipeline_taskIdSynth(ctx context.Context, field graphql.CollectedField, obj *model.Pipeline) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Pipeline_taskIdSynth(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskIDSynth, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Pipeline_taskIdSynth(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Pipeline",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Pipeline_afterSynth(ctx context.Context, field graphql.CollectedField, obj *model.Pipeline) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Pipeline_afterSynth(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AfterSynth, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Pipeline_afterSynth(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Pipeline",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Pipeline_status(ctx context.Context, field graphql.CollectedField, obj *model.Pipeline) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Pipeline_status(ctx, field)
 	if err != nil {
@@ -8045,6 +8155,75 @@ func (ec *executionContext) fieldContext_Pipeline_status(_ context.Context, fiel
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type PipelineStatus does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Pipeline_currentTask(ctx context.Context, field graphql.CollectedField, obj *model.Pipeline) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Pipeline_currentTask(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Pipeline().CurrentTask(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Task)
+	fc.Result = res
+	return ec.marshalOTask2ᚖgithubᚗcomᚋstraheᚋcurioᚑdashboardᚋgraphᚋmodelᚐTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Pipeline_currentTask(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Pipeline",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Task_id(ctx, field)
+			case "initiatedByID":
+				return ec.fieldContext_Task_initiatedByID(ctx, field)
+			case "initiatedBy":
+				return ec.fieldContext_Task_initiatedBy(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Task_updateTime(ctx, field)
+			case "postedTime":
+				return ec.fieldContext_Task_postedTime(ctx, field)
+			case "ownerId":
+				return ec.fieldContext_Task_ownerId(ctx, field)
+			case "owner":
+				return ec.fieldContext_Task_owner(ctx, field)
+			case "addedByID":
+				return ec.fieldContext_Task_addedByID(ctx, field)
+			case "addedBy":
+				return ec.fieldContext_Task_addedBy(ctx, field)
+			case "previousTaskID":
+				return ec.fieldContext_Task_previousTaskID(ctx, field)
+			case "previousTask":
+				return ec.fieldContext_Task_previousTask(ctx, field)
+			case "name":
+				return ec.fieldContext_Task_name(ctx, field)
+			case "histories":
+				return ec.fieldContext_Task_histories(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Task", field.Name)
 		},
 	}
 	return fc, nil
@@ -9774,8 +9953,14 @@ func (ec *executionContext) fieldContext_Query_pipelines(_ context.Context, fiel
 				return ec.fieldContext_Pipeline_failedReason(ctx, field)
 			case "failedReasonMsg":
 				return ec.fieldContext_Pipeline_failedReasonMsg(ctx, field)
+			case "taskIdSynth":
+				return ec.fieldContext_Pipeline_taskIdSynth(ctx, field)
+			case "afterSynth":
+				return ec.fieldContext_Pipeline_afterSynth(ctx, field)
 			case "status":
 				return ec.fieldContext_Pipeline_status(ctx, field)
+			case "currentTask":
+				return ec.fieldContext_Pipeline_currentTask(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Pipeline", field.Name)
 		},
@@ -17893,6 +18078,13 @@ func (ec *executionContext) _Pipeline(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "taskIdSynth":
+			out.Values[i] = ec._Pipeline_taskIdSynth(ctx, field, obj)
+		case "afterSynth":
+			out.Values[i] = ec._Pipeline_afterSynth(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "status":
 			field := field
 
@@ -17906,6 +18098,39 @@ func (ec *executionContext) _Pipeline(ctx context.Context, sel ast.SelectionSet,
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "currentTask":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Pipeline_currentTask(ctx, field, obj)
 				return res
 			}
 

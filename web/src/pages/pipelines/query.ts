@@ -44,6 +44,9 @@ export const GetSectorsSdrPipeline = gql`
       failedReason
       failedReasonMsg
       status
-
+      currentTask {
+        name
+        postedTime
+      }
     }
   }`
