@@ -26,7 +26,7 @@ func (b *BigInt) UnmarshalGQL(v interface{}) error {
 
 // MarshalGQL implements the graphql.Marshaler interface
 func (b BigInt) MarshalGQL(w io.Writer) {
-	_, _ = w.Write([]byte(b.String()))
+	_, _ = w.Write([]byte(b.String())) // nolint: errcheck
 }
 
 func (b *BigInt) Scan(value interface{}) error {

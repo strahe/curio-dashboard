@@ -2,6 +2,7 @@ package loaders
 
 import (
 	"context"
+
 	"github.com/strahe/curio-dashboard/graph/model"
 )
 

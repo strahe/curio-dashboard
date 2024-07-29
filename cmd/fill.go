@@ -64,7 +64,7 @@ var fillCmd = &cli.Command{
 		defer closer()
 
 		var runJobs []jobs.BackFillingJob
-		if cctx.IsSet("jobs") {
+		if cctx.IsSet("jobs") { // nolint:revive,empty-block
 			// todo: parse jobs
 		} else {
 			allJobs := aggregator.AllJobs(harmonyDB, appDB, fullNode, loaders.NewLoader(harmonyDB, appDB, 1000))

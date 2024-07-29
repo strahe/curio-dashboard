@@ -26,7 +26,7 @@ func NewAggTaskHistory(loader *loaders.Loader, db *db.HarmonyDB, appDB *gorm.DB)
 }
 
 func (j *AggTaskHistory) Spec() string {
-	return "@hourly"
+	return "@hourly" // nolint: goconst
 }
 
 func (j *AggTaskHistory) Name() string {

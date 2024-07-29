@@ -14,7 +14,7 @@ import (
 	"github.com/filecoin-project/lotus/api/client"
 	cliutil "github.com/filecoin-project/lotus/cli/util"
 	"github.com/strahe/curio-dashboard/graph"
-	cachecontrol "github.com/strahe/curio-dashboard/graph/cache_control"
+	cachecontrol "github.com/strahe/curio-dashboard/graph/cachecontrol"
 	"github.com/strahe/curio-dashboard/graph/model"
 	"github.com/strahe/curio-dashboard/types"
 	pgx "github.com/yugabyte/pgx/v5"

@@ -3,8 +3,9 @@ package types
 import (
 	"database/sql/driver"
 	"fmt"
-	"github.com/filecoin-project/go-address"
 	"io"
+
+	"github.com/filecoin-project/go-address"
 )
 
 type Address struct {
@@ -28,7 +29,7 @@ func (b *Address) UnmarshalGQL(v interface{}) error {
 
 // MarshalGQL implements the graphql.Marshaler interface
 func (b Address) MarshalGQL(w io.Writer) {
-	_, _ = w.Write([]byte(`"` + b.String() + `"`))
+	_, _ = w.Write([]byte(`"` + b.String() + `"`)) // nolint: errcheck
 }
 
 func (b *Address) Scan(value interface{}) error {

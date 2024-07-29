@@ -1,11 +1,11 @@
 package loaders
 
 import (
-	"gorm.io/gorm"
 	"time"
 
 	"github.com/hashicorp/golang-lru/v2/expirable"
 	"github.com/strahe/curio-dashboard/db"
+	"gorm.io/gorm"
 )
 
 type Loader struct {

@@ -2,11 +2,11 @@ package loaders
 
 import (
 	"context"
-	"github.com/strahe/curio-dashboard/types"
 
 	"github.com/BurntSushi/toml"
 	"github.com/filecoin-project/go-address"
 	"github.com/strahe/curio-dashboard/graph/model"
+	"github.com/strahe/curio-dashboard/types"
 	"golang.org/x/xerrors"
 )
 

@@ -1,8 +1,9 @@
 package model
 
 import (
-	"github.com/strahe/curio-dashboard/types"
 	"time"
+
+	"github.com/strahe/curio-dashboard/types"
 )
 
 type MinerInfo struct {

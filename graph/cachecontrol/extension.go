@@ -1,4 +1,4 @@
-package cache_control
+package cachecontrol
 
 import (
 	"context"
@@ -20,7 +20,7 @@ func (c Extension) Validate(_ graphql.ExecutableSchema) error {
 }
 
 func (c Extension) InterceptResponse(ctx context.Context, next graphql.ResponseHandler) *graphql.Response {
-	cache := CacheControl(ctx)
+	cache := GetCacheControl(ctx)
 	if cache == nil {
 		ctx = WithCacheControlExtension(ctx)
 	}
@@ -28,7 +28,7 @@ func (c Extension) InterceptResponse(ctx context.Context, next graphql.ResponseH
 	result := next(ctx)
 
 	if result != nil {
-		cache := CacheControl(ctx)
+		cache := GetCacheControl(ctx)
 
 		if len(cache.Hints) > 0 {
 			if result.Extensions == nil {

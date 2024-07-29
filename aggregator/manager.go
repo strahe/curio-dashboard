@@ -75,7 +75,7 @@ func AllBackFillingJobs(js []jobs.Job) []jobs.BackFillingJob {
 }
 
 func NoBackFillingJobs(js []jobs.Job) []jobs.Job {
-	return lo.Filter(js, func(j jobs.Job, index int) bool {
+	return lo.Filter(js, func(j jobs.Job, _ int) bool {
 		_, ok := j.(jobs.BackFillingJob)
 		return !ok
 	})
