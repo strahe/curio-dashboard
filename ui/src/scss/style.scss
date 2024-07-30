@@ -1,0 +1,43 @@
+@import './variables';
+@import 'vuetify/styles/main.sass';
+@import './override';
+@import './layout/container';
+@import './layout/sidebar';
+@import './layout/footer';
+@import './layout/topbar';
+@import './layout/horizontal';
+
+@import './components/VAlert';
+@import './components/VAvatar';
+@import './components/VList';
+@import './components/VButtons';
+@import './components/VCard';
+@import './components/VBadge';
+@import './components/VBreadcrumb';
+@import './components/VPagination';
+@import './components/VField';
+@import './components/VInput';
+@import './components/VNavigationDrawer';
+@import './components/VShadow';
+@import './components/VTextField';
+@import './components/VTextarea';
+@import './components/VTabs';
+@import './components/VTimeline';
+
+@import './pages/datatable';
+@import './pages/dashboards';
+@import './pages/editor';
+
+@import 'vue3-perfect-scrollbar/style.css';
+
+.DarkDefaultTheme,
+.DarkTheme1,
+.DarkTheme2,
+.DarkTheme3,
+.DarkTheme4,
+.DarkTheme5,
+.DarkTheme6,
+.DarkTheme7,
+.DarkTheme8 {
+  @import './layout/dark';
+}
