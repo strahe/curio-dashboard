@@ -3,12 +3,17 @@ const AppRoutes = {
   meta: {
     requiresAuth: true,
   },
-  component: () => import('@/layouts/dashboard/DashboardLayout.vue'),
+  component: () => import('@/layouts/DashboardLayout.vue'),
   children: [
     {
       name: 'Machines',
       path: '/app/machines',
       component: () => import('@/pages/machines/index.vue'),
+    },
+    {
+      name: 'Storages',
+      path: '/app/storages',
+      component: () => import('@/pages/storages/index.vue'),
     },
     {
       name: 'Pipelines',

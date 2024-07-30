@@ -28,5 +28,7 @@ declare module 'vue-router/auto-routes' {
     '/pipelines/OrderTab': RouteRecordInfo<'/pipelines/OrderTab', '/pipelines/OrderTab', Record<never, never>, Record<never, never>>,
     '/pipelines/RecievableCard': RouteRecordInfo<'/pipelines/RecievableCard', '/pipelines/RecievableCard', Record<never, never>, Record<never, never>>,
     '/pipelines/WidgetCharts': RouteRecordInfo<'/pipelines/WidgetCharts', '/pipelines/WidgetCharts', Record<never, never>, Record<never, never>>,
+    '/storages/': RouteRecordInfo<'/storages/', '/storages', Record<never, never>, Record<never, never>>,
+    '/storages/StoragePathList': RouteRecordInfo<'/storages/StoragePathList', '/storages/StoragePathList', Record<never, never>, Record<never, never>>,
   }
 }

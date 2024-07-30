@@ -1,22 +1,22 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
-  import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue'
-  import WidgetCharts from '@/pages/pipelines/WidgetCharts.vue'
-  import RecievableCard from '@/pages/pipelines/RecievableCard.vue'
-  import OrderTab from '@/pages/pipelines/OrderTab.vue'
-  const page = ref({ title: 'Pipelines' })
-  const breadcrumbs = ref([
+import { ref } from 'vue'
+import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue'
+import WidgetCharts from '@/pages/pipelines/WidgetCharts.vue'
+import RecievableCard from '@/pages/pipelines/RecievableCard.vue'
+import OrderTab from '@/pages/pipelines/OrderTab.vue'
+const page = ref({ title: 'Pipelines' })
+const breadcrumbs = ref([
     {
-      title: 'Invoice',
-      disabled: false,
-      href: '#',
+        title: 'Invoice',
+        disabled: false,
+        href: '#',
     },
     {
-      title: 'List',
-      disabled: true,
-      href: '#',
+        title: 'List',
+        disabled: true,
+        href: '#',
     },
-  ])
+])
 </script>
 
 <template>

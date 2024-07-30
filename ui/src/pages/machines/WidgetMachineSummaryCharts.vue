@@ -1,25 +1,25 @@
 <script setup lang="ts">
-  import { computed, ComputedRef, ref } from 'vue'
-  import { useQuery } from '@vue/apollo-composable'
-  import { GetMachinesSummary } from '@/pages/machines/graphql'
-  import { MachineSummary } from '@/typed-graph'
-  import { formatBytes } from '@/utils/helpers/formatBytes'
-  import moment from 'moment'
-  import { mdiCpu64Bit } from '@mdi/js'
+import { computed, ComputedRef } from 'vue'
+import { useQuery } from '@vue/apollo-composable'
+import { GetMachinesSummary } from '@/pages/machines/graphql'
+import { MachineSummary } from '@/typed-graph'
+import { formatBytes } from '@/utils/helpers/formatBytes'
+import moment from 'moment'
+import { mdiCarSpeedLimiter, mdiCpu64Bit, mdiExpansionCard, mdiServer } from '@mdi/js'
 
-  const { result } = useQuery(GetMachinesSummary, null, () => ({
+const { result } = useQuery(GetMachinesSummary, null, () => ({
     fetchPolicy: 'cache-first',
     pollInterval: 600000,
-  }))
+}))
 
-  const stats: ComputedRef<MachineSummary> = computed(() => result.value?.machineSummary || {})
+const stats: ComputedRef<MachineSummary> = computed(() => result.value?.machineSummary)
 
-  const cards = ref([
-    { value: stats.value.total, text: 'Machine', icon: mdiCpu64Bit, color: 'primary', color2: 'lightprimary', duedate: moment().calendar() },
-    { value: stats.value.totalCpu, text: 'CPU', icon: mdiCpu64Bit, color: 'primary', color2: 'lightprimary', duedate: moment().calendar() },
-    { value: stats.value.totalGpu, text: 'GPU', icon: mdiCpu64Bit, color: 'success', color2: 'lightsuccess', duedate: moment().calendar() },
-    { value: formatBytes(stats.value.totalRam).combined, text: 'RAM', icon: mdiCpu64Bit, color: 'warning', color2: 'lightwarning', duedate: moment().calendar() },
-  ])
+const cards = computed(() => [
+    { value: stats.value?.total || 0, text: 'Machine', icon: mdiServer, color: 'primary', duedate: moment().calendar() },
+    { value: stats.value?.totalCpu || 0, text: 'CPU', icon: mdiCpu64Bit, color: 'info', duedate: moment().calendar() },
+    { value: stats.value?.totalGpu || 0, text: 'GPU', icon: mdiExpansionCard, color: 'success', duedate: moment().calendar() },
+    { value: formatBytes(stats.value?.totalRam || 0).combined, text: 'RAM', icon: mdiCarSpeedLimiter, color: 'warning', duedate: moment().calendar() },
+])
 
 </script>
 <template>
@@ -42,12 +42,11 @@
               </div>
               <span class="d-flex align-center">
                 <v-btn
-                  :class="'text-' + card4.color"
-                  :color="card4.color2"
+                  :color="card4.color"
                   rounded="md"
                   variant="flat"
                 >
-                  <v-icon :icon="`mdiSvg:${card4.icon}`" :style="{ fontSize: '20px' }" />
+                  <v-icon :icon="card4.icon" />
                 </v-btn>
               </span>
             </div>

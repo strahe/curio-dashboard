@@ -1,62 +1,62 @@
-import { defineStore } from 'pinia';
+import { defineStore } from 'pinia'
 // project imports
-import axios from '@/utils/axios';
+import axios from '@/utils/axios'
 
 export const useMailStore = defineStore({
   id: 'mail',
   state: () => ({
     mails: [],
     activeFilter: 'all',
-    unreadCount: undefined
+    unreadCount: undefined,
   }),
   getters: {},
   actions: {
     // Fetch mail from action
-    async fetchMails() {
+    async fetchMails () {
       try {
-        const response = await axios.get('/api/mails/list');
-        this.mails = response.data.mails;
-        this.unreadCount = response.data.unreadCount;
+        const response = await axios.get('/api/mails/list')
+        this.mails = response.data.mails
+        this.unreadCount = response.data.unreadCount
       } catch (error) {
-        alert(error);
+        alert(error)
       }
     },
     // Fetch filtered mail from action
-    async filterMails(filter: string) {
+    async filterMails (filter: string) {
       try {
-        const response = await axios.post('/api/mails/filter', { filter });
-        this.mails = response.data;
+        const response = await axios.post('/api/mails/filter', { filter })
+        this.mails = response.data
       } catch (error) {
-        alert(error);
+        alert(error)
       }
     },
     // setRead
-    async setRead(id: string) {
+    async setRead (id: string) {
       try {
-        await axios.post('/api/mails/setRead', { id });
+        await axios.post('/api/mails/setRead', { id })
       } catch (error) {
-        alert(error);
+        alert(error)
       }
     },
     // Set Starred
-    async setStarred(id: string) {
+    async setStarred (id: string) {
       try {
-        await axios.post('/api/mails/setStarred', { id });
+        await axios.post('/api/mails/setStarred', { id })
       } catch (error) {
-        alert(error);
+        alert(error)
       }
     },
     // Set Imporatnt
-    async setImportant(id: string) {
+    async setImportant (id: string) {
       try {
-        await axios.post('/api/mails/setImportant', { id });
+        await axios.post('/api/mails/setImportant', { id })
       } catch (error) {
-        alert(error);
+        alert(error)
       }
     },
-    //select filter
-    SelectFilter(item: string) {
-      this.activeFilter = item;
-    }
-  }
-});
+    // select filter
+    SelectFilter (item: string) {
+      this.activeFilter = item
+    },
+  },
+})

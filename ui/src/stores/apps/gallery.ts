@@ -1,22 +1,22 @@
-import { defineStore } from 'pinia';
+import { defineStore } from 'pinia'
 // project imports
-import axios from '@/utils/axios';
+import axios from '@/utils/axios'
 
 export const useGalleryStore = defineStore({
   id: 'Gallery',
   state: () => ({
-    gallery: []
+    gallery: [],
   }),
   getters: {},
   actions: {
     // Fetch followers from action
-    async fetchGallery() {
+    async fetchGallery () {
       try {
-        const response = await axios.get('/api/gallery/list');
-        this.gallery = response.data.gallery;
+        const response = await axios.get('/api/gallery/list')
+        this.gallery = response.data.gallery
       } catch (error) {
-        alert(error);
+        alert(error)
       }
-    }
-  }
-});
+    },
+  },
+})

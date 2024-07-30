@@ -1,23 +1,22 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
-  import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue'
-  import RecievableCard from '@/pages/pipelines/RecievableCard.vue'
-  import MachineList from '@/pages/machines/MachineList.vue'
-  import WidgetMachineSummaryCharts from '@/pages/machines/WidgetMachineSummaryCharts.vue'
+import { ref } from 'vue'
+import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue'
+import MachineList from '@/pages/machines/MachineList.vue'
+import WidgetMachineSummaryCharts from '@/pages/machines/WidgetMachineSummaryCharts.vue'
 
-  const page = ref({ title: 'Pipelines' })
-  const breadcrumbs = ref([
+const page = ref({ title: 'Machines' })
+const breadcrumbs = ref([
     {
-      title: 'Pipeline',
-      disabled: false,
-      href: '#',
+        title: 'Machine',
+        disabled: false,
+        href: '#',
     },
     {
-      title: 'List',
-      disabled: true,
-      href: '#',
+        title: 'List',
+        disabled: true,
+        href: '#',
     },
-  ])
+])
 
 </script>
 

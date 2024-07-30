@@ -20,6 +20,7 @@ import { i18n } from '@/plugins/i18n'
 import VueApexCharts from 'vue3-apexcharts'
 import { apolloClient } from '@/plugins/apollo'
 import { DefaultApolloClient } from '@vue/apollo-composable'
+import 'vue3-easy-data-table/dist/style.css'
 
 export function registerPlugins (app: App) {
   app

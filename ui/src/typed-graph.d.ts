@@ -62,7 +62,6 @@ export type Machine = {
   tasks?: Maybe<Array<Maybe<Task>>>;
 };
 
-
 export type MachineTaskHistoriesArgs = {
   last: Scalars['Int']['input'];
 };
@@ -107,12 +106,10 @@ export type Mutation = {
   updateConfig?: Maybe<Config>;
 };
 
-
 export type MutationCreateConfigArgs = {
   config: Scalars['String']['input'];
   title: Scalars['String']['input'];
 };
-
 
 export type MutationUpdateConfigArgs = {
   config: Scalars['String']['input'];
@@ -256,32 +253,26 @@ export type Query = {
   tasksCount: Scalars['Int']['output'];
 };
 
-
 export type QueryActorArgs = {
   address: Scalars['Address']['input'];
 };
-
 
 export type QueryConfigArgs = {
   layer: Scalars['String']['input'];
 };
 
-
 export type QueryMachineArgs = {
   id: Scalars['Int']['input'];
 };
-
 
 export type QueryMiningSummaryByDayArgs = {
   lastDays: Scalars['Int']['input'];
 };
 
-
 export type QuerySectorArgs = {
   actor: Scalars['ActorID']['input'];
   sectorNumber: Scalars['Int']['input'];
 };
-
 
 export type QuerySectorsArgs = {
   actor?: InputMaybe<Scalars['ActorID']['input']>;
@@ -290,32 +281,26 @@ export type QuerySectorsArgs = {
   sectorNumber?: InputMaybe<Scalars['Int']['input']>;
 };
 
-
 export type QuerySectorsCountArgs = {
   actor?: InputMaybe<Scalars['ActorID']['input']>;
 };
-
 
 export type QueryStorageUsagesArgs = {
   lastDays: Scalars['Int']['input'];
   storageID?: InputMaybe<Scalars['String']['input']>;
 };
 
-
 export type QueryTaskArgs = {
   id: Scalars['Int']['input'];
 };
-
 
 export type QueryTaskAggregatesByDayArgs = {
   lastDays: Scalars['Int']['input'];
 };
 
-
 export type QueryTaskAggregatesByHourArgs = {
   lastHours: Scalars['Int']['input'];
 };
-
 
 export type QueryTaskHistoriesArgs = {
   limit: Scalars['Int']['input'];
@@ -476,12 +461,10 @@ export type TaskSummaryDay = {
   trueCount: Scalars['Int']['output'];
 };
 
-
-      export type PossibleTypesResultData = {
-  "possibleTypes": {}
+export type PossibleTypesResultData = {
+  'possibleTypes': {}
 };
-      const result: PossibleTypesResultData = {
-  "possibleTypes": {}
-};
-      export default result;
-    
+const result: PossibleTypesResultData = {
+  possibleTypes: {},
+}
+export default result

@@ -1,38 +1,36 @@
 <script setup lang="ts">
-  import { computed, ComputedRef, ref } from 'vue'
-  import moment from 'moment'
-  import type { Header, Item } from 'vue3-easy-data-table'
-  import 'vue3-easy-data-table/dist/style.css'
-  import { CopyOutlined, EyeOutlined, FilterOutlined, PrinterOutlined, SearchOutlined } from '@ant-design/icons-vue'
-  import { useQuery } from '@vue/apollo-composable'
-  import { GetMachines } from '@/pages/machines/graphql'
-  import { Machine } from '@/typed-graph'
-  import { formatBytes } from '@/utils/helpers/formatBytes'
+import { computed, ComputedRef, ref } from 'vue'
+import moment from 'moment'
+import type { Header, Item } from 'vue3-easy-data-table'
+import { EyeOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons-vue'
+import { useQuery } from '@vue/apollo-composable'
+import { GetMachines } from '@/pages/machines/graphql'
+import { Machine } from '@/typed-graph'
+import { formatBytes } from '@/utils/helpers/formatBytes'
 
-  const { result } = useQuery(GetMachines, null, () => ({
-    fetchPolicy: 'cache-first',
-    pollInterval: 10000,
-  }))
-  const items: ComputedRef<[Machine]> = computed(() => result.value?.machines || [])
+const { result, loading, refetch } = useQuery(GetMachines, null, () => ({
+  fetchPolicy: 'cache-first',
+  pollInterval: 10000,
+}))
+const items: ComputedRef<[Machine]> = computed(() => result.value?.machines || [])
 
-  const searchField = ref('name')
-  const searchValue = ref('')
+const searchField = ref('hostAndPort')
+const searchValue = ref('')
 
-  const headers: Header[] = [
-    { text: 'ID', value: 'id', sortable: true },
-    { text: 'Name', value: 'detail.machineName' },
-    { text: 'Last Contact', value: 'lastContact' },
-    { text: 'Startup', value: 'detail.startupTime' },
-    { text: 'CPU', value: 'cpu' },
-    { text: 'GPU', value: 'gpu' },
-    { text: 'RAM', value: 'ram' },
-    { text: 'Host and Port', value: 'hostAndPort' },
-    { text: 'Action', value: 'operation' },
-  ]
+const headers: Header[] = [
+  { text: 'ID', value: 'id', sortable: true },
+  { text: 'Name', value: 'detail.machineName' },
+  { text: 'Last Contact', value: 'lastContact', sortable: true },
+  { text: 'Startup', value: 'detail.startupTime', sortable: true },
+  { text: 'CPU', value: 'cpu', sortable: true },
+  { text: 'GPU', value: 'gpu', sortable: true },
+  { text: 'RAM', value: 'ram' },
+  { text: 'Host and Port', value: 'hostAndPort' },
+  { text: 'Action', value: 'operation' },
+]
 
-  const themeColor = ref('rgb(var(--v-theme-primary))')
-  // const { deleteOrder } = store
-  const itemsSelected = ref<Item[]>([])
+const themeColor = ref('rgb(var(--v-theme-primary))')
+const itemsSelected = ref<Item[]>([])
 </script>
 
 <template>
@@ -46,7 +44,7 @@
                 v-model="searchValue"
                 hide-details
                 persistent-placeholder
-                placeholder="Search Order"
+                placeholder="Search"
                 type="text"
                 variant="outlined"
               >
@@ -57,14 +55,8 @@
             </v-col>
             <v-col cols="12" md="3">
               <div class="d-flex ga-2 justify-end">
-                <v-btn round rounded variant="text">
-                  <CopyOutlined />
-                </v-btn>
-                <v-btn round rounded variant="text">
-                  <PrinterOutlined />
-                </v-btn>
-                <v-btn round rounded variant="text">
-                  <FilterOutlined />
+                <v-btn round rounded variant="text" @click="refetch">
+                  <ReloadOutlined />
                 </v-btn>
               </div>
             </v-col>
@@ -76,7 +68,8 @@
             v-model:items-selected="itemsSelected"
             :headers="headers"
             :items="items"
-            :rows-per-page="5"
+            :loading="loading"
+            :rows-per-page="100"
             :search-field="searchField"
             :search-value="searchValue"
             table-class-name="customize-table"
@@ -98,7 +91,13 @@
             </template>
             <template #item-operation="{}">
               <div class="operation-wrapper">
-                <v-btn color="secondary" round rounded variant="text">
+                <v-btn
+                  color="secondary"
+                  round
+                  rounded
+                  title="More"
+                  variant="text"
+                >
                   <EyeOutlined />
                 </v-btn>
               </div>

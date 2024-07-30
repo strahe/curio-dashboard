@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { FileDoneOutlined, InfoCircleOutlined } from '@ant-design/icons-vue';
+import { FileDoneOutlined, InfoCircleOutlined } from '@ant-design/icons-vue'
 </script>
 <template>
-  <v-card variant="flat" class="recievable-card">
+  <v-card class="recievable-card" variant="flat">
     <v-card-item>
       <div class="d-flex align-end">
         <div class="d-flex">
-          <v-avatar size="40" color="primary" rounded>
+          <v-avatar color="primary" rounded size="40">
             <FileDoneOutlined :style="{ fontSize: '20px' }" />
           </v-avatar>
           <div class="text-white ml-2">
@@ -29,12 +29,12 @@ import { FileDoneOutlined, InfoCircleOutlined } from '@ant-design/icons-vue';
       <div class="d-flex align-center">
         <v-progress-linear
           aria-label="progressbar"
-          color="warning"
-          model-value="90"
           bg-opacity="0.4"
+          color="warning"
           height="6"
+          model-value="90"
           rounded
-        ></v-progress-linear>
+        />
         <span class="text-caption text-white ml-2 d-block">90%</span>
       </div>
     </v-card-item>

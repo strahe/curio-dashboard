@@ -1,15 +1,15 @@
 <script setup lang="ts">
-  type Breadcrumb = {
+type Breadcrumb = {
     title: string;
     disabled: boolean;
     href: string;
-  };
+};
 
-  const props = defineProps({
+const props = defineProps({
     title: String,
     breadcrumbs: Array as () => Breadcrumb[],
     icon: String,
-  })
+})
 </script>
 
 // ===============================|| Theme Breadcrumb ||=============================== //

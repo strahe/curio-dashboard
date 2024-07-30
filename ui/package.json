@@ -39,6 +39,7 @@
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/fragment-matcher": "^5.0.2",
     "@mdi/js": "^7.4.47",
+    "@rushstack/eslint-patch": "^1.10.4",
     "@types/node": "^20.14.10",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vue/eslint-config-typescript": "^13.0.0",

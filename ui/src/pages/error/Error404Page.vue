@@ -5,9 +5,9 @@
     <v-col class="d-flex align-center justify-center">
       <div class="text-center">
         <div class="CardMediaWrapper">
-          <img alt="404" src="@/assets/images/Error404.png">
+          <img alt="404" src="@/assets/images/maintenance/Error404.png">
           <div class="CardMediaBuild">
-            <img alt="grid" class="w-100" src="@/assets/images/TwoCone.png">
+            <img alt="grid" class="w-100" src="@/assets/images/maintenance/TwoCone.png">
           </div>
         </div>
         <h1 class="text-md-h1 text-h2 mt-16">Page Not Found</h1>

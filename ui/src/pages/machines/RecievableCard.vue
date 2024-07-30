@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { FileDoneOutlined, InfoCircleOutlined } from '@ant-design/icons-vue'
+import { FileDoneOutlined, InfoCircleOutlined } from '@ant-design/icons-vue'
 
 </script>
 <template>
