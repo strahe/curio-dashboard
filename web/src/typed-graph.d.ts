@@ -164,12 +164,14 @@ export type Pipeline = {
   afterPrecommitMsg: Scalars['Boolean']['output'];
   afterPrecommitMsgSuccess: Scalars['Boolean']['output'];
   afterSdr: Scalars['Boolean']['output'];
+  afterSynth: Scalars['Boolean']['output'];
   afterTreeC: Scalars['Boolean']['output'];
   afterTreeD: Scalars['Boolean']['output'];
   afterTreeR: Scalars['Boolean']['output'];
   commitMsgCid?: Maybe<Scalars['String']['output']>;
   commitMsgTsk?: Maybe<Scalars['ByteArray']['output']>;
   createTime: Scalars['Time']['output'];
+  currentTask?: Maybe<Task>;
   failed: Scalars['Boolean']['output'];
   failedAt?: Maybe<Scalars['Time']['output']>;
   failedReason: Scalars['String']['output'];
@@ -190,6 +192,7 @@ export type Pipeline = {
   taskIdPorep?: Maybe<Scalars['Int']['output']>;
   taskIdPrecommitMsg?: Maybe<Scalars['Int']['output']>;
   taskIdSdr?: Maybe<Scalars['Int']['output']>;
+  taskIdSynth?: Maybe<Scalars['Int']['output']>;
   taskIdTreeC?: Maybe<Scalars['Int']['output']>;
   taskIdTreeD?: Maybe<Scalars['Int']['output']>;
   taskIdTreeR?: Maybe<Scalars['Int']['output']>;
@@ -200,19 +203,22 @@ export type Pipeline = {
 };
 
 export enum PipelineStatus {
-  Commit = 'Commit',
+  ClearCache = 'ClearCache',
   CommitMsg = 'CommitMsg',
+  CommitMsgWait = 'CommitMsgWait',
   Failed = 'Failed',
-  Finalize = 'Finalize',
   MoveStorage = 'MoveStorage',
   PoRep = 'PoRep',
-  PreCommit = 'PreCommit',
   PreCommitMsg = 'PreCommitMsg',
+  PreCommitMsgWait = 'PreCommitMsgWait',
   Sdr = 'SDR',
-  Started = 'Started',
+  Success = 'Success',
+  Synthetic = 'Synthetic',
   TreeC = 'TreeC',
   TreeD = 'TreeD',
-  TreeR = 'TreeR'
+  TreeR = 'TreeR',
+  Unknown = 'Unknown',
+  WaitSeed = 'WaitSeed'
 }
 
 export type PipelineSummary = {

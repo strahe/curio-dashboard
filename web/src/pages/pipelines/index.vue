@@ -19,11 +19,11 @@ const { result, loading, refetch, error } = useQuery(GetSectorsSdrPipeline,  nul
 }))
 const items: ComputedRef<[Pipeline]> = computed(() => result.value?.pipelines || []);
 const headers = [
-  { title: 'ID', key: 'id'},
   { title: 'Miner', key: 'spId' },
   { title: 'Sector', key: 'sectorNumber' },
   { title: 'Created', key: 'createTime' },
   { title: 'Status', key: 'status' },
+  { title: 'Running', key: 'currentTask' },
   { title: '  ', key: 'data-table-expand' },
 ];
 </script>
@@ -51,6 +51,10 @@ const headers = [
             </template>
             <template v-slot:[`item.status`]="{item}">
               <v-chip :color="item.status === 'Failed' ? 'red' :'green'">{{item.status}}</v-chip>
+            </template>
+            <template v-slot:[`item.currentTask`]="{}">
+<!--              todo: add running task status here-->
+              <v-progress-circular indeterminate></v-progress-circular>
             </template>
             <template v-slot:expanded-row="{ columns, item }">
               <tr>

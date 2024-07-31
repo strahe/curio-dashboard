@@ -39,22 +39,27 @@ type Pipeline {
     failedAt: Time
     failedReason: String!
     failedReasonMsg: String!
+    taskIdSynth: Int
+    afterSynth: Boolean!
 
     status: PipelineStatus!
+    currentTask: Task
 }
 
 enum PipelineStatus {
-    Started
     SDR
     TreeD
-    TreeC
-    TreeR
-    PreCommit
+    TreeRC
+    Synthetic
     PreCommitMsg
+    PreCommitMsgWait
+    WaitSeed
     PoRep
-    Finalize
+    ClearCache
     MoveStorage
-    Commit
     CommitMsg
+    CommitMsgWait
     Failed
+    Success
+    Unknown
 }
