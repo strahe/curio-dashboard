@@ -20,6 +20,11 @@ const AppRoutes = {
       path: '/app/pipelines',
       component: () => import('@/pages/pipelines/index.vue'),
     },
+    {
+      name: 'Configurations',
+      path: '/app/configurations',
+      component: () => import('@/pages/configurations/index.vue'),
+    },
   ],
 }
 
