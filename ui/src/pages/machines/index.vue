@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue'
 import MachineList from '@/pages/machines/MachineList.vue'
-import WidgetMachineSummaryCharts from '@/pages/machines/WidgetMachineSummaryCharts.vue'
+import WidgetMachineSummaryCharts from '@/pages/machines/MachineSummaryCharts.vue'
 
 const page = ref({ title: 'Machines' })
 const breadcrumbs = ref([

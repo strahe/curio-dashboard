@@ -8,7 +8,6 @@ import Edit from '@/pages/configurations/EditConfiguration.vue'
 import {
   DeleteOutlined,
   EditOutlined,
-  EyeOutlined,
   PlusOutlined,
   ReloadOutlined,
   SearchOutlined,
@@ -84,13 +83,14 @@ function updateDialog (value: boolean) {
               <div class="d-flex ga-2 justify-end">
                 <v-text-field
                   v-model="editTitle"
+                  :error="editTitle === ''"
                   hide-details
                   persistent-placeholder
                   placeholder="Layer"
                   type="text"
                   variant="outlined"
                 />
-                <v-btn color="primary" variant="flat" @click="openCreateDialog">
+                <v-btn color="primary" :disabled="editTitle === ''" variant="flat" @click="openCreateDialog">
                   <template #prepend>
                     <PlusOutlined />
                   </template>
@@ -135,9 +135,6 @@ function updateDialog (value: boolean) {
             </template>
             <template #item-action="item">
               <div class="operation-wrapper">
-                <v-btn color="secondary" icon="true" rounded variant="text">
-                  <EyeOutlined />
-                </v-btn>
                 <v-btn
                   color="primary"
                   icon="true"
@@ -149,6 +146,7 @@ function updateDialog (value: boolean) {
                 </v-btn>
                 <v-btn
                   color="error"
+                  disabled
                   icon="true"
                   rounded
                   variant="text"

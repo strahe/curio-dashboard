@@ -1,13 +1,12 @@
 // icons
 import {
-  CrownOutlined,
-  CustomerServiceOutlined,
-  DashboardOutlined,
-  HomeOutlined,
-  IdcardOutlined,
-  QuestionOutlined,
-  TableOutlined,
-} from '@ant-design/icons-vue'
+  ChartHistogramIcon,
+  DatabaseIcon,
+  HomeIcon,
+  ServerIcon,
+  SettingsIcon,
+  VectorIcon,
+} from 'vue-tabler-icons'
 
 export interface menu {
   header?: string;
@@ -30,114 +29,36 @@ const sidebarItem: menu[] = [
   { header: 'Dashboard' },
   {
     title: 'Overview',
-    icon: HomeOutlined,
-    to: '/dashboard/overview',
+    icon: HomeIcon,
+    to: '/app/overview',
   },
   {
     title: 'Analytics',
-    icon: DashboardOutlined,
-    to: '/dashboard/default',
+    icon: ChartHistogramIcon,
+    to: '/app/analytics',
+  },
+  { header: 'Sector' },
+  {
+    title: 'Pipelines',
+    icon: VectorIcon,
+    to: '/app/pipelines',
   },
   { header: 'Cluster' },
   {
     title: 'Machines',
-    icon: IdcardOutlined,
+    icon: ServerIcon,
     to: '/app/machines',
   },
   {
     title: 'Storages',
-    icon: IdcardOutlined,
+    icon: DatabaseIcon,
     to: '/app/storages',
   },
-  { header: 'Sector' },
   {
-    title: 'Customer',
-    icon: CustomerServiceOutlined,
-    to: '/customer/',
-    children: [
-      {
-        title: 'Customer List',
-        to: '/customer/customerlist',
-      },
-      {
-        title: 'Create Invoice',
-        to: '/app/customer/create-invoice',
-      },
-      {
-        title: 'Order Details',
-        to: '/app/customer/order-details',
-      },
-      {
-        title: 'Order List',
-        to: '/customer/orderlist',
-      },
-      {
-        title: 'Product List',
-        to: '/customer/productlist',
-      },
-      {
-        title: 'Product Review',
-        to: '/customer/productreview',
-      },
-    ],
+    title: 'Configurations',
+    icon: SettingsIcon,
+    to: '/app/configurations',
   },
-  { header: 'Forms' },
-  {
-    title: 'Tables',
-    icon: TableOutlined,
-    to: '/forms/tables',
-    children: [
-      {
-        title: 'Basic Table',
-        to: '/tables/tbl-basic',
-      },
-      {
-        title: 'Dark Table',
-        to: '/tables/tbl-dark',
-      },
-      {
-        title: 'Density Table',
-        to: '/tables/tbl-density',
-      },
-      {
-        title: 'Height Table',
-        to: '/tables/tbl-height',
-      },
-      {
-        title: 'Fixed Header Table',
-        to: '/tables/tbl-fixed-header',
-      },
-    ],
-  },
-  { header: 'Utilities' },
-  {
-    title: 'Icons',
-    icon: CrownOutlined,
-    to: '/forms/radio',
-    children: [
-      {
-        title: 'Ant design Icons',
-        to: '/icons/ant',
-      },
-      {
-        title: 'Tabler Icons',
-        to: '/icons/tabler',
-      },
-      {
-        title: 'Material Icons',
-        to: '/icons/material',
-      },
-    ],
-  },
-  { header: 'Pages' },
-  {
-    title: 'FAQs',
-    icon: QuestionOutlined,
-    getURL: true,
-    to: 'pages/faq',
-    type: 'external',
-  },
-  { divider: true },
 ]
 
 export default sidebarItem

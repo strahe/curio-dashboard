@@ -1,13 +1,14 @@
 <script setup lang="ts">
 
 import { Codemirror } from 'vue-codemirror'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { StreamLanguage } from '@codemirror/language'
 import { toml } from '@codemirror/legacy-modes/mode/toml'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { mdiClose } from '@mdi/js'
 import { useMutation } from '@vue/apollo-composable'
 import { CreateConfig, UpdateConfig } from '@/pages/configurations/graphql'
+import { useCustomizerStore } from '@/stores/customizer'
 
 const props = defineProps({
   isCreate: Boolean,
@@ -24,7 +25,19 @@ function closeDialog () {
   emit('updateDialog', false)
 }
 
-const extensions = [StreamLanguage.define(toml), oneDark]
+const customizer = useCustomizerStore()
+
+const dark = computed(() => {
+  return customizer.actTheme === 'DarkDefaultTheme'
+})
+
+const extensions = computed(() => {
+  if (dark.value) {
+    return [StreamLanguage.define(toml), oneDark]
+  }
+  return [StreamLanguage.define(toml)]
+})
+
 const editConfig = ref(props.config)
 const saveLoading = ref(false)
 
@@ -51,6 +64,7 @@ function saveEdit () {
     })
   }
 }
+
 </script>
 
 <template>

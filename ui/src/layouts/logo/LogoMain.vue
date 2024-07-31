@@ -7,8 +7,9 @@ import { useCustomizerStore } from '@/stores/customizer'
 const customizer = useCustomizerStore()
 
 const dark = computed(() => {
-    return customizer.actTheme === 'DarkDefaultTheme'
+  return customizer.actTheme === 'DarkDefaultTheme'
 })
+
 </script>
 <template>
   <LogoLight v-if="dark" />
