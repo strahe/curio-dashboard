@@ -30,5 +30,6 @@ declare module 'vue-router/auto-routes' {
     '/pipelines/WidgetCharts': RouteRecordInfo<'/pipelines/WidgetCharts', '/pipelines/WidgetCharts', Record<never, never>, Record<never, never>>,
     '/storages/': RouteRecordInfo<'/storages/', '/storages', Record<never, never>, Record<never, never>>,
     '/storages/StoragePathList': RouteRecordInfo<'/storages/StoragePathList', '/storages/StoragePathList', Record<never, never>, Record<never, never>>,
+    '/storages/StorageUsageChart': RouteRecordInfo<'/storages/StorageUsageChart', '/storages/StorageUsageChart', Record<never, never>, Record<never, never>>,
   }
 }

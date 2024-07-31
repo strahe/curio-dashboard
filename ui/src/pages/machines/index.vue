@@ -6,16 +6,16 @@ import WidgetMachineSummaryCharts from '@/pages/machines/WidgetMachineSummaryCha
 
 const page = ref({ title: 'Machines' })
 const breadcrumbs = ref([
-    {
-        title: 'Machine',
-        disabled: false,
-        href: '#',
-    },
-    {
-        title: 'List',
-        disabled: true,
-        href: '#',
-    },
+  {
+    title: 'Machine',
+    disabled: false,
+    href: '#',
+  },
+  {
+    title: 'List',
+    disabled: true,
+    href: '#',
+  },
 ])
 
 </script>

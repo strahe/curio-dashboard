@@ -26,12 +26,31 @@ const headers = [
   { text: 'Last Heartbeat', value: 'lastHeartbeat' },
 ]
 
+const filteredItems = computed(() => {
+  return filteredItemsByType(tab.value).value
+})
+
+const filteredItemsByType = (type: string) => computed(() => {
+  if (type === 'All') {
+    return items.value
+  }
+  return items.value.filter(item => item.type === type)
+})
+
 const searchField = ref('storageId')
 const searchValue = ref('')
 
 const itemsSelected = ref<Item[]>([])
 const themeColor = ref('rgb(var(--v-theme-primary))')
+const tab = ref('All')
 
+const tabs = [
+  { text: 'All', color: 'accent' },
+  { text: 'Seal', color: 'success' },
+  { text: 'Store', color: 'warning' },
+  { text: 'Hybrid', color: 'info' },
+  { text: 'Readonly', color: 'error' },
+]
 </script>
 
 <template>
@@ -40,6 +59,23 @@ const themeColor = ref('rgb(var(--v-theme-primary))')
       <v-card class="bg-surface" elevation="0" variant="outlined">
         <v-card-item>
           <v-row class="align-center" justify="space-between">
+            <v-col cols="12" md="6">
+              <v-tabs v-model="tab" color="primary">
+                <template v-for="t in tabs" :key="t.text">
+                  <v-tab class="font-weight-medium" :value="t.text">
+                    {{ t.text }}
+                    <v-chip
+                      class="ml-2 font-weight-medium"
+                      :color="t.color"
+                      label
+                      size="small"
+                    >
+                      {{ filteredItemsByType(t.text).value.length }}
+                    </v-chip>
+                  </v-tab>
+                </template>
+              </v-tabs>
+            </v-col>
             <v-col cols="12" md="3">
               <v-text-field
                 v-model="searchValue"
@@ -68,7 +104,7 @@ const themeColor = ref('rgb(var(--v-theme-primary))')
           <EasyDataTable
             v-model:items-selected="itemsSelected"
             :headers="headers"
-            :items="items"
+            :items="filteredItems"
             :loading="loading"
             :rows-per-page="100"
             :search-field="searchField"
@@ -105,10 +141,11 @@ const themeColor = ref('rgb(var(--v-theme-primary))')
             <template #item-urls="{ urls }">
               <v-select
                 color="primary"
+                hide-details
+                hide-no-data
                 :items="urls.split(',')"
-                label="Urls"
+                :label="urls.split(',')[0]"
                 min-width="200"
-                role="link"
                 single-line
                 variant="outlined"
               />
