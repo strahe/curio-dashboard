@@ -44,5 +44,9 @@ export const GetSectorsPipeline = gql`
       failedReason
       failedReasonMsg
       status
+      currentTask {
+        name
+        postedTime
+      }
     }
   }`

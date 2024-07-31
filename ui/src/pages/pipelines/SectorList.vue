@@ -64,10 +64,11 @@ const itemsSelected = ref<Item[]>([])
             table-class-name="customize-table"
             :theme-color="themeColor"
           >
-            <template #[`item.id`]="{ id }">
-              <div class="player-wrapper">
-                <h5 class="text-h5">#{{ id }}</h5>
-              </div>
+            <template #item-id="item">
+              <small class="font-weight-bold">Miner</small>
+              <h5 class="text-h6">{{ item.spId }}</h5>
+              <small class="mt-2 d-block font-weight-bold">Sector</small>
+              <h5 class="text-h6">{{ item.sectorNumber }}</h5>
             </template>
           </EasyDataTable>
         </v-card-text>
