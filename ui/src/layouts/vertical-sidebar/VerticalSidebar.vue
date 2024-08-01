@@ -15,14 +15,14 @@ const sidebarMenu = shallowRef(sidebarItems)
 
 <template>
   <v-navigation-drawer
-    v-model="customizer.Sidebar_drawer"
+    v-model="customizer.sidebarDrawer"
     app
     class="leftSidebar"
     elevation="0"
     expand-on-hover
     left
     mobile-breakpoint="lg"
-    :rail="customizer.mini_sidebar"
+    :rail="customizer.miniSidebar"
     rail-width="60"
   >
     <!---Logo part -->

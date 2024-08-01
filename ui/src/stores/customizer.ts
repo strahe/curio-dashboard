@@ -1,50 +1,32 @@
 import { defineStore } from 'pinia'
+import { useStorage } from '@vueuse/core'
 import config from '@/config'
 
 export const useCustomizerStore = defineStore({
   id: 'customizer',
   state: () => ({
-    Sidebar_drawer: config.Sidebar_drawer,
-    Customizer_drawer: config.Customizer_drawer,
-    mini_sidebar: config.mini_sidebar,
-    setHorizontalLayout: config.setHorizontalLayout, // Horizontal layout
-    actTheme: config.actTheme,
-    dark: config.dark,
-    fontTheme: config.fontTheme,
-    inputBg: config.inputBg,
-    boxed: config.boxed,
+    sidebarDrawer: useStorage('sidebarDrawer', config.sidebarDrawer),
+    customizerDrawer: useStorage('customizerDrawer', config.customizerDrawer),
+    miniSidebar: useStorage('miniSidebar', config.miniSidebar),
+    horizontalLayout: useStorage('horizontalLayout', config.horizontalLayout),
+    dark: useStorage('dark', config.dark),
   }),
-
   getters: {},
   actions: {
-    SET_SIDEBAR_DRAWER () {
-      this.Sidebar_drawer = !this.Sidebar_drawer
+    setSidebarDrawer (value: boolean) {
+      this.sidebarDrawer = value
     },
-    SET_MINI_SIDEBAR (payload: boolean) {
-      this.mini_sidebar = payload
+    setMiniSidebar (value: boolean) {
+      this.miniSidebar = value
     },
-    SET_CUSTOMIZER_DRAWER (payload: boolean) {
-      this.Customizer_drawer = payload
+    setCustomizerDrawer (value: boolean) {
+      this.customizerDrawer = value
     },
-
-    SET_LAYOUT (payload: boolean) {
-      this.setHorizontalLayout = payload
+    setHorizontalLayout (value: boolean) {
+      this.horizontalLayout = value
     },
-    SET_THEME (payload: string) {
-      this.actTheme = payload
-    },
-
-    SET_DARK (payload: boolean) {
-      if (payload) {
-        this.actTheme = 'DarkDefaultTheme'
-      } else {
-        this.actTheme = 'DefaultTheme'
-      }
-      this.dark = payload
-    },
-
-    SET_FONT (payload: string) {
-      this.fontTheme = payload
+    setDark (value: boolean) {
+      this.dark = value
     },
   },
 })

@@ -79,7 +79,7 @@ const multiple = ref([0, 1, 2, 3, 4, 5])
 
 function clearoptions () {
   customizer.actTheme = 'DefaultTheme'
-  customizer.setHorizontalLayout = false
+  customizer.horizontalLayout = false
   customizer.inputBg = false
   customizer.boxed = false
   customizer.fontTheme = 'Public sans'
@@ -91,7 +91,7 @@ function clearoptions () {
 <!------------------------------------->
 <template>
   <v-navigation-drawer
-    v-model="customizer.Customizer_drawer"
+    v-model="customizer.customizerDrawer"
     app
     border="0"
     elevation="24"
@@ -104,7 +104,7 @@ function clearoptions () {
         <div class="pa-5 d-flex justify-space-between align-center bg-primary">
           <div class="text-h5 font-weight-medium">Theme Customization</div>
           <div>
-            <v-btn density="compact" icon variant="text" @click.stop="customizer.SET_CUSTOMIZER_DRAWER(!customizer.Customizer_drawer)">
+            <v-btn density="compact" icon variant="text" @click.stop="customizer.setCustomizerDrawer(!customizer.customizerDrawer)">
               <CloseCircleOutlined />
             </v-btn>
           </div>
@@ -133,7 +133,7 @@ function clearoptions () {
                   <!-- sidebar layout -->
                   <!------------------------------------->
                   <div>
-                    <v-radio-group v-model="customizer.setHorizontalLayout" class="custom-radio ma-n2" hide-details>
+                    <v-radio-group v-model="customizer.horizontalLayout" class="custom-radio ma-n2" hide-details>
                       <v-radio class="ma-2 text-center" color="primary" label="Vertical" :value="false">
                         <img alt="menu layout" src="@/assets/images/customizer/default.svg" style="width: 64px; height: 64px; left: -24%">
                       </v-radio>

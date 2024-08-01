@@ -2,10 +2,8 @@
 import { shallowRef } from 'vue'
 
 const languageDD = shallowRef([
-    { title: 'English', subtext: 'UK', value: 'en' },
-    { title: 'français', subtext: 'French', value: 'fr' },
-    { title: 'Română', subtext: 'Romanian', value: 'ro' },
-    { title: '中国人', subtext: 'Chinese', value: 'zh' },
+  { title: 'English', subtext: 'US', value: 'en' },
+  { title: '中国人', subtext: 'Chinese', value: 'zh' },
 ])
 </script>
 
