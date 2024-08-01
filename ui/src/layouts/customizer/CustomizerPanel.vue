@@ -11,64 +11,64 @@ const customizer = useCustomizerStore()
 
 // themes color options
 const themeColors = ref([
-    {
-        name: 'DefaultTheme',
-        title: 'Default',
-        bg: 'themeDefault',
-    },
-    {
-        name: 'LightTheme1',
-        title: 'Theme 1',
-        bg: 'themeLightTheme1',
-    },
-    {
-        name: 'LightTheme2',
-        title: 'Theme 2',
-        bg: 'themeLightTheme2',
-    },
-    {
-        name: 'LightTheme3',
-        title: 'Theme 3',
-        bg: 'themeLightTheme3',
-    },
-    {
-        name: 'LightTheme4',
-        title: 'Theme 4',
-        bg: 'themeLightTheme4',
-    },
-    {
-        name: 'LightTheme5',
-        title: 'Theme 5',
-        bg: 'themeLightTheme5',
-    },
-    {
-        name: 'LightTheme6',
-        title: 'Theme 6',
-        bg: 'themeLightTheme6',
-    },
-    {
-        name: 'LightTheme7',
-        title: 'Theme 7',
-        bg: 'themeLightTheme7',
-    },
-    {
-        name: 'LightTheme8',
-        title: 'Theme 8',
-        bg: 'themeLightTheme8',
-    },
+  {
+    name: 'DefaultTheme',
+    title: 'Default',
+    bg: 'themeDefault',
+  },
+  {
+    name: 'LightTheme1',
+    title: 'Theme 1',
+    bg: 'themeLightTheme1',
+  },
+  {
+    name: 'LightTheme2',
+    title: 'Theme 2',
+    bg: 'themeLightTheme2',
+  },
+  {
+    name: 'LightTheme3',
+    title: 'Theme 3',
+    bg: 'themeLightTheme3',
+  },
+  {
+    name: 'LightTheme4',
+    title: 'Theme 4',
+    bg: 'themeLightTheme4',
+  },
+  {
+    name: 'LightTheme5',
+    title: 'Theme 5',
+    bg: 'themeLightTheme5',
+  },
+  {
+    name: 'LightTheme6',
+    title: 'Theme 6',
+    bg: 'themeLightTheme6',
+  },
+  {
+    name: 'LightTheme7',
+    title: 'Theme 7',
+    bg: 'themeLightTheme7',
+  },
+  {
+    name: 'LightTheme8',
+    title: 'Theme 8',
+    bg: 'themeLightTheme8',
+  },
 ])
 
 // Dark Theme Colors
 const DarkthemeColors = ref([
-    { name: 'DarkDefaultTheme', title: 'Default', bg: 'themeDarkDefault' },
-    { name: 'DarkTheme1', title: 'Theme 1', bg: 'themeDark1' },
-    { name: 'DarkTheme2', title: 'Theme 2', bg: 'themeDark2' },
-    { name: 'DarkTheme3', title: 'Theme 3', bg: 'themeDark3' },
-    { name: 'DarkTheme4', title: 'Theme 4', bg: 'themeDark4' },
-    { name: 'DarkTheme5', title: 'Theme 5', bg: 'themeDark5' },
-    { name: 'DarkTheme6', title: 'Theme 6', bg: 'themeDark6' },
-    { name: 'DarkTheme7', title: 'Theme 7', bg: 'themeDark7' },
-    { name: 'DarkTheme8', title: 'Theme 8', bg: 'themeDark8' },
+  { name: 'DarkDefaultTheme', title: 'Default', bg: 'themeDarkDefault' },
+  { name: 'DarkTheme1', title: 'Theme 1', bg: 'themeDark1' },
+  { name: 'DarkTheme2', title: 'Theme 2', bg: 'themeDark2' },
+  { name: 'DarkTheme3', title: 'Theme 3', bg: 'themeDark3' },
+  { name: 'DarkTheme4', title: 'Theme 4', bg: 'themeDark4' },
+  { name: 'DarkTheme5', title: 'Theme 5', bg: 'themeDark5' },
+  { name: 'DarkTheme6', title: 'Theme 6', bg: 'themeDark6' },
+  { name: 'DarkTheme7', title: 'Theme 7', bg: 'themeDark7' },
+  { name: 'DarkTheme8', title: 'Theme 8', bg: 'themeDark8' },
 ])
 
 // themes font Family options
@@ -78,11 +78,11 @@ const fontFamily = ref(['Inter', 'Roboto', 'Poppins', 'Public sans'])
 const multiple = ref([0, 1, 2, 3, 4, 5])
 
 function clearoptions () {
-    customizer.actTheme = 'DefaultTheme'
-    customizer.setHorizontalLayout = false
-    customizer.inputBg = false
-    customizer.boxed = false
-    customizer.fontTheme = 'Public sans'
+  customizer.actTheme = 'DefaultTheme'
+  customizer.setHorizontalLayout = false
+  customizer.inputBg = false
+  customizer.boxed = false
+  customizer.fontTheme = 'Public sans'
 }
 </script>
 

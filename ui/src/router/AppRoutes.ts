@@ -3,6 +3,7 @@ const AppRoutes = {
   meta: {
     requiresAuth: true,
   },
+  redirect: '/app/overview',
   component: () => import('@/layouts/DashboardLayout.vue'),
   children: [
     {

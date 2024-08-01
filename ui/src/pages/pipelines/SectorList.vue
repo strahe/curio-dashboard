@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import moment from 'moment'
 import { useQuery } from '@vue/apollo-composable'
 import { ReloadOutlined, SearchOutlined } from '@ant-design/icons-vue'
 import { computed, ComputedRef, ref } from 'vue'
@@ -12,6 +13,8 @@ const { result, loading, refetch } = useQuery(GetSectorsPipeline, null, () => ({
 const items: ComputedRef<[Pipeline]> = computed(() => result.value?.pipelines || [])
 const headers = [
   { text: 'ID', value: 'id', sortable: true },
+  { text: 'Status', value: 'status' },
+  { text: 'Created', value: 'createTime' },
   { text: 'Action', value: 'action' },
 ]
 
@@ -64,11 +67,20 @@ const itemsSelected = ref<Item[]>([])
             table-class-name="customize-table"
             :theme-color="themeColor"
           >
-            <template #item-id="item">
-              <small class="font-weight-bold">Miner</small>
-              <h5 class="text-h6">{{ item.spId }}</h5>
-              <small class="mt-2 d-block font-weight-bold">Sector</small>
-              <h5 class="text-h6">{{ item.sectorNumber }}</h5>
+            <template #item-id="{spId, sectorNumber}">
+              <small class="font-weight-bold">{{ spId }}</small>
+              <h5 class="text-h6">{{ sectorNumber }}</h5>
+            </template>
+            <template #item-status="{status}">
+              <v-chip
+                :color="status === 'Failed' ? 'error' : 'success'"
+                label
+                size="small"
+                variant="flat"
+              >{{ status }}</v-chip>
+            </template>
+            <template #item-createTime="{createTime}">
+              {{ moment(createTime).format() }}
             </template>
           </EasyDataTable>
         </v-card-text>

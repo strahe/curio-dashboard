@@ -7,6 +7,7 @@ export type ConfigProps = {
   fontTheme: string;
   inputBg: boolean;
   boxed: boolean;
+  dark: boolean;
 };
 
 const config: ConfigProps = {
@@ -18,6 +19,7 @@ const config: ConfigProps = {
   fontTheme: 'Public sans',
   inputBg: false,
   boxed: false,
+  dark: false,
 }
 
 export default config

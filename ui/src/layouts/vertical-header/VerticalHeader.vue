@@ -1,23 +1,22 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 // icons
-import { MenuFoldOutlined, SearchOutlined, SettingOutlined, TranslationOutlined, WindowsOutlined } from '@ant-design/icons-vue'
+import { MenuFoldOutlined, SearchOutlined } from '@ant-design/icons-vue'
+import { AdjustmentsHorizontalIcon, LanguageIcon } from 'vue-tabler-icons'
 
 // dropdown imports
 import LanguageDD from './LanguageDD.vue'
 import NotificationDD from './NotificationDD.vue'
 import ProfileDD from './ProfileDD.vue'
-import MegaMenuDD from './MegaMenuDD.vue'
 import Searchbar from './SearchBarPanel.vue'
-import MessageDD from './MessageDD.vue'
 import FullScreen from './FullScreen.vue'
 import { useCustomizerStore } from '@/stores/customizer'
 
 const customizer = useCustomizerStore()
 const priority = ref(customizer.setHorizontalLayout ? 0 : 0)
 watch(priority, newPriority => {
-    // yes, console.log() is a side effect
-    priority.value = newPriority
+  // yes, console.log() is a side effect
+  priority.value = newPriority
 })
 </script>
 
@@ -91,27 +90,6 @@ watch(priority, newPriority => {
     <!-- ---------------------------------------------- -->
 
     <!-- ---------------------------------------------- -->
-    <!-- Messages -->
-    <!-- ---------------------------------------------- -->
-    <v-menu :close-on-content-click="false" offset="10, 320">
-      <template #activator="{ props }">
-        <v-btn
-          class="text-secondary hidden-sm-and-down d-lg-block d-none"
-          color="darkText"
-          icon
-          rounded="sm"
-          size="small"
-          variant="text"
-          v-bind="props"
-        >
-          <WindowsOutlined :style="{ fontSize: '16px' }" />
-        </v-btn>
-      </template>
-      <v-sheet class="d-lg-block d-none" height="325" rounded="md" width="1024">
-        <MegaMenuDD />
-      </v-sheet>
-    </v-menu>
-    <!-- ---------------------------------------------- -->
     <!-- translate -->
     <!-- ---------------------------------------------- -->
     <v-menu :close-on-content-click="false" location="bottom" offset="6, 80">
@@ -124,7 +102,7 @@ watch(priority, newPriority => {
           size="small"
           v-bind="props"
         >
-          <TranslationOutlined :style="{ fontSize: '16px' }" />
+          <LanguageIcon />
         </v-btn>
       </template>
       <v-sheet rounded="md" width="200">
@@ -138,11 +116,6 @@ watch(priority, newPriority => {
     <NotificationDD />
 
     <!-- ---------------------------------------------- -->
-    <!-- Message -->
-    <!-- ---------------------------------------------- -->
-    <MessageDD />
-
-    <!-- ---------------------------------------------- -->
     <!-- Fullscreen -->
     <!-- ---------------------------------------------- -->
     <FullScreen />
@@ -150,17 +123,41 @@ watch(priority, newPriority => {
     <!-- ---------------------------------------------- -->
     <!-- Customizer -->
     <!-- ---------------------------------------------- -->
-    <v-btn
-      class="customizer-btn ml-sm-2 ml-1"
-      color="darkText"
-      icon
-      rounded="sm"
-      size="small"
-      variant="text"
-      @click.stop="customizer.SET_CUSTOMIZER_DRAWER(!customizer.Customizer_drawer)"
+    <v-menu
+      :close-on-content-click="false"
+      location="end"
     >
-      <SettingOutlined class="icon" :style="{ fontSize: '16px' }" />
-    </v-btn>
+      <template #activator="{ props }">
+        <v-btn
+          color="indigo"
+          icon
+          v-bind="props"
+        >
+          <v-icon :icon="AdjustmentsHorizontalIcon" />
+        </v-btn>
+      </template>
+      <v-card>
+        <v-list>
+          <v-list-item>
+            <v-switch
+              color="purple"
+              hide-details
+              label="Dark Mode"
+              :model-value="customizer.dark"
+              @click.stop="customizer.SET_DARK(!customizer.dark)"
+            />
+          </v-list-item>
+
+          <v-list-item>
+            <v-switch
+              color="purple"
+              hide-details
+              label="Enable hints"
+            />
+          </v-list-item>
+        </v-list>
+      </v-card>
+    </v-menu>
 
     <!-- ---------------------------------------------- -->
     <!-- User Profile -->

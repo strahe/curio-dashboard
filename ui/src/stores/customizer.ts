@@ -9,6 +9,7 @@ export const useCustomizerStore = defineStore({
     mini_sidebar: config.mini_sidebar,
     setHorizontalLayout: config.setHorizontalLayout, // Horizontal layout
     actTheme: config.actTheme,
+    dark: config.dark,
     fontTheme: config.fontTheme,
     inputBg: config.inputBg,
     boxed: config.boxed,
@@ -32,6 +33,16 @@ export const useCustomizerStore = defineStore({
     SET_THEME (payload: string) {
       this.actTheme = payload
     },
+
+    SET_DARK (payload: boolean) {
+      if (payload) {
+        this.actTheme = 'DarkDefaultTheme'
+      } else {
+        this.actTheme = 'DefaultTheme'
+      }
+      this.dark = payload
+    },
+
     SET_FONT (payload: string) {
       this.fontTheme = payload
     },

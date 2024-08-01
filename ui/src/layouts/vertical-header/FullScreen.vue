@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 // icons
-import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
+import { ArrowsMaximizeIcon, ArrowsMinimizeIcon } from 'vue-tabler-icons'
 
 const fullscreen = ref(false)
 
 function toggleFullscreen () {
-    fullscreen.value = !fullscreen.value
-    if (document && !document.fullscreenElement) {
-        document.documentElement.requestFullscreen()
-    } else if (document.exitFullscreen) {
-        document.exitFullscreen()
-    }
+  fullscreen.value = !fullscreen.value
+  if (document && !document.fullscreenElement) {
+    document.documentElement.requestFullscreen()
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen()
+  }
 }
 </script>
 <template>
@@ -19,13 +19,13 @@ function toggleFullscreen () {
     <v-btn
       class="text-secondary ml-sm-2 ml-1"
       color="darkText"
-      icon
+      icon="true"
       rounded="sm"
       size="small"
       @click="toggleFullscreen"
     >
-      <FullscreenOutlined v-if="!fullscreen" :style="{ fontSize: '16px' }" />
-      <FullscreenExitOutlined v-if="fullscreen" :style="{ fontSize: '16px' }" />
+      <ArrowsMaximizeIcon v-if="!fullscreen" />
+      <ArrowsMinimizeIcon v-if="fullscreen" />
     </v-btn>
   </div>
 </template>
