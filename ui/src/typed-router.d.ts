@@ -27,6 +27,8 @@ declare module 'vue-router/auto-routes' {
     '/machines/': RouteRecordInfo<'/machines/', '/machines', Record<never, never>, Record<never, never>>,
     '/machines/MachineList': RouteRecordInfo<'/machines/MachineList', '/machines/MachineList', Record<never, never>, Record<never, never>>,
     '/machines/MachineSummaryCharts': RouteRecordInfo<'/machines/MachineSummaryCharts', '/machines/MachineSummaryCharts', Record<never, never>, Record<never, never>>,
+    '/miners/': RouteRecordInfo<'/miners/', '/miners', Record<never, never>, Record<never, never>>,
+    '/miners/MinerList': RouteRecordInfo<'/miners/MinerList', '/miners/MinerList', Record<never, never>, Record<never, never>>,
     '/overview/': RouteRecordInfo<'/overview/', '/overview', Record<never, never>, Record<never, never>>,
     '/pipelines/': RouteRecordInfo<'/pipelines/', '/pipelines', Record<never, never>, Record<never, never>>,
     '/pipelines/SectorList': RouteRecordInfo<'/pipelines/SectorList', '/pipelines/SectorList', Record<never, never>, Record<never, never>>,

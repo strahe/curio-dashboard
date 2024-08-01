@@ -5,6 +5,7 @@ import {
   HomeIcon,
   ServerIcon,
   SettingsIcon,
+  UsersIcon,
   VectorIcon,
 } from 'vue-tabler-icons'
 
@@ -37,7 +38,12 @@ const sidebarItem: menu[] = [
     icon: ChartHistogramIcon,
     to: '/app/analytics',
   },
-  { header: 'Sector' },
+  { header: 'Sealing' },
+  {
+    title: 'Miners',
+    icon: UsersIcon,
+    to: '/app/miners',
+  },
   {
     title: 'Pipelines',
     icon: VectorIcon,

@@ -37,6 +37,11 @@ const AppRoutes = {
       path: '/app/configurations',
       component: () => import('@/pages/configurations/index.vue'),
     },
+    {
+      name: 'Miners',
+      path: '/app/miners',
+      component: () => import('@/pages/miners/index.vue'),
+    },
   ],
 }
 
