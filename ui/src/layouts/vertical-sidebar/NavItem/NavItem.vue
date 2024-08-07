@@ -6,11 +6,11 @@ const props = defineProps({ item: Object, level: Number })
 const relativeURL = ref(string)
 
 onMounted(async () => {
-    try {
-        relativeURL.value = await import.meta.env.BASE_URL
-    } catch (error) {
-        console.error('Error url not found:', error)
-    }
+  try {
+    relativeURL.value = await import.meta.env.BASE_URL
+  } catch (error) {
+    console.error('Error url not found:', error)
+  }
 })
 </script>
 

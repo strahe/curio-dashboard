@@ -30,7 +30,7 @@ watch(priority, newPriority => {
       variant="text"
       @click.stop="customizer.setMiniSidebar(!customizer.miniSidebar)"
     >
-      <MenuFoldOutlined :style="{ fontSize: '16px' }" />
+      <MenuFoldOutlined v-if="!customizer.horizontalLayout" :style="{ fontSize: '16px' }" />
     </v-btn>
     <v-btn
       class="hidden-lg-and-up text-secondary ms-3"

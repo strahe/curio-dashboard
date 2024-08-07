@@ -2,7 +2,7 @@
 import NavItem from '../NavItem/NavItem.vue'
 // icons
 import { RightOutlined } from '@ant-design/icons-vue'
-
+import { HomeIcon } from 'vue-tabler-icons'
 const props = defineProps({ item: Object, level: Number })
 </script>
 
@@ -10,9 +10,8 @@ const props = defineProps({ item: Object, level: Number })
   <!---Dropdown  -->
   <a class="navItemLink rounded-md cursor-pointer">
     <!---Icon  -->
-    <i class="navIcon">
-      <component :is="props.item.icon" :level="level" :style="{ fontSize: '16px' }" />
-    </i>
+    <component :is="props.item.icon" class="iconClass" :level="props.level" :style="{ fontSize: '16px' }" />
+
     <!---Title  -->
     <span class="mr-auto">{{ item.title }}</span>
     <!---If Caption-->

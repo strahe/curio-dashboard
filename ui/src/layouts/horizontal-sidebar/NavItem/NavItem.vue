@@ -6,9 +6,7 @@ const props = defineProps({ item: Object, level: Number })
   <!---Single Item-->
   <router-link class="navItemLink rounded-0" :disabled="item.disabled" :to="`${item.to}`">
     <!---If icon-->
-    <i class="navIcon">
-      <component :is="props.item.icon" :level="props.level" :style="{ fontSize: '16px' }" />
-    </i>
+    <component :is="props.item.icon" :level="props.level" :style="{ fontSize: '16px' }" />
     <span>{{ item.title }}</span>
     <!---If Caption-->
     <small v-if="item.subCaption" class="text-caption mt-n1 hide-menu">
