@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue';
+import { shallowRef } from 'vue'
 
 // icons
-import { TwitterOutlined, ShoppingOutlined, CheckOutlined, UserOutlined } from '@ant-design/icons-vue';
+import { CheckOutlined, ShoppingOutlined, TwitterOutlined, UserOutlined } from '@ant-design/icons-vue'
 
 const messages = shallowRef([
   {
@@ -10,14 +10,14 @@ const messages = shallowRef([
     icon: TwitterOutlined,
     time: '2 hrs ago',
     title: '+ 1652 Followers',
-    subtext: 'You’re getting more and more followers, keep it up!'
+    subtext: 'You’re getting more and more followers, keep it up!',
   },
   {
     color: 'error',
     icon: ShoppingOutlined,
     time: '4 hrs ago',
     title: '+ 5 New Products were added!',
-    subtext: 'Congratulations!'
+    subtext: 'Congratulations!',
   },
   {
     color: 'success',
@@ -25,25 +25,25 @@ const messages = shallowRef([
     time: '1 day ago',
     title: 'Database backup completed!',
     subtext: 'Download the',
-    link: 'latest backup.'
+    link: 'latest backup.',
   },
   {
     color: 'primary',
     icon: UserOutlined,
     time: '2 day ago',
     title: '+2 Friend Requests',
-    subtext: 'This is great, keep it up!'
-  }
-]);
+    subtext: 'This is great, keep it up!',
+  },
+])
 </script>
 
 <template>
-  <v-timeline side="end" line-color="borderLight" class="my-1 custom-timeline timeline-icon-circle justify-start px-5">
-    <v-timeline-item :dot-color="message.color" v-for="(message, i) in messages" :key="i" fill-dot>
-      <template v-slot:icon>
+  <v-timeline class="my-1 custom-timeline timeline-icon-circle justify-start px-5" line-color="borderLight" side="end">
+    <v-timeline-item v-for="(message, i) in messages" :key="i" :dot-color="message.color" fill-dot>
+      <template #icon>
         <component :is="message.icon" :style="{ fontSize: '16px' }" />
       </template>
-      <template v-slot:opposite>
+      <template #opposite>
         <span class="text-subtitle-2 text-medium-emphasis">{{ message.time }}</span>
       </template>
       <v-card elevation="0">
@@ -52,7 +52,7 @@ const messages = shallowRef([
         </h6>
         <span class="text-caption text-lightText">
           {{ message.subtext }}
-          <router-link to="/widget/data" class="text-primary link-hover" v-if="message.link">{{ message.link }}</router-link>
+          <router-link v-if="message.link" class="text-primary link-hover" to="/widget/data">{{ message.link }}</router-link>
         </span>
       </v-card>
     </v-timeline-item>

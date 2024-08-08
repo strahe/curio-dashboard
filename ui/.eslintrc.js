@@ -16,8 +16,10 @@ module.exports = {
     'vuetify',
     '@vue/eslint-config-typescript/recommended',
   ],
+  ignorePatterns: ['src/typed-graph.d.ts', 'src/vite-env.d.ts'],
   rules: {
     'vue/multi-word-component-names': 'off',
     'vue/script-indent': ['error', 2, { baseIndent: 0 }],
   },
 }
+c

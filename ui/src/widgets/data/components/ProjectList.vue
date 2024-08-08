@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue';
+import { shallowRef } from 'vue'
 
-import Avatar1 from '@/assets/images/users/avatar-1.png';
-import Avatar2 from '@/assets/images/users/avatar-2.png';
-import Avatar3 from '@/assets/images/users/avatar-3.png';
-import Avatar4 from '@/assets/images/users/avatar-4.png';
-import Avatar5 from '@/assets/images/users/avatar-6.png';
+import Avatar1 from '@/assets/images/users/avatar-1.png'
+import Avatar2 from '@/assets/images/users/avatar-2.png'
+import Avatar3 from '@/assets/images/users/avatar-3.png'
+import Avatar4 from '@/assets/images/users/avatar-4.png'
+import Avatar5 from '@/assets/images/users/avatar-6.png'
 
 const projects = shallowRef([
   {
@@ -14,7 +14,7 @@ const projects = shallowRef([
     role: 'Graphics Designer',
     name: 'Materially',
     date: 'Jun, 26',
-    priority: 'low'
+    priority: 'low',
   },
   {
     avatar: Avatar2,
@@ -22,7 +22,7 @@ const projects = shallowRef([
     role: 'Web Designer',
     name: 'Mashable',
     date: 'March, 31',
-    priority: 'lower'
+    priority: 'lower',
   },
   {
     avatar: Avatar3,
@@ -30,7 +30,7 @@ const projects = shallowRef([
     role: 'Developer',
     name: 'Flatable',
     date: 'Aug, 02',
-    priority: 'medium'
+    priority: 'medium',
   },
   {
     avatar: Avatar4,
@@ -38,7 +38,7 @@ const projects = shallowRef([
     role: 'Developer',
     name: 'Guruable',
     date: 'Sep, 22',
-    priority: 'high'
+    priority: 'high',
   },
   {
     avatar: Avatar5,
@@ -46,13 +46,13 @@ const projects = shallowRef([
     role: 'Leader',
     name: 'Berry',
     date: 'Sep, 22',
-    priority: 'higher'
-  }
-]);
+    priority: 'higher',
+  },
+])
 </script>
 
 <template>
-  <v-table class="bordered-table" hover density="comfortable">
+  <v-table class="bordered-table" density="comfortable" hover>
     <thead class="bg-containerBg">
       <tr>
         <th class="text-left text-caption font-weight-bold text-uppercase">Assigned</th>
@@ -65,7 +65,7 @@ const projects = shallowRef([
       <tr v-for="item in projects" :key="item.name">
         <td class="py-4">
           <div class="d-flex align-center">
-            <img :src="item.avatar" width="40" alt="user" class="rounded-circle" />
+            <img alt="user" class="rounded-circle" :src="item.avatar" width="40">
             <div class="ml-4">
               <h6 class="text-subtitle-1 mb-0">{{ item.username }}</h6>
               <span class="text-lightText text-caption">{{ item.role }}</span>
@@ -75,11 +75,41 @@ const projects = shallowRef([
         <td class="py-4">{{ item.name }}</td>
         <td class="py-4" style="min-width: 100px">{{ item.date }}</td>
         <td class="py-4 text-right">
-          <v-chip color="warning" variant="flat" label size="small" v-if="item.priority === 'low'">Low</v-chip>
-          <v-chip color="info" variant="flat" label size="small" v-else-if="item.priority === 'high'">High</v-chip>
-          <v-chip color="error" variant="flat" label size="small" v-else-if="item.priority === 'lower'">Lower</v-chip>
-          <v-chip color="success" variant="flat" label size="small" v-else-if="item.priority === 'higher'">Higher</v-chip>
-          <v-chip color="primary" variant="flat" label size="small" v-else>Medium</v-chip>
+          <v-chip
+            v-if="item.priority === 'low'"
+            color="warning"
+            label
+            size="small"
+            variant="flat"
+          >Low</v-chip>
+          <v-chip
+            v-else-if="item.priority === 'high'"
+            color="info"
+            label
+            size="small"
+            variant="flat"
+          >High</v-chip>
+          <v-chip
+            v-else-if="item.priority === 'lower'"
+            color="error"
+            label
+            size="small"
+            variant="flat"
+          >Lower</v-chip>
+          <v-chip
+            v-else-if="item.priority === 'higher'"
+            color="success"
+            label
+            size="small"
+            variant="flat"
+          >Higher</v-chip>
+          <v-chip
+            v-else
+            color="primary"
+            label
+            size="small"
+            variant="flat"
+          >Medium</v-chip>
         </td>
       </tr>
     </tbody>

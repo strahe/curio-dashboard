@@ -1,43 +1,43 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue';
+import { shallowRef } from 'vue'
 
 const todos = shallowRef([
   {
     item: 'Check your Email',
-    done: true
+    done: true,
   },
   {
     item: 'Make YouTube Video',
-    done: true
+    done: true,
   },
   {
     item: 'Create Banner',
-    done: true
+    done: true,
   },
   {
     item: 'Upload Project',
-    done: false
+    done: false,
   },
   {
     item: 'Update Task',
-    done: false
+    done: false,
   },
   {
     item: 'Task Issue',
-    done: false
+    done: false,
   },
   {
     item: 'Deploy Project',
-    done: false
-  }
-]);
+    done: false,
+  },
+])
 </script>
 
 <template>
   <div class="pa-5">
-    <div class="pb-0 todo-list" v-for="(todo, i) in todos" :key="i" :value="todo.item">
-      <v-checkbox :model-value="todo.done" color="primary" density="compact" hide-details>
-        <template v-slot:label>
+    <div v-for="(todo, i) in todos" :key="i" class="pb-0 todo-list" :value="todo.item">
+      <v-checkbox color="primary" density="compact" hide-details :model-value="todo.done">
+        <template #label>
           <div class="ml-2">
             {{ todo.item }}
           </div>

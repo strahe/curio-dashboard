@@ -1,48 +1,54 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue';
+import { shallowRef } from 'vue'
 
 // import icons
-import { MessageFilled, ShoppingFilled, FileTextFilled } from '@ant-design/icons-vue';
+import { FileTextFilled, MessageFilled, ShoppingFilled } from '@ant-design/icons-vue'
 
 const feeds = shallowRef([
   {
     color: 'primary',
     icon: MessageFilled,
     name: 'You have 3 pending tasks.',
-    time: '5 mins ago'
+    time: '5 mins ago',
   },
   {
     color: 'error',
     icon: ShoppingFilled,
     name: 'New order received',
-    time: '1 day ago'
+    time: '1 day ago',
   },
   {
     color: 'success',
     icon: FileTextFilled,
     name: 'You have 3 pending tasks.',
-    time: '3 week ago'
+    time: '3 week ago',
   },
   {
     color: 'primary',
     icon: MessageFilled,
     name: 'New order received',
-    time: 'around month'
+    time: 'around month',
   },
   {
     color: 'warning',
     icon: ShoppingFilled,
     name: 'Order cancelled',
-    time: '2 month ago'
-  }
-]);
+    time: '2 month ago',
+  },
+])
 </script>
 
 <template>
-  <v-list class="py-0" lines="two" density="compact" aria-label="feeds" aria-busy="true">
+  <v-list
+    aria-busy="true"
+    aria-label="feeds"
+    class="py-0"
+    density="compact"
+    lines="two"
+  >
     <v-list-item v-for="(feed, i) in feeds" :key="i" class="no-spacer">
-      <template v-slot:prepend>
-        <v-avatar size="32" :color="feed.color" variant="flat" class="mr-3 py-2">
+      <template #prepend>
+        <v-avatar class="mr-3 py-2" :color="feed.color" size="32" variant="flat">
           <component :is="feed.icon" class="text-white" />
         </v-avatar>
       </template>

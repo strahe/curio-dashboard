@@ -4,7 +4,7 @@ import { EyeIcon, ReloadIcon, SearchIcon } from 'vue-tabler-icons'
 import { useQuery } from '@vue/apollo-composable'
 import { computed, ComputedRef, ref } from 'vue'
 import { Actor } from '@/typed-graph'
-import type { Header } from 'vue3-easy-data-table'
+import type { Header, Item } from 'vue3-easy-data-table'
 import { GetActors } from '@/pages/miners/graphql'
 import { formatFIL } from '@/utils/helpers/formatFIL'
 import { formatBytes } from '@/utils/helpers/formatBytes'
@@ -16,6 +16,8 @@ const items: ComputedRef<[Actor]> = computed(() => result.value?.actors || [])
 
 const searchField = ref('address')
 const searchValue = ref('')
+const itemsSelected = ref<Item[]>([])
+const themeColor = ref('rgb(var(--v-theme-primary))')
 
 const headers :Header[] = [
   { text: 'Address', value: 'address' },

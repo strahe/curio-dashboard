@@ -27,12 +27,8 @@ function closeDialog () {
 
 const customizer = useCustomizerStore()
 
-const dark = computed(() => {
-  return customizer.actTheme === 'DarkDefaultTheme'
-})
-
 const extensions = computed(() => {
-  if (dark.value) {
+  if (customizer.dark) {
     return [StreamLanguage.define(toml), oneDark]
   }
   return [StreamLanguage.define(toml)]

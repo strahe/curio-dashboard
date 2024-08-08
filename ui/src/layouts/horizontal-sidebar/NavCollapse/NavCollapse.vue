@@ -2,7 +2,6 @@
 import NavItem from '../NavItem/NavItem.vue'
 // icons
 import { RightOutlined } from '@ant-design/icons-vue'
-import { HomeIcon } from 'vue-tabler-icons'
 const props = defineProps({ item: Object, level: Number })
 </script>
 

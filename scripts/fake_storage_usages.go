@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	u, _ := dburl.Parse(os.Getenv("CURIO_APPDB_URL"))
+	u, _ := dburl.Parse(os.Getenv("CURIO_APPDB_URL")) // nolint: errcheck
 	db, err := gorm.Open(postgres.Open(u.DSN), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 type Breadcrumb = {
-    title: string;
-    disabled: boolean;
-    href: string;
+  title: string;
+  disabled: boolean;
+  href: string;
 };
 
 const props = defineProps({
-    title: String,
-    breadcrumbs: Array as () => Breadcrumb[],
-    icon: String,
+  title: String,
+  breadcrumbs: Array as () => Breadcrumb[],
+  icon: String,
 })
 </script>
 

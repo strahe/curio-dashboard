@@ -2,16 +2,16 @@
 import { ref } from 'vue'
 // icons
 import {
-    CommentOutlined,
-    EditOutlined,
-    LockOutlined,
-    LogoutOutlined,
-    ProfileOutlined,
-    QuestionCircleOutlined,
-    SettingOutlined,
-    UnorderedListOutlined,
-    UserOutlined,
-    WalletOutlined,
+  CommentOutlined,
+  EditOutlined,
+  LockOutlined,
+  LogoutOutlined,
+  ProfileOutlined,
+  QuestionCircleOutlined,
+  SettingOutlined,
+  UnorderedListOutlined,
+  UserOutlined,
+  WalletOutlined,
 } from '@ant-design/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 

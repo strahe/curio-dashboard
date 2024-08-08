@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
+import { ref } from 'vue'
+import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue'
 
 // import components
-import ChartCards from './components/ChartCards.vue';
-import UniqueVisitor from './components/UniqueVisitor.vue';
-import IncomeOverview from './components/IncomeOverview.vue';
-import IncomeCompare from './components/IncomeCompare.vue';
-import AnalyticsReport from './components/AnalyticsReport.vue';
-import SalesReport from './components/SalesReport.vue';
-import AcquisitionChannels from './components/AcquisitionChannels.vue';
+import ChartCards from './components/ChartCards.vue'
+import UniqueVisitor from './components/UniqueVisitor.vue'
+import IncomeOverview from './components/IncomeOverview.vue'
+import IncomeCompare from './components/IncomeCompare.vue'
+import AnalyticsReport from './components/AnalyticsReport.vue'
+import SalesReport from './components/SalesReport.vue'
+import AcquisitionChannels from './components/AcquisitionChannels.vue'
 
-const page = ref({ title: 'Charts' });
+const page = ref({ title: 'Charts' })
 const breadcrumbs = ref([
   {
     title: 'Widget',
     disabled: false,
-    href: '#'
+    href: '#',
   },
   {
     title: 'Charts',
     disabled: true,
-    href: '#'
-  }
-]);
+    href: '#',
+  },
+])
 </script>
 
 <template>
-  <BaseBreadcrumb :title="page.title" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
+  <BaseBreadcrumb :breadcrumbs="breadcrumbs" :title="page.title" />
 
   <ChartCards />
   <v-row class="mb-0">

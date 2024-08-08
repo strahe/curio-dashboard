@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue';
+import { shallowRef } from 'vue'
 
-import Avatar1 from '@/assets/images/users/avatar-1.png';
-import Avatar2 from '@/assets/images/users/avatar-2.png';
-import Avatar3 from '@/assets/images/users/avatar-3.png';
-import Avatar4 from '@/assets/images/users/avatar-4.png';
+import Avatar1 from '@/assets/images/users/avatar-1.png'
+import Avatar2 from '@/assets/images/users/avatar-2.png'
+import Avatar3 from '@/assets/images/users/avatar-3.png'
+import Avatar4 from '@/assets/images/users/avatar-4.png'
 
 const products = shallowRef([
   {
@@ -12,34 +12,34 @@ const products = shallowRef([
     name: 'John Deo',
     time: 12,
     title: '[#1183] Workaround for OS X selects printing bug',
-    subtext: 'Chrome fixed the bug several versions ago, thus rendering this...'
+    subtext: 'Chrome fixed the bug several versions ago, thus rendering this...',
   },
   {
     avatar: Avatar2,
     name: 'Jems Win',
     time: 16,
     title: '[#1249] Vertically center carousel controls',
-    subtext: 'Try any carousel control and reduce the screen width below...'
+    subtext: 'Try any carousel control and reduce the screen width below...',
   },
   {
     avatar: Avatar3,
     name: 'Jeny Wiliiam',
     time: 40,
     title: '[#1254] Inaccurate small pagination height',
-    subtext: 'The height of pagination elements is not consistent with...'
+    subtext: 'The height of pagination elements is not consistent with...',
   },
   {
     avatar: Avatar4,
     name: 'Jems Win',
     time: 12,
     title: '[#1249] Vertically center carousel controls',
-    subtext: 'Try any carousel control and reduce the screen width below...'
-  }
-]);
+    subtext: 'Try any carousel control and reduce the screen width below...',
+  },
+])
 </script>
 
 <template>
-  <v-table class="bordered-table" hover density="comfortable">
+  <v-table class="bordered-table" density="comfortable" hover>
     <thead class="bg-containerBg">
       <tr>
         <th class="text-center text-caption font-weight-bold text-uppercase">Due</th>
@@ -55,7 +55,7 @@ const products = shallowRef([
         </td>
         <td class="py-3">
           <div class="d-flex align-center">
-            <img :src="item.avatar" width="40" alt="Julia" class="rounded-circle" />
+            <img alt="Julia" class="rounded-circle" :src="item.avatar" width="40">
             <h5 class="text-subtitle-1 ml-4 mb-0">{{ item.name }}</h5>
           </div>
         </td>

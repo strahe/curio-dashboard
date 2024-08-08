@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue';
+import { shallowRef } from 'vue'
 
 // assets
-import Product1 from '@/assets/images/products/1.jpg';
-import Product2 from '@/assets/images/products/2.jpg';
-import Product3 from '@/assets/images/products/3.jpg';
-import Product4 from '@/assets/images/products/4.jpg';
+import Product1 from '@/assets/images/products/1.jpg'
+import Product2 from '@/assets/images/products/2.jpg'
+import Product3 from '@/assets/images/products/3.jpg'
+import Product4 from '@/assets/images/products/4.jpg'
 
 // import icons
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons-vue'
 
 const products = shallowRef([
   {
@@ -18,7 +18,7 @@ const products = shallowRef([
     product: 'Moto G5',
     total: '10',
     date: '17-2-2017',
-    status: 'pending'
+    status: 'pending',
   },
   {
     orderid: 68457898,
@@ -27,7 +27,7 @@ const products = shallowRef([
     product: 'iPhone 8',
     total: '16',
     date: '20-2-2017',
-    status: 'paid'
+    status: 'paid',
   },
   {
     orderid: 45457898,
@@ -36,7 +36,7 @@ const products = shallowRef([
     product: 'Redmi 4',
     total: '20',
     date: '17-2-2017',
-    status: 'success'
+    status: 'success',
   },
   {
     orderid: 62446232,
@@ -45,13 +45,13 @@ const products = shallowRef([
     product: 'Jio',
     total: '15',
     date: '125-4-2017',
-    status: 'failed'
-  }
-]);
+    status: 'failed',
+  },
+])
 </script>
 
 <template>
-  <v-table class="bordered-table" hover density="comfortable">
+  <v-table class="bordered-table" density="comfortable" hover>
     <thead class="bg-containerBg">
       <tr>
         <th class="text-left text-caption font-weight-bold text-uppercase">Customer</th>
@@ -70,23 +70,47 @@ const products = shallowRef([
         <td class="py-3">{{ item.customer }}</td>
         <td class="py-3">#{{ item.orderid }}</td>
         <td class="py-3">
-          <img :src="item.avatar" width="20" height="40" :alt="item.avatar" />
+          <img :alt="item.avatar" height="40" :src="item.avatar" width="20">
         </td>
         <td class="py-3">{{ item.product }}</td>
         <td class="py-3">{{ item.total }}</td>
         <td class="py-3" style="min-width: 110px">{{ item.date }}</td>
         <td class="py-3">
-          <v-chip color="warning" variant="flat" label size="small" v-if="item.status === 'pending'"> Pending</v-chip>
-          <v-chip color="primary" variant="flat" label size="small" v-else-if="item.status === 'paid'"> Paid</v-chip>
-          <v-chip color="success" variant="flat" label size="small" v-else-if="item.status === 'success'"> Success</v-chip>
-          <v-chip color="error" variant="flat" label size="small" v-else>Failed</v-chip>
+          <v-chip
+            v-if="item.status === 'pending'"
+            color="warning"
+            label
+            size="small"
+            variant="flat"
+          > Pending</v-chip>
+          <v-chip
+            v-else-if="item.status === 'paid'"
+            color="primary"
+            label
+            size="small"
+            variant="flat"
+          > Paid</v-chip>
+          <v-chip
+            v-else-if="item.status === 'success'"
+            color="success"
+            label
+            size="small"
+            variant="flat"
+          > Success</v-chip>
+          <v-chip
+            v-else
+            color="error"
+            label
+            size="small"
+            variant="flat"
+          >Failed</v-chip>
         </td>
         <td class="py-3">
           <div class="d-flex align-center">
-            <v-btn icon color="primary" variant="text" rounded>
+            <v-btn color="primary" icon rounded variant="text">
               <EditOutlined :style="{ fontSize: '20px' }" />
             </v-btn>
-            <v-btn icon color="inherit" variant="text" rounded>
+            <v-btn color="inherit" icon rounded variant="text">
               <DeleteOutlined :style="{ fontSize: '20px' }" />
             </v-btn>
           </div>

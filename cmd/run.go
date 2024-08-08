@@ -23,7 +23,7 @@ import (
 	"github.com/strahe/curio-dashboard/graph"
 	cachecontrol "github.com/strahe/curio-dashboard/graph/cachecontrol"
 	"github.com/strahe/curio-dashboard/graph/resolvers"
-	"github.com/strahe/curio-dashboard/web"
+	"github.com/strahe/curio-dashboard/ui"
 	"github.com/urfave/cli/v2"
 )
 
@@ -116,7 +116,7 @@ var runCmd = &cli.Command{
 		})
 		srv.Use(cachecontrol.Extension{})
 
-		assets, _ := web.Assets() // nolint:errcheck
+		assets, _ := ui.Assets() // nolint:errcheck
 		fs := http.FileServer(http.FS(assets))
 		router.Handle("/", http.StripPrefix("/", fs))
 		router.Handle("/playground", playground.Handler("GraphQL playground", "/graphql"))

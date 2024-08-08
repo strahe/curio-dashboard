@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { router } from '@/router'
 
 export const useAuthStore = defineStore({
   id: 'auth',
@@ -12,17 +11,13 @@ export const useAuthStore = defineStore({
   }),
   actions: {
     async login (username: string, password: string) {
-      // update pinia state
-      // this.user = user
-      // store user details and jwt in local storage to keep user logged in between page refreshes
-      // localStorage.setItem('user', JSON.stringify(user))
-      // redirect to previous url or default to home page
-      // router.push(this.returnUrl || '/dashboard/default')
+      // login logic
+      // store user details and jwt token in local storage to keep user logged in between page refreshes
+      localStorage.setItem('user', JSON.stringify({ username, password }))
+      // redirect to returnUrl or home
+      // todo: implement redirect
     },
     logout () {
-      this.user = null
-      localStorage.removeItem('user')
-      router.push('/auth/login1')
     },
   },
 })

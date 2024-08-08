@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue';
+import { shallowRef } from 'vue'
 
 const products = shallowRef([
   {
@@ -7,34 +7,34 @@ const products = shallowRef([
     subtext: 'Powerful Admin Theme',
     sales: '16,300',
     avgprice: '53',
-    total: '15,652'
+    total: '15,652',
   },
   {
     title: 'Photoshop',
     subtext: 'Design Software',
     sales: '26,421',
     avgprice: '35',
-    total: '8,785'
+    total: '8,785',
   },
   {
     title: 'Guruable',
     subtext: 'Best Admin Template',
     sales: '8,265',
     avgprice: '98',
-    total: '9,652'
+    total: '9,652',
   },
   {
     title: 'Flatable',
     subtext: 'Admin App',
     sales: '10,652',
     avgprice: '20',
-    total: '7,856'
-  }
-]);
+    total: '7,856',
+  },
+])
 </script>
 
 <template>
-  <v-table class="bordered-table" hover density="comfortable">
+  <v-table class="bordered-table" density="comfortable" hover>
     <thead class="bg-containerBg">
       <tr>
         <th class="text-left text-caption font-weight-bold text-uppercase">Application</th>

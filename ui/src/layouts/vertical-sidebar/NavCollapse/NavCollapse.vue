@@ -12,9 +12,9 @@ const props = defineProps({ item: Object, level: Number })
     <!-- ---------------------------------------------- -->
     <!---Dropdown  -->
     <!-- ---------------------------------------------- -->
-    <template #activator="{ props }">
+    <template #activator="{ props1 }">
       <v-list-item
-        v-bind="props"
+        v-bind="props1"
         class="mb-1"
         color="primary"
         rounded

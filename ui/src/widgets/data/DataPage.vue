@@ -1,58 +1,64 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
-import CardHeader from '@/components/shared/CardHeader.vue';
-import WidgetCard from '@/components/shared/WidgetCard.vue';
+import { ref } from 'vue'
+import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue'
+import CardHeader from '@/components/shared/CardHeader.vue'
+import WidgetCard from '@/components/shared/WidgetCard.vue'
 
 // icons
-import { PlusCircleOutlined } from '@ant-design/icons-vue';
+import { PlusCircleOutlined } from '@ant-design/icons-vue'
 
 // imports widgets
-import TodoList from './components/TodoList.vue';
-import TrafficSources from './components/TrafficSources.vue';
-import TeamMembers from './components/TeamMembers.vue';
-import UserActivity from './components/UserActivity.vue';
-import LatestPosts from './components/LatestPosts.vue';
-import Messages from './components/MessageList.vue';
-import Projects from './components/ProjectList.vue';
-import ProductSales from './components/ProductSales.vue';
-import Tasks from './components/TaskList.vue';
-import ApplicationSales from './components/ApplicationSales.vue';
-import ActiveTickets from './components/ActiveTickets.vue';
-import Feeds from './components/FeedList.vue';
-import LatestCustomer from './components/LatestCustomer.vue';
-import LatestOrder from './components/LatestOrder.vue';
-import IncomingRequest from './components/IncomingRequest.vue';
-import TotalRevenue from './components/TotalRevenue.vue';
-import NewCustomers from './components/NewCustomers.vue';
-import RecentTickets from './components/RecentTickets.vue';
+import TodoList from './components/TodoList.vue'
+import TrafficSources from './components/TrafficSources.vue'
+import TeamMembers from './components/TeamMembers.vue'
+import UserActivity from './components/UserActivity.vue'
+import LatestPosts from './components/LatestPosts.vue'
+import Messages from './components/MessageList.vue'
+import Projects from './components/ProjectList.vue'
+import ProductSales from './components/ProductSales.vue'
+import Tasks from './components/TaskList.vue'
+import ApplicationSales from './components/ApplicationSales.vue'
+import ActiveTickets from './components/ActiveTickets.vue'
+import Feeds from './components/FeedList.vue'
+import LatestCustomer from './components/LatestCustomer.vue'
+import LatestOrder from './components/LatestOrder.vue'
+import IncomingRequest from './components/IncomingRequest.vue'
+import TotalRevenue from './components/TotalRevenue.vue'
+import NewCustomers from './components/NewCustomers.vue'
+import RecentTickets from './components/RecentTickets.vue'
 
-const page = ref({ title: 'Data' });
+const page = ref({ title: 'Data' })
 const breadcrumbs = ref([
   {
     title: 'Widget',
     disabled: false,
-    href: '#'
+    href: '#',
   },
   {
     title: 'Data',
     disabled: true,
-    href: '#'
-  }
-]);
+    href: '#',
+  },
+])
 </script>
 
 <template>
-  <BaseBreadcrumb :title="page.title" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
+  <BaseBreadcrumb :breadcrumbs="breadcrumbs" :title="page.title" />
 
   <v-row>
     <!-- ---------------------------------------------------------------- -->
     <!-- Todo List -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" md="4" sm="6">
-      <CardHeader title="To Do List" class="headerWithBtn">
-        <template v-slot:header>
-          <v-btn color="primary" variant="text" size="small" rounded icon>
+      <CardHeader class="headerWithBtn" title="To Do List">
+        <template #header>
+          <v-btn
+            color="primary"
+            icon
+            rounded
+            size="small"
+            variant="text"
+          >
             <PlusCircleOutlined :style="{ fontSize: '16px' }" />
           </v-btn>
         </template>
@@ -64,7 +70,7 @@ const breadcrumbs = ref([
     <!-- Traffic Sources -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" md="4" sm="6">
-      <WidgetCard title="Traffic Sources" subtitle="You’re getting more and more sources, keep it up!">
+      <WidgetCard subtitle="You’re getting more and more sources, keep it up!" title="Traffic Sources">
         <TrafficSources />
       </WidgetCard>
     </v-col>
@@ -73,9 +79,9 @@ const breadcrumbs = ref([
     <!-- Team Members -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" md="4">
-      <CardHeader title="Team Members" class="overflow-hidden">
-        <template v-slot:header>
-          <router-link to="/widget/data" class="text-h6 text-primary link-hover">View all</router-link>
+      <CardHeader class="overflow-hidden" title="Team Members">
+        <template #header>
+          <router-link class="text-h6 text-primary link-hover" to="/widget/data">View all</router-link>
         </template>
         <TeamMembers />
       </CardHeader>
@@ -86,8 +92,8 @@ const breadcrumbs = ref([
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" md="6">
       <CardHeader title="Latest Messages">
-        <template v-slot:header>
-          <router-link to="/widget/data" class="text-h6 text-primary link-hover">View all</router-link>
+        <template #header>
+          <router-link class="text-h6 text-primary link-hover" to="/widget/data">View all</router-link>
         </template>
         <Messages />
       </CardHeader>
@@ -98,8 +104,8 @@ const breadcrumbs = ref([
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" md="6">
       <CardHeader title="User Activity">
-        <template v-slot:header>
-          <router-link to="/widget/data" class="text-h6 text-primary link-hover">View all</router-link>
+        <template #header>
+          <router-link class="text-h6 text-primary link-hover" to="/widget/data">View all</router-link>
         </template>
         <UserActivity />
       </CardHeader>
@@ -109,9 +115,9 @@ const breadcrumbs = ref([
     <!-- Projects -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" lg="6">
-      <CardHeader title="Projects" class="overflow-hidden">
-        <template v-slot:header>
-          <router-link to="/widget/data" class="text-h6 text-primary link-hover">View all</router-link>
+      <CardHeader class="overflow-hidden" title="Projects">
+        <template #header>
+          <router-link class="text-h6 text-primary link-hover" to="/widget/data">View all</router-link>
         </template>
         <Projects />
       </CardHeader>
@@ -121,7 +127,7 @@ const breadcrumbs = ref([
     <!-- Product Sales -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" lg="6">
-      <CardHeader title="Product Sales" class="overflow-hidden">
+      <CardHeader class="overflow-hidden" title="Product Sales">
         <ProductSales />
       </CardHeader>
     </v-col>
@@ -131,8 +137,8 @@ const breadcrumbs = ref([
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" lg="4" md="5">
       <CardHeader title="Tasks">
-        <template v-slot:header>
-          <router-link to="/widget/data" class="text-h6 text-primary link-hover">View all</router-link>
+        <template #header>
+          <router-link class="text-h6 text-primary link-hover" to="/widget/data">View all</router-link>
         </template>
         <Tasks />
       </CardHeader>
@@ -142,9 +148,9 @@ const breadcrumbs = ref([
     <!-- Application Sales -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" lg="8" md="7">
-      <CardHeader title="Application Sales" class="overflow-hidden">
-        <template v-slot:header>
-          <router-link to="/widget/data" class="text-h6 text-primary link-hover">View all</router-link>
+      <CardHeader class="overflow-hidden" title="Application Sales">
+        <template #header>
+          <router-link class="text-h6 text-primary link-hover" to="/widget/data">View all</router-link>
         </template>
         <ApplicationSales />
       </CardHeader>
@@ -155,8 +161,8 @@ const breadcrumbs = ref([
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" md="8">
       <CardHeader title="Active Tickets">
-        <template v-slot:header>
-          <router-link to="/widget/data" class="text-h6 text-primary link-hover">View all</router-link>
+        <template #header>
+          <router-link class="text-h6 text-primary link-hover" to="/widget/data">View all</router-link>
         </template>
         <ActiveTickets />
       </CardHeader>
@@ -166,9 +172,9 @@ const breadcrumbs = ref([
     <!-- Latest Posts -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" md="4">
-      <CardHeader title="Latest Posts" class="overflow-hidden">
-        <template v-slot:header>
-          <router-link to="/widget/data" class="text-h6 text-primary link-hover">View all</router-link>
+      <CardHeader class="overflow-hidden" title="Latest Posts">
+        <template #header>
+          <router-link class="text-h6 text-primary link-hover" to="/widget/data">View all</router-link>
         </template>
         <LatestPosts />
       </CardHeader>
@@ -178,9 +184,9 @@ const breadcrumbs = ref([
     <!-- Feeds -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" lg="4" md="5">
-      <CardHeader title="Feeds" class="overflow-hidden">
-        <template v-slot:header>
-          <router-link to="/widget/data" class="text-h6 text-primary link-hover">View all</router-link>
+      <CardHeader class="overflow-hidden" title="Feeds">
+        <template #header>
+          <router-link class="text-h6 text-primary link-hover" to="/widget/data">View all</router-link>
         </template>
         <Feeds />
       </CardHeader>
@@ -190,9 +196,9 @@ const breadcrumbs = ref([
     <!-- Latest Customers -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" lg="8" md="7">
-      <CardHeader title="Latest Customers" class="overflow-hidden">
-        <template v-slot:header>
-          <router-link to="/widget/data" class="text-h6 text-primary link-hover">View all</router-link>
+      <CardHeader class="overflow-hidden" title="Latest Customers">
+        <template #header>
+          <router-link class="text-h6 text-primary link-hover" to="/widget/data">View all</router-link>
         </template>
         <LatestCustomer />
       </CardHeader>
@@ -202,9 +208,9 @@ const breadcrumbs = ref([
     <!-- Latest Order -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12">
-      <CardHeader title="Latest Order" class="overflow-hidden">
-        <template v-slot:header>
-          <router-link to="/widget/data" class="text-h6 text-primary link-hover">View all</router-link>
+      <CardHeader class="overflow-hidden" title="Latest Order">
+        <template #header>
+          <router-link class="text-h6 text-primary link-hover" to="/widget/data">View all</router-link>
         </template>
         <LatestOrder />
       </CardHeader>
@@ -214,9 +220,9 @@ const breadcrumbs = ref([
     <!-- Incoming Requests -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" md="4" sm="6">
-      <CardHeader title="Incoming Requests" class="overflow-hidden">
-        <template v-slot:header>
-          <router-link to="/widget/data" class="text-h6 text-primary link-hover">View all</router-link>
+      <CardHeader class="overflow-hidden" title="Incoming Requests">
+        <template #header>
+          <router-link class="text-h6 text-primary link-hover" to="/widget/data">View all</router-link>
         </template>
         <IncomingRequest />
       </CardHeader>
@@ -226,7 +232,7 @@ const breadcrumbs = ref([
     <!-- Total Revenue -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" md="4" sm="6">
-      <CardHeader title="Total Revenue" class="overflow-hidden">
+      <CardHeader class="overflow-hidden" title="Total Revenue">
         <TotalRevenue />
       </CardHeader>
     </v-col>
@@ -235,7 +241,7 @@ const breadcrumbs = ref([
     <!-- New Customers -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" md="4">
-      <CardHeader title="New Customers" class="overflow-hidden">
+      <CardHeader class="overflow-hidden" title="New Customers">
         <NewCustomers />
       </CardHeader>
     </v-col>
@@ -244,9 +250,9 @@ const breadcrumbs = ref([
     <!-- Recent Tickets -->
     <!-- ---------------------------------------------------------------- -->
     <v-col cols="12" lg="8">
-      <CardHeader title="Recent Tickets" class="overflow-hidden">
-        <template v-slot:header>
-          <router-link to="/widget/data" class="text-h6 text-primary link-hover">View all</router-link>
+      <CardHeader class="overflow-hidden" title="Recent Tickets">
+        <template #header>
+          <router-link class="text-h6 text-primary link-hover" to="/widget/data">View all</router-link>
         </template>
         <RecentTickets />
       </CardHeader>

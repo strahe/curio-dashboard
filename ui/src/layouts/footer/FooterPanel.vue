@@ -2,15 +2,15 @@
 import { shallowRef } from 'vue'
 
 const footerLink = shallowRef([
-    {
-        title: 'About us',
-    },
-    {
-        title: 'Privacy',
-    },
-    {
-        title: 'Terms',
-    },
+  {
+    title: 'About us',
+  },
+  {
+    title: 'Privacy',
+  },
+  {
+    title: 'Terms',
+  },
 ])
 </script>
 <template>
