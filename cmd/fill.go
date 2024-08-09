@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/filecoin-project/curio/deps"
 	"github.com/robfig/cron/v3"
 	"github.com/strahe/curio-dashboard/aggregator"
 	"github.com/strahe/curio-dashboard/aggregator/jobs"
@@ -57,7 +58,7 @@ var fillCmd = &cli.Command{
 			return fmt.Errorf("FULLNODE_API_INFO not set")
 		}
 		apiInfo := strings.Split(os.Getenv("FULLNODE_API_INFO"), ",")
-		fullNode, closer, err := getFullNodeAPIV1(cctx, apiInfo)
+		fullNode, closer, err := deps.GetFullNodeAPIV1Curio(cctx, apiInfo)
 		if err != nil {
 			return fmt.Errorf("failed to get full node API: %w", err)
 		}

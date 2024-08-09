@@ -1,4 +1,4 @@
-all: go-deps web-deps web go
+all: go-deps ui-deps ui go
 
 gen:
 	go generate ./...
@@ -11,9 +11,9 @@ go-deps:
 go:
 	go build -o curio-dashboard ./cmd
 
-web-deps:
-	cd web && yarn install
+ui-deps:
+	cd ui && yarn install
 
-web:
-	cd web && yarn build
-.PHONY: web
+ui:
+	cd ui && yarn build
+.PHONY: ui

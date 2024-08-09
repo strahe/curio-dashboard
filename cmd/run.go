@@ -12,6 +12,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/filecoin-project/curio/deps"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/lotus/build"
 	cliutil "github.com/filecoin-project/lotus/cli/util"
@@ -22,7 +23,7 @@ import (
 	"github.com/strahe/curio-dashboard/graph"
 	cachecontrol "github.com/strahe/curio-dashboard/graph/cachecontrol"
 	"github.com/strahe/curio-dashboard/graph/resolvers"
-	"github.com/strahe/curio-dashboard/web"
+	"github.com/strahe/curio-dashboard/ui"
 	"github.com/urfave/cli/v2"
 )
 
@@ -49,7 +50,8 @@ var runCmd = &cli.Command{
 			return fmt.Errorf("FULLNODE_API_INFO not set")
 		}
 		apiInfo := strings.Split(os.Getenv("FULLNODE_API_INFO"), ",")
-		fullNode, closer, err := getFullNodeAPIV1(cctx, apiInfo)
+
+		fullNode, closer, err := deps.GetFullNodeAPIV1Curio(cctx, apiInfo)
 		if err != nil {
 			return fmt.Errorf("failed to get full node API: %w", err)
 		}
@@ -114,7 +116,7 @@ var runCmd = &cli.Command{
 		})
 		srv.Use(cachecontrol.Extension{})
 
-		assets, _ := web.Assets() // nolint:errcheck
+		assets, _ := ui.Assets() // nolint:errcheck
 		fs := http.FileServer(http.FS(assets))
 		router.Handle("/", http.StripPrefix("/", fs))
 		router.Handle("/playground", playground.Handler("GraphQL playground", "/graphql"))

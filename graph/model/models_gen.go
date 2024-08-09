@@ -115,7 +115,10 @@ type Pipeline struct {
 	FailedAt                 *time.Time      `json:"failedAt,omitempty"`
 	FailedReason             string          `json:"failedReason"`
 	FailedReasonMsg          string          `json:"failedReasonMsg"`
+	TaskIDSynth              *int            `json:"taskIdSynth,omitempty"`
+	AfterSynth               bool            `json:"afterSynth"`
 	Status                   PipelineStatus  `json:"status"`
+	CurrentTask              *Task           `json:"currentTask,omitempty"`
 }
 
 type Query struct {
@@ -210,40 +213,44 @@ type TaskSummaryDay struct {
 type PipelineStatus string
 
 const (
-	PipelineStatusStarted      PipelineStatus = "Started"
-	PipelineStatusSdr          PipelineStatus = "SDR"
-	PipelineStatusTreeD        PipelineStatus = "TreeD"
-	PipelineStatusTreeC        PipelineStatus = "TreeC"
-	PipelineStatusTreeR        PipelineStatus = "TreeR"
-	PipelineStatusPreCommit    PipelineStatus = "PreCommit"
-	PipelineStatusPreCommitMsg PipelineStatus = "PreCommitMsg"
-	PipelineStatusPoRep        PipelineStatus = "PoRep"
-	PipelineStatusFinalize     PipelineStatus = "Finalize"
-	PipelineStatusMoveStorage  PipelineStatus = "MoveStorage"
-	PipelineStatusCommit       PipelineStatus = "Commit"
-	PipelineStatusCommitMsg    PipelineStatus = "CommitMsg"
-	PipelineStatusFailed       PipelineStatus = "Failed"
+	PipelineStatusSdr              PipelineStatus = "SDR"
+	PipelineStatusTreeD            PipelineStatus = "TreeD"
+	PipelineStatusTreeRc           PipelineStatus = "TreeRC"
+	PipelineStatusSynthetic        PipelineStatus = "Synthetic"
+	PipelineStatusPreCommitMsg     PipelineStatus = "PreCommitMsg"
+	PipelineStatusPreCommitMsgWait PipelineStatus = "PreCommitMsgWait"
+	PipelineStatusWaitSeed         PipelineStatus = "WaitSeed"
+	PipelineStatusPoRep            PipelineStatus = "PoRep"
+	PipelineStatusClearCache       PipelineStatus = "ClearCache"
+	PipelineStatusMoveStorage      PipelineStatus = "MoveStorage"
+	PipelineStatusCommitMsg        PipelineStatus = "CommitMsg"
+	PipelineStatusCommitMsgWait    PipelineStatus = "CommitMsgWait"
+	PipelineStatusFailed           PipelineStatus = "Failed"
+	PipelineStatusSuccess          PipelineStatus = "Success"
+	PipelineStatusUnknown          PipelineStatus = "Unknown"
 )
 
 var AllPipelineStatus = []PipelineStatus{
-	PipelineStatusStarted,
 	PipelineStatusSdr,
 	PipelineStatusTreeD,
-	PipelineStatusTreeC,
-	PipelineStatusTreeR,
-	PipelineStatusPreCommit,
+	PipelineStatusTreeRc,
+	PipelineStatusSynthetic,
 	PipelineStatusPreCommitMsg,
+	PipelineStatusPreCommitMsgWait,
+	PipelineStatusWaitSeed,
 	PipelineStatusPoRep,
-	PipelineStatusFinalize,
+	PipelineStatusClearCache,
 	PipelineStatusMoveStorage,
-	PipelineStatusCommit,
 	PipelineStatusCommitMsg,
+	PipelineStatusCommitMsgWait,
 	PipelineStatusFailed,
+	PipelineStatusSuccess,
+	PipelineStatusUnknown,
 }
 
 func (e PipelineStatus) IsValid() bool {
 	switch e {
-	case PipelineStatusStarted, PipelineStatusSdr, PipelineStatusTreeD, PipelineStatusTreeC, PipelineStatusTreeR, PipelineStatusPreCommit, PipelineStatusPreCommitMsg, PipelineStatusPoRep, PipelineStatusFinalize, PipelineStatusMoveStorage, PipelineStatusCommit, PipelineStatusCommitMsg, PipelineStatusFailed:
+	case PipelineStatusSdr, PipelineStatusTreeD, PipelineStatusTreeRc, PipelineStatusSynthetic, PipelineStatusPreCommitMsg, PipelineStatusPreCommitMsgWait, PipelineStatusWaitSeed, PipelineStatusPoRep, PipelineStatusClearCache, PipelineStatusMoveStorage, PipelineStatusCommitMsg, PipelineStatusCommitMsgWait, PipelineStatusFailed, PipelineStatusSuccess, PipelineStatusUnknown:
 		return true
 	}
 	return false

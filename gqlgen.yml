@@ -100,3 +100,5 @@ models:
         resolver: true
       status:
         resolver: true
+      currentTask:
+        resolver: true
