@@ -20,7 +20,7 @@ const footerLink = shallowRef([
         <p class="text-caption mb-0">© All rights reserved</p>
       </v-col>
       <v-col class="text-right" cols="6">
-        <a v-for="(item, i) in footerLink" :key="i" class="mx-2 text-caption text-darkText" href="/starter">
+        <a v-for="(item, i) in footerLink" :key="i" class="mx-2 text-caption text-darkText" href="#">
           {{ item.title }}
         </a>
       </v-col>

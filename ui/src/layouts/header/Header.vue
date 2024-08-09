@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 // icons
-import { MenuFoldOutlined, SearchOutlined } from '@ant-design/icons-vue'
-import { AdjustmentsHorizontalIcon, LanguageIcon } from 'vue-tabler-icons'
+import { MenuFoldOutlined } from '@ant-design/icons-vue'
+import { AdjustmentsHorizontalIcon, LanguageIcon, SearchIcon } from 'vue-tabler-icons'
 
-// dropdown imports
 import LanguageDD from './LanguageDD.vue'
 import NotificationDD from './NotificationDD.vue'
 import ProfileDD from './ProfileDD.vue'
 import Searchbar from './SearchBarPanel.vue'
 import FullScreen from './FullScreen.vue'
 import { useCustomizerStore } from '@/stores/customizer'
+import Logo from '@/layouts/logo/Logo.vue'
 
 const customizer = useCustomizerStore()
 const priority = ref(customizer.horizontalLayout ? 0 : 0)
@@ -21,7 +21,11 @@ watch(priority, newPriority => {
 
 <template>
   <v-app-bar elevation="0" height="60" :priority="priority">
+    <div v-if="customizer.horizontalLayout" class="pa-5 hidden-md-and-down">
+      <Logo />
+    </div>
     <v-btn
+      v-if="!customizer.horizontalLayout"
       class="hidden-md-and-down text-secondary mr-3"
       color="darkText"
       icon
@@ -30,20 +34,8 @@ watch(priority, newPriority => {
       variant="text"
       @click.stop="customizer.setMiniSidebar(!customizer.miniSidebar)"
     >
-      <MenuFoldOutlined v-if="!customizer.horizontalLayout" :style="{ fontSize: '16px' }" />
-    </v-btn>
-    <v-btn
-      class="hidden-lg-and-up text-secondary ms-3"
-      color="darkText"
-      icon
-      rounded="sm"
-      size="small"
-      variant="text"
-      @click.stop="customizer.setSidebarDrawer(!customizer.sidebarDrawer)"
-    >
       <MenuFoldOutlined :style="{ fontSize: '16px' }" />
     </v-btn>
-
     <!-- search mobile -->
     <v-menu class="hidden-lg-and-up" :close-on-content-click="false" offset="10, 0">
       <template #activator="{ props }">
@@ -56,7 +48,7 @@ watch(priority, newPriority => {
           variant="flat"
           v-bind="props"
         >
-          <SearchOutlined :style="{ fontSize: '17px' }" />
+          <SearchIcon :style="{ fontSize: '17px' }" />
         </v-btn>
       </template>
       <v-sheet class="search-sheet v-col-12 pa-0" width="320">
@@ -68,7 +60,7 @@ watch(priority, newPriority => {
           variant="solo"
         >
           <template #prepend-inner>
-            <SearchOutlined :style="{ fontSize: '17px' }" />
+            <SearchIcon :style="{ fontSize: '17px' }" />
           </template>
         </v-text-field>
       </v-sheet>
@@ -163,7 +155,6 @@ watch(priority, newPriority => {
             <v-avatar class="mr-sm-2 mr-0 py-2">
               <img alt="Julia" src="@/assets/images/users/avatar-1.png">
             </v-avatar>
-            <h6 class="text-subtitle-1 mb-0 d-sm-block d-none">JWT User</h6>
           </div>
         </v-btn>
       </template>

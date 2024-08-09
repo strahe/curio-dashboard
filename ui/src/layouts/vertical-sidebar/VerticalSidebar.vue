@@ -5,8 +5,7 @@ import sidebarItems from './sidebarItem'
 import NavGroup from './NavGroup/NavGroup.vue'
 import NavItem from './NavItem/NavItem.vue'
 import NavCollapse from './NavCollapse/NavCollapse.vue'
-import UserProfile from './extrabox/UserProfile.vue'
-import Logo from '../logo/LogoMain.vue'
+import Logo from '@/layouts/logo/Logo.vue'
 import { useCustomizerStore } from '@/stores/customizer'
 
 const customizer = useCustomizerStore()
@@ -49,8 +48,5 @@ const sidebarMenu = shallowRef(sidebarItems)
         </template>
       </v-list>
     </perfect-scrollbar>
-
-    <!-- user profile -->
-    <UserProfile />
   </v-navigation-drawer>
 </template>
