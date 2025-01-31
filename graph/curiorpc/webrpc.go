@@ -36,6 +36,14 @@ type WebRPC interface {
 	UpgradeResetTaskIDs(ctx context.Context, spid, sectorNum uint64) error
 	UpgradeDelete(ctx context.Context, spid, sectorNum uint64) error
 	WinStats(ctx context.Context) ([]webrpc.WinStats, error)
+
+	SetStorageAsk(ctx context.Context, ask *webrpc.StorageAsk) error
+	MarketBalance(ctx context.Context) ([]webrpc.MarketBalanceStatus, error)
+	MoveBalanceToEscrow(ctx context.Context, miner string, amount string, wallet string) (string, error)
+	GetPriceFilters(ctx context.Context) ([]webrpc.PriceFilter, error)
+	SetPriceFilters(ctx context.Context, name string, minDur, maxDur int, minSize, maxSize int64, price int64, verified bool) error
+	AddPriceFilters(ctx context.Context, name string, minDur, maxDur int, minSize, maxSize int64, price int64, verified bool) error
+	RemovePricingFilter(ctx context.Context, name string) error
 }
 
 type sectorListEntry struct {

@@ -1,6 +1,7 @@
 import {
   IconBox,
   IconBrandAsana,
+  IconBuildingStore,
   IconChartHistogram,
   IconCurrency,
   IconDatabase,
@@ -11,76 +12,77 @@ import {
   IconUsers,
   IconVector,
 } from '@tabler/icons-vue'
+import { RouteLocationAsPathGeneric, RouteLocationAsRelativeGeneric } from 'vue-router'
 
-export interface menu {
+export interface menuItem {
   header?: string;
   title?: string;
   icon?: object;
-  to?: string;
+  to?: string | RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric;
   getURL?: boolean;
   divider?: boolean;
   chip?: string;
   chipColor?: string;
   chipVariant?: NonNullable<'flat' | 'text' | 'elevated' | 'tonal' | 'outlined' | 'plain'> | undefined;
   chipIcon?: string;
-  children?: menu[];
+  children?: menuItem[];
   disabled?: boolean;
   type?: string;
   subCaption?: string;
 }
 
-const sidebarItem: menu[] = [
-  { header: 'Dashboard' },
+const sidebarItems: menuItem[] = [
+  { header: 'Dashboard', icon: IconHome },
   {
     title: 'Overview',
     icon: IconHome,
-    to: '/app/overview',
+    to: { name: "Overview" },
   },
   {
     title: 'Analytics',
     icon: IconChartHistogram,
-    to: '/app/analytics',
+    to: { name: "Analytics" },
   },
-  { header: 'Sealing' },
+  { header: 'Sealing', icon: IconBrandAsana },
   {
     title: 'Tasks',
     icon: IconBrandAsana,
     children: [
       {
         title: 'Running',
-        to: '/app/running-tasks',
+        to: { name: 'RunningTasks' }
       },
       {
         title: 'History',
-        to: '/app/task-history',
+        to: { name: "TaskHistory" },
       },
     ],
   },
   {
     title: 'PoRep',
     icon: IconVector,
-    to: '/app/porep',
+    to: { name: "PoRep" },
   },
   {
     title: 'Sectors',
     icon: IconBox,
-    to: '/app/sectors',
+    to: { name: "Sectors" },
   },
   {
     title: 'Deals',
     icon: IconParking,
-    to: '/app/deals/pending',
+    to: { name: "PendingDeals" },
   },
   {
     title: 'Messages',
     icon: IconVector,
-    to: '/app/messages/sends',
+    to: { name: "MessageSends" },
   },
-  { header: 'Mining' },
+  { header: 'Mining', icon: IconUsers },
   {
     title: 'Miners',
     icon: IconUsers,
-    to: '/app/miners',
+    to: { name: "Miners" },
   },
   {
     title: "Wins",
@@ -88,30 +90,49 @@ const sidebarItem: menu[] = [
     children: [
       {
         title: 'Overview',
-        to: '/app/mining/overview',
+        to: { name: "MiningOverview" },
       },
       {
         title: 'Blocks',
-        to: '/app/mining/wins',
+        to: { name: "MiningTaskList" },
       },
     ],
   },
-  { header: 'Cluster' },
+  { header: 'Market', icon: IconBuildingStore },
+  {
+    title: 'Market',
+    icon: IconBuildingStore,
+    children: [
+      {
+        title: 'Balances',
+        to: { name: "MarketBalances" }
+      },
+      {
+        title: 'Storage Asks',
+        to: { name: "StorageAsks" }
+      },
+      {
+        title: 'Price Filter',
+        to: { name: "PriceFilter" }
+      },
+    ]
+  },
+  { header: 'Cluster', icon: IconServer },
   {
     title: 'Machines',
     icon: IconServer,
-    to: '/app/machines',
+    to: { name: "Machines" },
   },
   {
     title: 'Storages',
     icon: IconDatabase,
-    to: '/app/storages',
+    to: { name: "Storages" },
   },
   {
     title: 'Configurations',
     icon: IconSettings,
-    to: '/app/configurations',
+    to: { name: "Configurations" },
   },
 ]
 
-export default sidebarItem
+export default sidebarItems
